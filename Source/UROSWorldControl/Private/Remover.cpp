@@ -56,28 +56,26 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> ARemover::FROSRemoveModelServer::Callback
 		StaticCastSharedPtr<FROSBridgeRemoveModelSrv::Request>(Request);
 
 	AActor* ActorToBeRemoved;
-	try
-	{
-		// get and remove Actor with given UtagID of Controller IDMap
-		ActorToBeRemoved = Parent->Controller->IDMap.FindAndRemoveChecked(Request_->GetUtagId());
-	}
-	catch (const std::exception&)
-	{
-		// the given UtagID was not found.
-		UE_LOG(LogTemp, Warning, TEXT("Actor with id:\"%s\" does not exist."));
-		return TSharedPtr<FROSBridgeSrv::SrvResponse>
-			(new FROSBridgeRemoveModelSrv::Response(false));
-	}
 	
-	//Destroy Actor
-	// Execute on game thread
-	AsyncTask(ENamedThreads::GameThread, [=]()
-	{
-		ActorToBeRemoved->Destroy();
-	}
-	);
+		// get and remove Actor with given UtagID of Controller IDMap
+		if(Parent->Controller->IDMap.RemoveAndCopyValue(Request_->GetUtagId(), ActorToBeRemoved)){
+			// Actor was found and will be destroyed on GameThread
+			AsyncTask(ENamedThreads::GameThread, [=]()
+			{
+				ActorToBeRemoved->Destroy();
+			}
+			);
 
+			return TSharedPtr<FROSBridgeSrv::SrvResponse>
+				(new FROSBridgeRemoveModelSrv::Response(true));
+		} 
+		else
+		{
+			// the given UtagID was not found.
+			UE_LOG(LogTemp, Warning, TEXT("Actor with id:\"%s\" does not exist and can therefore not be removed."), *Request_->GetUtagId());
+			return TSharedPtr<FROSBridgeSrv::SrvResponse>
+				(new FROSBridgeRemoveModelSrv::Response(false));
+		}
 
-	return TSharedPtr<FROSBridgeSrv::SrvResponse>
-		(new FROSBridgeRemoveModelSrv::Response(true));
+		
 }

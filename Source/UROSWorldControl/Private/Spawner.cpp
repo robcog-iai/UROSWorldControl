@@ -32,13 +32,13 @@ void ASpawner::BeginPlay()
 	Handler->Connect();
 
 	// DEBUG
-	SpawnAsset(
+	/*SpawnAsset(
 		TEXT("StaticMesh'/Engine/BasicShapes/Sphere.Sphere'"),
 		TEXT("Material'/Engine/BasicShapes/BasicShapeMaterial.BasicShapeMaterial'"),
 		FVector(130, 200, 300),
 		FRotator::ZeroRotator,
 		TArray<UTagMsg>::TArray()
-	);
+	);*/
 		
 }
 
@@ -49,15 +49,6 @@ void ASpawner::BeginPlay()
 void ASpawner::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	//check if something is supposed to be spawned and spawn it.
-	/*while(SpawnAtNextTick.Num() != 0){
-		SpawnAssetParams params = SpawnAtNextTick.Pop(true);
-		SpawnAsset(params.PathOfMesh,
-			params.PathOfMaterial, 
-			params.Location, 
-			params.Rotator,
-			params.Tags);
-	}*/
 		
 	Handler->Process();
 }
@@ -109,21 +100,12 @@ bool ASpawner::SpawnAsset(const FString PathToMesh, const FString PathOfMaterial
 		return false;
 	}
 
-	//TODO: check is element with id already exist and handle it.
-	//Actual Spawning MesComponent
+	//Actual Spawning MeshComponent
 	AStaticMeshActor* SpawnedItem = World->SpawnActor<AStaticMeshActor>(Location, Rotation, SpawnParams);
 
-	//Assigning the Mesh and Material to the Component
-	SpawnedItem->SetMobility(EComponentMobility::Movable);
-	SpawnedItem->GetStaticMeshComponent()->SetStaticMesh(Mesh);
-	SpawnedItem->GetStaticMeshComponent()->SetMaterial(0, Material);
+	
 	for (auto Tag : Tags)
 	{
-		//TODO: Replace with FTagStatic add functionality once its provided
-		if (FTagStatics::GetTagTypeIndex(SpawnedItem, Tag.GetTagType()) == INDEX_NONE) {
-			SpawnedItem->Tags.Add(FName(*Tag.GetTagType().Append(";")));
-		}
-
 		FTagStatics::AddKeyValuePair(
 			SpawnedItem,
 			Tag.GetTagType(),
@@ -132,8 +114,28 @@ bool ASpawner::SpawnAsset(const FString PathToMesh, const FString PathOfMaterial
 
 		//Check if current Tag ist SemLog;id
 		if (Tag.GetTagType().Equals(TEXT("SemLog")) && Tag.GetKey().Equals(TEXT("id"))) {
-			//Add this object to id refrence map
-			Controller->IDMap.Add(Tag.GetValue(), SpawnedItem);
+			// check if ID was already taken
+			if (Controller->IDMap.Find(Tag.GetValue()) == nullptr) 
+			{
+				//Assigning the Mesh and Material to the Component
+				SpawnedItem->SetMobility(EComponentMobility::Movable);
+				SpawnedItem->GetStaticMeshComponent()->SetStaticMesh(Mesh);
+				SpawnedItem->GetStaticMeshComponent()->SetMaterial(0, Material);
+
+				//Add this object to id refrence map
+				Controller->IDMap.Add(Tag.GetValue(), SpawnedItem);
+			}
+			else
+			{
+				//ID is already taken
+				//Spawing and then destroying object avoids iterating over tags twice.
+				//since this code should rarely trigger this should be faster compared to extra iterations on every spawn 
+				SpawnedItem->Destroy();
+				UE_LOG(LogTemp, Warning, TEXT("Semlog id: \"%s\" is not unique, therefore nothing was spawned."), *Tag.GetValue());
+				return false;
+			}
+			
+			
 		}
 	}
 

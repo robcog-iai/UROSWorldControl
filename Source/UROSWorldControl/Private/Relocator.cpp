@@ -33,15 +33,6 @@ void ARelocator::BeginPlay()
 void ARelocator::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	while (MoveAtNextTick.Num() != 0) {
-		MoveAssetParams params = MoveAtNextTick.Pop(true);
-		Relocate(params.Actor,
-			params.Location,
-			params.Rotator);
-	}
-
-
 }
 
 
@@ -89,6 +80,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> ARelocator::FROSRelocationServer::Callbac
 
 	if (!Actor) {
 		// Couldn't find Actor for ID 
+		UE_LOG(LogTemp, Warning, TEXT("Actor with id:\"%s\" does not exist and can therefore not be moved."), *Request_->GetUtagId());
 		return MakeShareable<FROSBridgeSrv::SrvResponse>
 			(new FROSBridgeRelocateModelSrv::Response(false));
 	}
@@ -100,7 +92,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> ARelocator::FROSRelocationServer::Callbac
 	Params.Location = Request_->GetLocation();
 	Params.Rotator = Request_->GetRotator();
 
-	//Actor was found and will be relocated.
+	//Actor was found and will be relocated, in GameThread
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		Parent->Relocate(Params.Actor,
