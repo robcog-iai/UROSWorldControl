@@ -3,6 +3,7 @@
 #include "ROSWorldControlManager.h"
 #include "Spawner.h"
 #include "Relocator.h"
+#include "Remover.h"
 
 // Sets default values
 AROSWorldControlManager::AROSWorldControlManager()
@@ -40,6 +41,13 @@ void AROSWorldControlManager::BeginPlay()
 	Spawner->ServerAdress = ServerAdress;
 	Spawner->ServerPort = ServerPort;
 	Spawner->Controller = this;
+
+	// Spawn the Remover into the world
+	Remover = World->SpawnActor<ARemover>();
+	Remover->ServerAdress = ServerAdress;
+	Remover->ServerPort = ServerPort;
+	Remover->Controller = this;
+
 	
 }
 

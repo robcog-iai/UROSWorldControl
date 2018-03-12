@@ -25,7 +25,7 @@ void ASpawner::BeginPlay()
 	Handler = MakeShareable<FROSBridgeHandler>(new FROSBridgeHandler(ServerAdress, ServerPort));
 
 	// Add service clients and servers
-	TSharedPtr<FROSSpawnMeshServer> ServiceServer = MakeShareable<FROSSpawnMeshServer>(new FROSSpawnMeshServer(TEXT("spawner_service"), this));
+	TSharedPtr<FROSSpawnMeshServer> ServiceServer = MakeShareable<FROSSpawnMeshServer>(new FROSSpawnMeshServer(TEXT("ue/spawn_model"), this));
 	Handler->AddServiceServer(ServiceServer);
 
 	// Connect to ROSBridge Websocket server.
@@ -50,14 +50,14 @@ void ASpawner::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	//check if something is supposed to be spawned and spawn it.
-	while(SpawnAtNextTick.Num() != 0){
+	/*while(SpawnAtNextTick.Num() != 0){
 		SpawnAssetParams params = SpawnAtNextTick.Pop(true);
 		SpawnAsset(params.PathOfMesh,
 			params.PathOfMaterial, 
 			params.Location, 
 			params.Rotator,
 			params.Tags);
-	}
+	}*/
 		
 	Handler->Process();
 }
@@ -152,6 +152,8 @@ UMaterialInterface * ASpawner::LoadMaterial(const FString Path)
 	return Material;
 }
 
+
+
 TSharedPtr<FROSBridgeSrv::SrvRequest> ASpawner::FROSSpawnMeshServer::FromJson(TSharedPtr<FJsonObject> JsonObject) const
 {
 	TSharedPtr<FROSBridgeSpawnServiceSrv::Request> Request_ =
@@ -172,10 +174,21 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> ASpawner::FROSSpawnMeshServer::Callback(T
 	Params.Location = Request_->GetLocation();
 	Params.Rotator = Request_->GetRotator();
 	Params.Tags = Request_->GetTags();
-	Parent->SpawnAtNextTick.Add(Params);
 	
+
+	// Execute on game thread
+	AsyncTask(ENamedThreads::GameThread, [=]()
+	{
+		Parent->SpawnAsset(Params.PathOfMesh,
+			Params.PathOfMaterial,
+			Params.Location,
+			Params.Rotator,
+			Params.Tags);
+	}
+	);
+
+
 	//TODO: Wait for actual response value 
-	//maybe active Wait? for tick something like while(not ticked){};
 
 	return MakeShareable<FROSBridgeSrv::SrvResponse>
 		(new FROSBridgeSpawnServiceSrv::Response(true));

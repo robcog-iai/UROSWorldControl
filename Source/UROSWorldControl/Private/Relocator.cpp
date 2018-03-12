@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Relocator.h"
-#include "ROSBridge/srv/RelocateSrv.h"
+#include "ROSBridge/srv/RelocateModelSrv.h"
 
 // Sets default values
 ARelocator::ARelocator()
@@ -20,7 +20,7 @@ void ARelocator::BeginPlay()
 	Handler = MakeShareable<FROSBridgeHandler>(new FROSBridgeHandler(ServerAdress, ServerPort));
 
 	// Add service clients and servers
-	TSharedPtr<FROSRelocationServer> ServiceServer = MakeShareable<FROSRelocationServer>(new FROSRelocationServer(TEXT("relocation_service"), this));
+	TSharedPtr<FROSRelocationServer> ServiceServer = MakeShareable<FROSRelocationServer>(new FROSRelocationServer(TEXT("ue/relocate_model"), this));
 	Handler->AddServiceServer(ServiceServer);
 
 
@@ -71,8 +71,8 @@ bool ARelocator::Relocate(AActor* Actor, FVector Location, FRotator Rotator)
 
 TSharedPtr<FROSBridgeSrv::SrvRequest> ARelocator::FROSRelocationServer::FromJson(TSharedPtr<FJsonObject> JsonObject) const
 {
-	TSharedPtr<FROSBridgeRelocatSrv::Request> Request_ =
-		MakeShareable(new FROSBridgeRelocatSrv::Request());
+	TSharedPtr<FROSBridgeRelocateModelSrv::Request> Request_ =
+		MakeShareable(new FROSBridgeRelocateModelSrv::Request());
 	Request_->FromJson(JsonObject);
 	return TSharedPtr<FROSBridgeSrv::SrvRequest>(Request_);
 }
@@ -80,8 +80,8 @@ TSharedPtr<FROSBridgeSrv::SrvRequest> ARelocator::FROSRelocationServer::FromJson
 TSharedPtr<FROSBridgeSrv::SrvResponse> ARelocator::FROSRelocationServer::Callback(TSharedPtr<FROSBridgeSrv::SrvRequest> Request)
 {
 
-	TSharedPtr<FROSBridgeRelocatSrv::Request> Request_ =
-		StaticCastSharedPtr<FROSBridgeRelocatSrv::Request>(Request);
+	TSharedPtr<FROSBridgeRelocateModelSrv::Request> Request_ =
+		StaticCastSharedPtr<FROSBridgeRelocateModelSrv::Request>(Request);
 
 	//Get Actor for given ID
 	AActor** Actor = Parent->Controller->IDMap.Find(Request_->GetUtagId());
@@ -90,20 +90,25 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> ARelocator::FROSRelocationServer::Callbac
 	if (!Actor) {
 		// Couldn't find Actor for ID 
 		return MakeShareable<FROSBridgeSrv::SrvResponse>
-			(new FROSBridgeRelocatSrv::Response(false));
+			(new FROSBridgeRelocateModelSrv::Response(false));
 	}
 
-	//Actor was found and will be relocated.
-	//bool worked = Parent->Relocate(*Actor, Request_->GetLocation(), Request_->GetRotator());
 
 	// Setup params
 	MoveAssetParams Params;
 	Params.Actor = *Actor;
 	Params.Location = Request_->GetLocation();
 	Params.Rotator = Request_->GetRotator();
-	// Add to Que for next Tick
-	Parent->MoveAtNextTick.Add(Params);
+
+	//Actor was found and will be relocated.
+	AsyncTask(ENamedThreads::GameThread, [=]()
+	{
+		Parent->Relocate(Params.Actor,
+			Params.Location,
+			Params.Rotator);
+	}
+	);
 
 	return MakeShareable<FROSBridgeSrv::SrvResponse>
-		(new FROSBridgeRelocatSrv::Response(true));
+		(new FROSBridgeRelocateModelSrv::Response(true));
 }

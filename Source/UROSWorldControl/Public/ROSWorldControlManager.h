@@ -7,10 +7,10 @@
 #include "TagStatics.h"
 #include "ROSWorldControlManager.generated.h"
 
-
 //Forward declariation to avoid recursion
 class ASpawner;
 class ARelocator;
+class ARemover;
 
 UCLASS()
 class UROSWORLDCONTROL_API AROSWorldControlManager : public AActor
@@ -40,4 +40,5 @@ public:
 private:
 	ARelocator* Relocator;
 	ASpawner* Spawner;
+	ARemover* Remover;
 };

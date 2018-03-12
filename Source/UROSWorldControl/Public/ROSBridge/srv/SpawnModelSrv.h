@@ -2,7 +2,7 @@
 
 #include "ROSBridgeSrv.h"
 #include "Pose.h"
-#include "TagMsg.h"
+#include "ROSBridge/msgs/TagMsg.h"
 
 class UROSBRIDGE_API FROSBridgeSpawnServiceSrv : public FROSBridgeSrv {
 protected :

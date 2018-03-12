@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "ROSBridgeSrvServer.h"
 #include "ROSBridgeHandler.h"
-#include "SpawnServiceSrv.h"
+#include "SpawnModelSrv.h"
 #include "ROSWorldControlManager.h"
 #include "Spawner.generated.h"
 
@@ -69,7 +69,7 @@ private:
 
 	public:
 		FROSSpawnMeshServer(FString Name, ASpawner* Parent_) :
-			FROSBridgeSrvServer(Name, TEXT("ue/spawner_service")) 
+			FROSBridgeSrvServer(Name, TEXT("ue/spawn_model")) 
 		{
 			Parent = Parent_;
 		}

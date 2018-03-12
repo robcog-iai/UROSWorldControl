@@ -3,12 +3,12 @@
 #include "ROSBridgeSrv.h"
 #include "Pose.h"
 
-class UROSBRIDGE_API FROSBridgeRelocatSrv : public FROSBridgeSrv {
+class UROSBRIDGE_API FROSBridgeRelocateModelSrv : public FROSBridgeSrv {
 protected:
 	FString Type;
 
 public:
-	FROSBridgeRelocatSrv(FString Type_)
+	FROSBridgeRelocateModelSrv(FString Type_)
 	{
 		Type = Type_;
 	}

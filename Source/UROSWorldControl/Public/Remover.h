@@ -4,42 +4,30 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "ROSBridgeHandler.h"
-#include "ROSBridgeSrvServer.h"
-#include "ROSBridgeSrv.h"
 #include "Engine/StaticMeshActor.h"
 #include "UTags.h"
 #include "TagStatics.h"
 #include "ROSWorldControlManager.h"
-#include "Relocator.generated.h"
+#include "Remover.generated.h"
 
-struct MoveAssetParams
-{
-	AActor* Actor;
-	FVector Location;
-	FRotator Rotator;
-};
 
 UCLASS()
-class UROSWORLDCONTROL_API ARelocator : public AActor
+class UROSWORLDCONTROL_API ARemover : public AActor
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this actor's properties
-	ARelocator();
-
-	TArray<MoveAssetParams> MoveAtNextTick;
-	TSharedPtr<FROSBridgeHandler> Handler;
+	ARemover();
 	AROSWorldControlManager* Controller;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	bool Relocate(AActor* Actor, FVector Location, FRotator Rotator);
+	
 	UPROPERTY(EditAnywhere, Category = "RosBridge Websocket")
 		FString ServerAdress = TEXT("192.168.1.19");
 
@@ -48,17 +36,18 @@ public:
 
 	virtual void EndPlay(const EEndPlayReason::Type Reason);
 
+	TSharedPtr<FROSBridgeHandler> Handler;
 
 private:
-
-	class FROSRelocationServer final : public FROSBridgeSrvServer
+	
+	class FROSRemoveModelServer final : public FROSBridgeSrvServer
 	{
 	private:
-		ARelocator * Parent;
+		ARemover * Parent;
 
 	public:
-		FROSRelocationServer(FString Name, ARelocator* Parent_) :
-			FROSBridgeSrvServer(Name, TEXT("ue/relocate_model"))
+		FROSRemoveModelServer(FString Name, ARemover* Parent_) :
+			FROSBridgeSrvServer(Name, TEXT("ue/delete_model"))
 		{
 			Parent = Parent_;
 		}
@@ -68,4 +57,5 @@ private:
 		TSharedPtr<FROSBridgeSrv::SrvResponse> Callback(TSharedPtr<FROSBridgeSrv::SrvRequest> Request) override;
 
 	};
+
 };
