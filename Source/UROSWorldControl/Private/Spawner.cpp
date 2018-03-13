@@ -177,21 +177,35 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> ASpawner::FROSSpawnMeshServer::Callback(T
 	Params.Rotator = Request_->GetRotator();
 	Params.Tags = Request_->GetTags();
 	
-
+	GameThreadDoneFlag = false;
 	// Execute on game thread
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		Parent->SpawnAsset(Params.PathOfMesh,
+		bool success = Parent->SpawnAsset(Params.PathOfMesh,
 			Params.PathOfMaterial,
 			Params.Location,
 			Params.Rotator,
 			Params.Tags);
+		SetServiceSuccess(success);
+		SetGameThreadDoneFlag(true);
 	}
 	);
 
-
-	//TODO: Wait for actual response value 
+	// Wait for gamethread to be done
+	while (!GameThreadDoneFlag) {
+		FPlatformProcess::Sleep(1);
+	}
 
 	return MakeShareable<FROSBridgeSrv::SrvResponse>
-		(new FROSBridgeSpawnServiceSrv::Response(true));
+		(new FROSBridgeSpawnServiceSrv::Response(ServiceSuccess));
+}
+
+void ASpawner::FROSSpawnMeshServer::SetGameThreadDoneFlag(bool Flag)
+{
+	GameThreadDoneFlag = Flag;
+}
+
+void ASpawner::FROSSpawnMeshServer::SetServiceSuccess(bool Success)
+{
+	ServiceSuccess = Success;
 }

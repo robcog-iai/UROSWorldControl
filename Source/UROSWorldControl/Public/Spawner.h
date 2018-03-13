@@ -66,6 +66,8 @@ private:
 	{
 	private: 
 		ASpawner* Parent;
+		bool GameThreadDoneFlag;
+		bool ServiceSuccess;
 
 	public:
 		FROSSpawnMeshServer(FString Name, ASpawner* Parent_) :
@@ -79,6 +81,9 @@ private:
 
 		TSharedPtr<FROSBridgeSrv::SrvResponse> Callback(TSharedPtr<FROSBridgeSrv::SrvRequest> Request) override;
 
+		void SetGameThreadDoneFlag(bool Flag);
+
+		void SetServiceSuccess(bool success);
 	};
 
 	

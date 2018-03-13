@@ -39,11 +39,14 @@ public:
 	TSharedPtr<FROSBridgeHandler> Handler;
 
 private:
+
 	
 	class FROSRemoveModelServer final : public FROSBridgeSrvServer
 	{
 	private:
 		ARemover * Parent;
+		bool GameThreadDoneFlag;
+		bool ServiceSuccess;
 
 	public:
 		FROSRemoveModelServer(FString Name, ARemover* Parent_) :
@@ -56,6 +59,9 @@ private:
 
 		TSharedPtr<FROSBridgeSrv::SrvResponse> Callback(TSharedPtr<FROSBridgeSrv::SrvRequest> Request) override;
 
+		void SetGameThreadDoneFlag(bool Flag);
+
+		void SetServiceSuccess(bool success);
 	};
 
 };

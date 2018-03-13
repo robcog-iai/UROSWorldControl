@@ -60,14 +60,22 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> ARemover::FROSRemoveModelServer::Callback
 		// get and remove Actor with given UtagID of Controller IDMap
 		if(Parent->Controller->IDMap.RemoveAndCopyValue(Request_->GetUtagId(), ActorToBeRemoved)){
 			// Actor was found and will be destroyed on GameThread
+			GameThreadDoneFlag = false;
 			AsyncTask(ENamedThreads::GameThread, [=]()
 			{
-				ActorToBeRemoved->Destroy();
+				bool success = ActorToBeRemoved->Destroy();
+				SetServiceSuccess(success);
+				SetGameThreadDoneFlag(true);
 			}
 			);
 
+			// Wait for gamethread to be done
+			while (!GameThreadDoneFlag) {
+				FPlatformProcess::Sleep(1);
+			}
+
 			return TSharedPtr<FROSBridgeSrv::SrvResponse>
-				(new FROSBridgeRemoveModelSrv::Response(true));
+				(new FROSBridgeRemoveModelSrv::Response(ServiceSuccess));
 		} 
 		else
 		{
@@ -78,4 +86,15 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> ARemover::FROSRemoveModelServer::Callback
 		}
 
 		
+}
+
+
+void  ARemover::FROSRemoveModelServer::SetGameThreadDoneFlag(bool Flag)
+{
+	GameThreadDoneFlag = Flag;
+}
+
+void ARemover::FROSRemoveModelServer::SetServiceSuccess(bool Success)
+{
+	ServiceSuccess = Success;
 }

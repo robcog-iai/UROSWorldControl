@@ -92,15 +92,32 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> ARelocator::FROSRelocationServer::Callbac
 	Params.Location = Request_->GetLocation();
 	Params.Rotator = Request_->GetRotator();
 
+	GameThreadDoneFlag = false;
 	//Actor was found and will be relocated, in GameThread
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		Parent->Relocate(Params.Actor,
+		bool success = Parent->Relocate(Params.Actor,
 			Params.Location,
 			Params.Rotator);
+		SetServiceSuccess(success);
+		SetGameThreadDoneFlag(true);
 	}
 	);
 
+	// Wait for gamethread to be done
+	while (!GameThreadDoneFlag) {
+		FPlatformProcess::Sleep(1);
+	}
 	return MakeShareable<FROSBridgeSrv::SrvResponse>
-		(new FROSBridgeRelocateModelSrv::Response(true));
+		(new FROSBridgeRelocateModelSrv::Response(ServiceSuccess));
+}
+
+void  ARelocator::FROSRelocationServer::SetGameThreadDoneFlag(bool Flag)
+{
+	GameThreadDoneFlag = Flag;
+}
+
+void ARelocator::FROSRelocationServer::SetServiceSuccess(bool Success)
+{
+	ServiceSuccess = Success;
 }

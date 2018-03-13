@@ -55,6 +55,8 @@ private:
 	{
 	private:
 		ARelocator * Parent;
+		bool GameThreadDoneFlag;
+		bool ServiceSuccess;
 
 	public:
 		FROSRelocationServer(FString Name, ARelocator* Parent_) :
@@ -67,5 +69,8 @@ private:
 
 		TSharedPtr<FROSBridgeSrv::SrvResponse> Callback(TSharedPtr<FROSBridgeSrv::SrvRequest> Request) override;
 
+		void SetGameThreadDoneFlag(bool Flag);
+
+		void SetServiceSuccess(bool success);
 	};
 };
