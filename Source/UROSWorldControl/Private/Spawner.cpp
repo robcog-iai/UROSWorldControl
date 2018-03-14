@@ -25,7 +25,7 @@ void ASpawner::BeginPlay()
 	Handler = MakeShareable<FROSBridgeHandler>(new FROSBridgeHandler(ServerAdress, ServerPort));
 
 	// Add service clients and servers
-	TSharedPtr<FROSSpawnMeshServer> ServiceServer = MakeShareable<FROSSpawnMeshServer>(new FROSSpawnMeshServer(TEXT("ue/spawn_model"), this));
+	TSharedPtr<FROSSpawnMeshServer> ServiceServer = MakeShareable<FROSSpawnMeshServer>(new FROSSpawnMeshServer(NameSpace, TEXT("spawn_model"), this));
 	Handler->AddServiceServer(ServiceServer);
 
 	// Connect to ROSBridge Websocket server.

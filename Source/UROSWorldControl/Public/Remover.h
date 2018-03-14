@@ -34,6 +34,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "RosBridge Websocket")
 		int ServerPort = 9090;
 
+	UPROPERTY(EditAnywhere, Category = "ROS")
+		FString NameSpace = TEXT("unreal");
+
 	virtual void EndPlay(const EEndPlayReason::Type Reason);
 
 	TSharedPtr<FROSBridgeHandler> Handler;
@@ -49,8 +52,8 @@ private:
 		bool ServiceSuccess;
 
 	public:
-		FROSRemoveModelServer(FString Name, ARemover* Parent_) :
-			FROSBridgeSrvServer(Name, TEXT("ue/delete_model"))
+		FROSRemoveModelServer(FString NameSpace,FString Name, ARemover* Parent_) :
+			FROSBridgeSrvServer(NameSpace + "/" + Name, TEXT("ue/delete_model"))
 		{
 			Parent = Parent_;
 		}

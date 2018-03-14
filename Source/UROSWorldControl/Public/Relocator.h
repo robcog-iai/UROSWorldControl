@@ -46,6 +46,10 @@ public:
 	UPROPERTY(EditAnywhere, Category = "RosBridge Websocket")
 		int ServerPort = 9090;
 
+
+	UPROPERTY(EditAnywhere, Category = "ROS")
+		FString NameSpace = TEXT("unreal");
+
 	virtual void EndPlay(const EEndPlayReason::Type Reason);
 
 
@@ -59,8 +63,8 @@ private:
 		bool ServiceSuccess;
 
 	public:
-		FROSRelocationServer(FString Name, ARelocator* Parent_) :
-			FROSBridgeSrvServer(Name, TEXT("ue/relocate_model"))
+		FROSRelocationServer(FString NameSpace, FString Name, ARelocator* Parent_) :
+			FROSBridgeSrvServer(NameSpace + "/" + Name, TEXT("ue/relocate_model"))
 		{
 			Parent = Parent_;
 		}

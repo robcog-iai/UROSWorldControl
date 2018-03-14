@@ -43,6 +43,8 @@ public:
 	UPROPERTY(EditAnywhere, Category = "RosBridge Websocket")
 	int ServerPort = 9090;
 
+	UPROPERTY(EditAnywhere, Category = "ROS")
+		FString NameSpace = TEXT("unreal");
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -70,8 +72,8 @@ private:
 		bool ServiceSuccess;
 
 	public:
-		FROSSpawnMeshServer(FString Name, ASpawner* Parent_) :
-			FROSBridgeSrvServer(Name, TEXT("ue/spawn_model")) 
+		FROSSpawnMeshServer(FString NameSpace, FString Name, ASpawner* Parent_) :
+			FROSBridgeSrvServer(NameSpace + "/" + Name, TEXT("ue/spawn_model"))
 		{
 			Parent = Parent_;
 		}

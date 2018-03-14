@@ -33,6 +33,7 @@ void AROSWorldControlManager::BeginPlay()
 	Relocator = World->SpawnActor<ARelocator>();
 	Relocator->ServerAdress = ServerAdress;
 	Relocator->ServerPort = ServerPort;
+	Relocator->NameSpace = NameSpace;
 	Relocator->Controller = this;
 
 
@@ -40,12 +41,14 @@ void AROSWorldControlManager::BeginPlay()
 	Spawner = World->SpawnActor<ASpawner>();
 	Spawner->ServerAdress = ServerAdress;
 	Spawner->ServerPort = ServerPort;
+	Spawner->NameSpace = NameSpace;
 	Spawner->Controller = this;
 
 	// Spawn the Remover into the world
 	Remover = World->SpawnActor<ARemover>();
 	Remover->ServerAdress = ServerAdress;
 	Remover->ServerPort = ServerPort;
+	Remover->NameSpace = NameSpace;
 	Remover->Controller = this;
 
 	

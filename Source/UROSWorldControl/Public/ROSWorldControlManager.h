@@ -26,6 +26,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "RosBridge Websocket")
 	int ServerPort = 9090;
 
+	UPROPERTY(EditAnywhere, Category = "ROS")
+	FString NameSpace = TEXT("unreal");
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

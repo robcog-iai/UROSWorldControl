@@ -21,7 +21,7 @@ void ARemover::BeginPlay()
 	Handler = MakeShareable<FROSBridgeHandler>(new FROSBridgeHandler(ServerAdress, ServerPort));
 
 	// Add service clients and servers
-	TSharedPtr<FROSRemoveModelServer> ServiceServer = MakeShareable<FROSRemoveModelServer>(new FROSRemoveModelServer(TEXT("ue/delete_model"), this));
+	TSharedPtr<FROSRemoveModelServer> ServiceServer = MakeShareable<FROSRemoveModelServer>(new FROSRemoveModelServer(NameSpace, TEXT("delete_model"), this));
 	Handler->AddServiceServer(ServiceServer);
 
 	// Connect to ROSBridge Websocket server.
