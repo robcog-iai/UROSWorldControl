@@ -64,7 +64,7 @@ private:
 
 	public:
 		FROSRelocationServer(FString NameSpace, FString Name, ARelocator* Parent_) :
-			FROSBridgeSrvServer(NameSpace + "/" + Name, TEXT("ue/relocate_model"))
+			FROSBridgeSrvServer(NameSpace + TEXT("/") + Name, TEXT("unreal_msgs/relocate_model"))
 		{
 			Parent = Parent_;
 		}

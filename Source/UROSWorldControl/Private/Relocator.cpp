@@ -20,7 +20,7 @@ void ARelocator::BeginPlay()
 	Handler = MakeShareable<FROSBridgeHandler>(new FROSBridgeHandler(ServerAdress, ServerPort));
 
 	// Add service clients and servers
-	TSharedPtr<FROSRelocationServer> ServiceServer = MakeShareable<FROSRelocationServer>(new FROSRelocationServer(NameSpace, TEXT("ue/relocate_model"), this));
+	TSharedPtr<FROSRelocationServer> ServiceServer = MakeShareable<FROSRelocationServer>(new FROSRelocationServer(NameSpace, TEXT("relocate_model"), this));
 	Handler->AddServiceServer(ServiceServer);
 
 

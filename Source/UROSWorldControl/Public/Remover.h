@@ -53,7 +53,7 @@ private:
 
 	public:
 		FROSRemoveModelServer(FString NameSpace,FString Name, ARemover* Parent_) :
-			FROSBridgeSrvServer(NameSpace + "/" + Name, TEXT("ue/delete_model"))
+			FROSBridgeSrvServer(NameSpace + TEXT("/") + Name, TEXT("unreal_msgs/delete_model"))
 		{
 			Parent = Parent_;
 		}
