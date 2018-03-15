@@ -60,7 +60,7 @@ public:
 
 	public:
 		FROSSpawnMeshServer(FString Namespace, FString Name, ASpawner* InParent) :
-			FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("unreal_msgs/spawn_model"))
+			FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("unreal_msgs/SpawnModel"))
 		{
 			Parent = InParent;
 		}

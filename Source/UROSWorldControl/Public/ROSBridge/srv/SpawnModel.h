@@ -41,11 +41,11 @@ public:
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
 		{
-			PathToMesh = JsonObject->GetStringField("PathToMesh");
-			PathToMaterial = JsonObject->GetStringField("PathToMaterial");
-			Pose = geometry_msgs::Pose::GetFromJson(JsonObject->GetObjectField("Pose"));
+			PathToMesh = JsonObject->GetStringField("path_to_mesh");
+			PathToMaterial = JsonObject->GetStringField("path_to_material");
+			Pose = geometry_msgs::Pose::GetFromJson(JsonObject->GetObjectField("pose"));
 	
-			TArray<TSharedPtr<FJsonValue>> TagsPtrArray = JsonObject->GetArrayField(TEXT("Tags"));
+			TArray<TSharedPtr<FJsonValue>> TagsPtrArray = JsonObject->GetArrayField(TEXT("tags"));
 			for (auto &ptr : TagsPtrArray)
 			{
 				UTagMsg Tag;
@@ -71,9 +71,9 @@ public:
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const 
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-			Object->SetStringField("PathToMesh", PathToMesh);
-			Object->SetStringField("PathToMaterial", PathToMaterial);
-			Object->SetObjectField("Pose", Pose.ToJsonObject());
+			Object->SetStringField("path_to_mesh", PathToMesh);
+			Object->SetStringField("path_to_material", PathToMaterial);
+			Object->SetObjectField("pose", Pose.ToJsonObject());
 			
 			TArray<TSharedPtr<FJsonValue>> TagsPtrArray;
 			for (auto &Tag : Tags) 
@@ -81,7 +81,7 @@ public:
 				TSharedPtr<FJsonValue> Ptr = MakeShareable(new FJsonValueObject(Tag.ToJsonObject()));
 				TagsPtrArray.Add(Ptr);
 			}
-			Object->SetArrayField("Tags", TagsPtrArray);
+			Object->SetArrayField("tags", TagsPtrArray);
 			
 
 			return Object;
@@ -102,7 +102,7 @@ public:
 		
 		virtual void FromJson(TSharedPtr<FJsonObject> JSonObject) override
 		{
-			bSuccess = JSonObject->GetBoolField("succeded");
+			bSuccess = JSonObject->GetBoolField("success");
 		}
 
 		static Response GetFromJson(TSharedPtr<FJsonObject> JSonObject)
@@ -120,7 +120,7 @@ public:
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-			Object->SetBoolField("succeded", bSuccess);
+			Object->SetBoolField("success", bSuccess);
 			return Object;
 		}
 	};

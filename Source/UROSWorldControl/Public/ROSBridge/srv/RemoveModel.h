@@ -22,7 +22,7 @@ public:
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
-			UTagID = JsonObject->GetStringField("UTagID");
+			UTagID = JsonObject->GetStringField("id");
 		}
 
 		static Request GetFromJson(TSharedPtr<FJsonObject> JsonObject)
@@ -41,7 +41,7 @@ public:
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-			Object->SetStringField("UTagID", UTagID);
+			Object->SetStringField("id", UTagID);
 
 			return Object;
 		}
@@ -60,7 +60,7 @@ public:
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JSonObject) override
 		{
-			bSuccess = JSonObject->GetBoolField("succeded");
+			bSuccess = JSonObject->GetBoolField("success");
 		}
 
 		static Response GetFromJson(TSharedPtr<FJsonObject> JSonObject)
@@ -78,7 +78,7 @@ public:
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-			Object->SetBoolField("succeded", bSuccess);
+			Object->SetBoolField("success", bSuccess);
 			return Object;
 		}
 	};

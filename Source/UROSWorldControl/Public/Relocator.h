@@ -53,7 +53,7 @@ public:
 
 	public:
 		FROSRelocationServer(FString Namespace, FString Name, ARelocator* InParent) :
-			FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("unreal_msgs/set_model_pose"))
+			FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("unreal_msgs/SetModelPose"))
 		{
 			Parent = InParent;
 		}

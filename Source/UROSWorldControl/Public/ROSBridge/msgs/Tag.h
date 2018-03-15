@@ -54,9 +54,9 @@ public:
 
 	virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 	{
-		Key = JsonObject->GetStringField("Key");
-		Value = JsonObject->GetStringField("Value");
-		TagType = JsonObject->GetStringField("TagType");
+		Key = JsonObject->GetStringField("key");
+		Value = JsonObject->GetStringField("value");
+		TagType = JsonObject->GetStringField("tag_type");
 	}
 
 	virtual FString ToString() const override
@@ -67,9 +67,9 @@ public:
 	virtual TSharedPtr<FJsonObject> ToJsonObject() const override
 	{
 		TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-		Object->SetStringField(TEXT("Key"), Key);
-		Object->SetStringField(TEXT("Value"), Value);
-		Object->SetStringField(TEXT("TagType"), TagType);
+		Object->SetStringField(TEXT("key"), Key);
+		Object->SetStringField(TEXT("value"), Value);
+		Object->SetStringField(TEXT("tag_type"), TagType);
 		return Object;
 	}
 
