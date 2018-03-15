@@ -3,12 +3,12 @@
 #include "ROSBridgeSrv.h"
 #include "Pose.h"
 
-class UROSBRIDGE_API FROSBridgeRelocateModelSrv : public FROSBridgeSrv {
+class UROSBRIDGE_API FROSBridgeSetModelPoseSrv : public FROSBridgeSrv {
 protected:
 	FString Type;
 
 public:
-	FROSBridgeRelocateModelSrv(FString Type_)
+	FROSBridgeSetModelPoseSrv(FString Type_)
 	{
 		Type = Type_;
 	}
@@ -20,7 +20,7 @@ public:
 
 	public:
 		Request() {}
-		FString GetUtagId() { return UTagID; };
+		FString GetUTagId() { return UTagID; };
 
 		FVector GetLocation()
 		{
@@ -47,7 +47,7 @@ public:
 
 		virtual FString ToString() const override
 		{
-			return TEXT("FROSBridgeRelocatorSrv::Request { UTagID = ") + UTagID +
+			return TEXT("FROSBridgeSetModelPoseSrv::Request { UTagID = ") + UTagID +
 				TEXT(", Location = ") + Pose.GetPosition().GetVector().ToString() + 
 				TEXT(" and Rotator  = ") + FRotator::FRotator(Pose.GetOrientation().GetQuat()).ToString() + 
 				TEXT("} ");
@@ -68,17 +68,17 @@ public:
 
 	class Response : public SrvResponse {
 	private:
-		bool succeded;
+		bool bSuccess;
 
 	public:
 		Response() {}
-		Response(bool succeded_) : succeded(succeded_) {}
-		bool getWorked() const { return succeded; }
-		void setWorked(bool succeded_) { succeded = succeded_; }
+		Response(bool succeded_) : bSuccess(succeded_) {}
+		bool GetSuccess() const { return bSuccess; }
+		void SetSuccess(bool Success) { bSuccess = Success; }
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JSonObject) override
 		{
-			succeded = JSonObject->GetBoolField("succeded");
+			bSuccess = JSonObject->GetBoolField("succeded");
 		}
 
 		static Response GetFromJson(TSharedPtr<FJsonObject> JSonObject)
@@ -90,13 +90,13 @@ public:
 
 		virtual FString ToString() const override
 		{
-			return TEXT("FROSBridgeRelocatorSrv::Request { %s }"), succeded ? TEXT("True") : TEXT("False");
+			return TEXT("FROSBridgeSetModelPoseSrv::Request { %s }"), bSuccess ? TEXT("True") : TEXT("False");
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-			Object->SetBoolField("succeded", succeded);
+			Object->SetBoolField("succeded", bSuccess);
 			return Object;
 		}
 	};

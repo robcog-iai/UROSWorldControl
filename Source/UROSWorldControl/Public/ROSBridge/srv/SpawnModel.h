@@ -2,7 +2,7 @@
 
 #include "ROSBridgeSrv.h"
 #include "Pose.h"
-#include "ROSBridge/msgs/TagMsg.h"
+#include "ROSBridge/msgs/Tag.h"
 
 class UROSBRIDGE_API FROSBridgeSpawnServiceSrv : public FROSBridgeSrv {
 protected :
@@ -23,7 +23,7 @@ public:
 
 	public:
 		Request() {}
-		//TODO Constructor with parameters ?
+
 		FString GetPathToMesh() { return PathToMesh; }
 		FString GetPathToMaterial() { return PathToMaterial; }
 
@@ -65,7 +65,6 @@ public:
 		{
 			return TEXT("FROSBridgeSpawnService::Request { Mesh = ")
 						+ PathToMesh + TEXT(", Material = ") + PathToMaterial + TEXT("} ");
-			//TODO UPDATE for Tags and Pose
 
 		}
 
@@ -93,17 +92,17 @@ public:
 
 	class Response : public SrvResponse {
 	private:
-		bool succeded;
+		bool bSuccess;
 
 	public:
 		Response() {}
-		Response(bool succeded_) : succeded(succeded_) {}
-		bool getWorked() const { return succeded; }
-		void setWorked(bool succeded_) { succeded = succeded_; }
+		Response(bool Success) : bSuccess(Success) {}
+		bool GetSuccess() const { return bSuccess; }
+		void SetSuccess(bool Success) { bSuccess = Success; }
 		
 		virtual void FromJson(TSharedPtr<FJsonObject> JSonObject) override
 		{
-			succeded = JSonObject->GetBoolField("succeded");
+			bSuccess = JSonObject->GetBoolField("succeded");
 		}
 
 		static Response GetFromJson(TSharedPtr<FJsonObject> JSonObject)
@@ -115,13 +114,13 @@ public:
 
 		virtual FString ToString() const override
 		{
-			return TEXT("FROSBridgeSpawnService::Response { %s }"), succeded ? TEXT("True") : TEXT("False");
+			return TEXT("FROSBridgeSpawnService::Response { %s }"), bSuccess ? TEXT("True") : TEXT("False");
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-			Object->SetBoolField("succeded", succeded);
+			Object->SetBoolField("succeded", bSuccess);
 			return Object;
 		}
 	};

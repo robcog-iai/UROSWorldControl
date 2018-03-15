@@ -50,17 +50,17 @@ public:
 
 	class Response :public SrvResponse {
 	private:
-		bool succeded;
+		bool bSuccess;
 
 	public:
 		Response() {}
-		Response(bool succeded_) : succeded(succeded_) {}
-		bool getWorked() const { return succeded; }
-		void setWorked(bool succeded_) { succeded = succeded_; }
+		Response(bool Success) : bSuccess(Success) {}
+		bool GetSuccess() const { return bSuccess; }
+		void SetSuccess(bool Success) { bSuccess = Success; }
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JSonObject) override
 		{
-			succeded = JSonObject->GetBoolField("succeded");
+			bSuccess = JSonObject->GetBoolField("succeded");
 		}
 
 		static Response GetFromJson(TSharedPtr<FJsonObject> JSonObject)
@@ -72,13 +72,13 @@ public:
 
 		virtual FString ToString() const override
 		{
-			return TEXT("FROSBridgeRemoveModelSrv::Request { %s }"), succeded ? TEXT("True") : TEXT("False");
+			return TEXT("FROSBridgeRemoveModelSrv::Request { %s }"), bSuccess ? TEXT("True") : TEXT("False");
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-			Object->SetBoolField("succeded", succeded);
+			Object->SetBoolField("succeded", bSuccess);
 			return Object;
 		}
 	};

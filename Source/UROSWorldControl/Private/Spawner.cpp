@@ -18,18 +18,6 @@ ASpawner::ASpawner()
 // Called when the game starts or when spawned
 void ASpawner::BeginPlay()
 {
-	Super::BeginPlay();
-
-
-	// Set websocket server address to ws 
-	Handler = MakeShareable<FROSBridgeHandler>(new FROSBridgeHandler(ServerAdress, ServerPort));
-
-	// Add service clients and servers
-	TSharedPtr<FROSSpawnMeshServer> ServiceServer = MakeShareable<FROSSpawnMeshServer>(new FROSSpawnMeshServer(NameSpace, TEXT("spawn_model"), this));
-	Handler->AddServiceServer(ServiceServer);
-
-	// Connect to ROSBridge Websocket server.
-	Handler->Connect();
 
 	// DEBUG
 	/*SpawnAsset(
@@ -50,15 +38,6 @@ void ASpawner::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 		
-	Handler->Process();
-}
-
-void ASpawner::EndPlay(const EEndPlayReason::Type Reason)
-{
-	Handler->Disconnect();
-	// Disconnect the handler before parent ends
-
-	Super::EndPlay(Reason);
 }
 
 
@@ -115,7 +94,7 @@ bool ASpawner::SpawnAsset(const FString PathToMesh, const FString PathOfMaterial
 		//Check if current Tag ist SemLog;id
 		if (Tag.GetTagType().Equals(TEXT("SemLog")) && Tag.GetKey().Equals(TEXT("id"))) {
 			// check if ID was already taken
-			if (Controller->IDMap.Find(Tag.GetValue()) == nullptr) 
+			if (Controller->IdToActorMap.Find(Tag.GetValue()) == nullptr) 
 			{
 				//Assigning the Mesh and Material to the Component
 				SpawnedItem->SetMobility(EComponentMobility::Movable);
@@ -123,7 +102,7 @@ bool ASpawner::SpawnAsset(const FString PathToMesh, const FString PathOfMaterial
 				SpawnedItem->GetStaticMeshComponent()->SetMaterial(0, Material);
 
 				//Add this object to id refrence map
-				Controller->IDMap.Add(Tag.GetValue(), SpawnedItem);
+				Controller->IdToActorMap.Add(Tag.GetValue(), SpawnedItem);
 			}
 			else
 			{
@@ -167,15 +146,15 @@ TSharedPtr<FROSBridgeSrv::SrvRequest> ASpawner::FROSSpawnMeshServer::FromJson(TS
 TSharedPtr<FROSBridgeSrv::SrvResponse> ASpawner::FROSSpawnMeshServer::Callback(TSharedPtr<FROSBridgeSrv::SrvRequest> Request) 
 {
 	
-	TSharedPtr<FROSBridgeSpawnServiceSrv::Request> Request_ =
+	TSharedPtr<FROSBridgeSpawnServiceSrv::Request> SpawnMeshRequest =
 		StaticCastSharedPtr<FROSBridgeSpawnServiceSrv::Request>(Request);
 
 	SpawnAssetParams Params;
-	Params.PathOfMesh = Request_->GetPathToMesh();
-	Params.PathOfMaterial = Request_->GetPathToMaterial();
-	Params.Location = Request_->GetLocation();
-	Params.Rotator = Request_->GetRotator();
-	Params.Tags = Request_->GetTags();
+	Params.PathOfMesh = SpawnMeshRequest->GetPathToMesh();
+	Params.PathOfMaterial = SpawnMeshRequest->GetPathToMaterial();
+	Params.Location = SpawnMeshRequest->GetLocation();
+	Params.Rotator = SpawnMeshRequest->GetRotator();
+	Params.Tags = SpawnMeshRequest->GetTags();
 	
 	GameThreadDoneFlag = false;
 	// Execute on game thread
@@ -193,7 +172,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> ASpawner::FROSSpawnMeshServer::Callback(T
 
 	// Wait for gamethread to be done
 	while (!GameThreadDoneFlag) {
-		FPlatformProcess::Sleep(1);
+		FPlatformProcess::Sleep(0.01);
 	}
 
 	return MakeShareable<FROSBridgeSrv::SrvResponse>
@@ -205,7 +184,7 @@ void ASpawner::FROSSpawnMeshServer::SetGameThreadDoneFlag(bool Flag)
 	GameThreadDoneFlag = Flag;
 }
 
-void ASpawner::FROSSpawnMeshServer::SetServiceSuccess(bool Success)
+void ASpawner::FROSSpawnMeshServer::SetServiceSuccess(bool bSuccess)
 {
-	ServiceSuccess = Success;
+	ServiceSuccess = bSuccess;
 }

@@ -27,9 +27,7 @@ class UROSWORLDCONTROL_API ARelocator : public AActor
 public:
 	// Sets default values for this actor's properties
 	ARelocator();
-
-	TArray<MoveAssetParams> MoveAtNextTick;
-	TSharedPtr<FROSBridgeHandler> Handler;
+	
 	AROSWorldControlManager* Controller;
 
 protected:
@@ -40,21 +38,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	bool Relocate(AActor* Actor, FVector Location, FRotator Rotator);
-	UPROPERTY(EditAnywhere, Category = "RosBridge Websocket")
-		FString ServerAdress = TEXT("192.168.1.19");
-
-	UPROPERTY(EditAnywhere, Category = "RosBridge Websocket")
-		int ServerPort = 9090;
-
-
-	UPROPERTY(EditAnywhere, Category = "ROS")
-		FString NameSpace = TEXT("unreal");
-
-	virtual void EndPlay(const EEndPlayReason::Type Reason);
-
-
-private:
-
+	
 	class FROSRelocationServer final : public FROSBridgeSrvServer
 	{
 	private:
@@ -62,19 +46,21 @@ private:
 		bool GameThreadDoneFlag;
 		bool ServiceSuccess;
 
+
+		void SetGameThreadDoneFlag(bool Flag);
+
+		void SetServiceSuccess(bool Success);
+
 	public:
-		FROSRelocationServer(FString NameSpace, FString Name, ARelocator* Parent_) :
-			FROSBridgeSrvServer(NameSpace + TEXT("/") + Name, TEXT("unreal_msgs/relocate_model"))
+		FROSRelocationServer(FString Namespace, FString Name, ARelocator* InParent) :
+			FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("unreal_msgs/set_model_pose"))
 		{
-			Parent = Parent_;
+			Parent = InParent;
 		}
 
 		TSharedPtr<FROSBridgeSrv::SrvRequest> FromJson(TSharedPtr<FJsonObject> JsonObject) const override;
 
 		TSharedPtr<FROSBridgeSrv::SrvResponse> Callback(TSharedPtr<FROSBridgeSrv::SrvRequest> Request) override;
 
-		void SetGameThreadDoneFlag(bool Flag);
-
-		void SetServiceSuccess(bool success);
 	};
 };

@@ -28,43 +28,28 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	
-	UPROPERTY(EditAnywhere, Category = "RosBridge Websocket")
-		FString ServerAdress = TEXT("192.168.1.19");
-
-	UPROPERTY(EditAnywhere, Category = "RosBridge Websocket")
-		int ServerPort = 9090;
-
-	UPROPERTY(EditAnywhere, Category = "ROS")
-		FString NameSpace = TEXT("unreal");
-
-	virtual void EndPlay(const EEndPlayReason::Type Reason);
-
-	TSharedPtr<FROSBridgeHandler> Handler;
-
-private:
-
-	
 	class FROSRemoveModelServer final : public FROSBridgeSrvServer
 	{
 	private:
 		ARemover * Parent;
 		bool GameThreadDoneFlag;
 		bool ServiceSuccess;
+		
+		void SetGameThreadDoneFlag(bool Flag);
+
+		void SetServiceSuccess(bool Success);
 
 	public:
-		FROSRemoveModelServer(FString NameSpace,FString Name, ARemover* Parent_) :
-			FROSBridgeSrvServer(NameSpace + TEXT("/") + Name, TEXT("unreal_msgs/delete_model"))
+		FROSRemoveModelServer(FString Namespace,FString Name, ARemover* InParent) :
+			FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("unreal_msgs/delete_model"))
 		{
-			Parent = Parent_;
+			Parent = InParent;
 		}
 
 		TSharedPtr<FROSBridgeSrv::SrvRequest> FromJson(TSharedPtr<FJsonObject> JsonObject) const override;
 
 		TSharedPtr<FROSBridgeSrv::SrvResponse> Callback(TSharedPtr<FROSBridgeSrv::SrvRequest> Request) override;
 
-		void SetGameThreadDoneFlag(bool Flag);
-
-		void SetServiceSuccess(bool success);
 	};
 
 };

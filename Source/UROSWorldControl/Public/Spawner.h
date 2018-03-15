@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "ROSBridgeSrvServer.h"
 #include "ROSBridgeHandler.h"
-#include "SpawnModelSrv.h"
+#include "SpawnModel.h"
 #include "ROSWorldControlManager.h"
 #include "Spawner.generated.h"
 
@@ -29,7 +29,6 @@ class UROSWORLDCONTROL_API ASpawner : public AActor
 public:	
 	// Sets default values for this actor's properties
 	ASpawner();	
-	TArray<SpawnAssetParams> SpawnAtNextTick;
 	AROSWorldControlManager* Controller;
 
 protected:
@@ -37,20 +36,8 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
-	UPROPERTY(EditAnywhere, Category = "RosBridge Websocket")
-	FString ServerAdress = TEXT("192.168.1.19");
-
-	UPROPERTY(EditAnywhere, Category = "RosBridge Websocket")
-	int ServerPort = 9090;
-
-	UPROPERTY(EditAnywhere, Category = "ROS")
-		FString NameSpace = TEXT("unreal");
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	virtual void EndPlay(const EEndPlayReason::Type Reason);
-
-	TSharedPtr<FROSBridgeHandler> Handler;
 
 	//Spawns a StaticMeshComponent at the given Location, Rotation and Material.
 	//Object pointed to by PathOfMesh has to be a StaticMeshComponent.
@@ -58,11 +45,7 @@ public:
 	bool SpawnAsset(const FString PathOfMesh, const FString PathOfMaterial, const FVector Location, const FRotator Rotation, const TArray<UTagMsg> Tags);
 
 
-private: 
 
-	UStaticMesh * LoadMesh(const FString Path);
-
-	UMaterialInterface * LoadMaterial(const FString Path);
 
 	class FROSSpawnMeshServer final : public FROSBridgeSrvServer
 	{
@@ -71,11 +54,15 @@ private:
 		bool GameThreadDoneFlag;
 		bool ServiceSuccess;
 
+
+		void SetGameThreadDoneFlag(bool Flag);
+		void SetServiceSuccess(bool Success);
+
 	public:
-		FROSSpawnMeshServer(FString NameSpace, FString Name, ASpawner* Parent_) :
-			FROSBridgeSrvServer(NameSpace + TEXT("/") + Name, TEXT("unreal_msgs/spawn_model"))
+		FROSSpawnMeshServer(FString Namespace, FString Name, ASpawner* InParent) :
+			FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("unreal_msgs/spawn_model"))
 		{
-			Parent = Parent_;
+			Parent = InParent;
 		}
 		
 
@@ -83,10 +70,13 @@ private:
 
 		TSharedPtr<FROSBridgeSrv::SrvResponse> Callback(TSharedPtr<FROSBridgeSrv::SrvRequest> Request) override;
 
-		void SetGameThreadDoneFlag(bool Flag);
 
-		void SetServiceSuccess(bool success);
 	};
 
-	
+private:
+
+
+	UStaticMesh * LoadMesh(const FString Path);
+
+	UMaterialInterface * LoadMaterial(const FString Path);
 };

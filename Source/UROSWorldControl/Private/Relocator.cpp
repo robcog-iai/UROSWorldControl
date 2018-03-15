@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Relocator.h"
-#include "ROSBridge/srv/RelocateModelSrv.h"
+#include "ROSBridge/srv/SetModelPose.h"
 
 // Sets default values
 ARelocator::ARelocator()
@@ -16,17 +16,6 @@ void ARelocator::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Set websocket server address to ws 
-	Handler = MakeShareable<FROSBridgeHandler>(new FROSBridgeHandler(ServerAdress, ServerPort));
-
-	// Add service clients and servers
-	TSharedPtr<FROSRelocationServer> ServiceServer = MakeShareable<FROSRelocationServer>(new FROSRelocationServer(NameSpace, TEXT("relocate_model"), this));
-	Handler->AddServiceServer(ServiceServer);
-
-
-	// Connect to ROSBridge Websocket server.
-	Handler->Connect();
-
 }
 
 // Called every frame
@@ -36,14 +25,6 @@ void ARelocator::Tick(float DeltaTime)
 }
 
 
-
-void ARelocator::EndPlay(const EEndPlayReason::Type Reason)
-{
-	Handler->Disconnect();
-	// Disconnect the handler before parent ends
-
-	Super::EndPlay(Reason);
-}
 
 
 bool ARelocator::Relocate(AActor* Actor, FVector Location, FRotator Rotator)
@@ -62,8 +43,8 @@ bool ARelocator::Relocate(AActor* Actor, FVector Location, FRotator Rotator)
 
 TSharedPtr<FROSBridgeSrv::SrvRequest> ARelocator::FROSRelocationServer::FromJson(TSharedPtr<FJsonObject> JsonObject) const
 {
-	TSharedPtr<FROSBridgeRelocateModelSrv::Request> Request_ =
-		MakeShareable(new FROSBridgeRelocateModelSrv::Request());
+	TSharedPtr<FROSBridgeSetModelPoseSrv::Request> Request_ =
+		MakeShareable(new FROSBridgeSetModelPoseSrv::Request());
 	Request_->FromJson(JsonObject);
 	return TSharedPtr<FROSBridgeSrv::SrvRequest>(Request_);
 }
@@ -71,26 +52,26 @@ TSharedPtr<FROSBridgeSrv::SrvRequest> ARelocator::FROSRelocationServer::FromJson
 TSharedPtr<FROSBridgeSrv::SrvResponse> ARelocator::FROSRelocationServer::Callback(TSharedPtr<FROSBridgeSrv::SrvRequest> Request)
 {
 
-	TSharedPtr<FROSBridgeRelocateModelSrv::Request> Request_ =
-		StaticCastSharedPtr<FROSBridgeRelocateModelSrv::Request>(Request);
+	TSharedPtr<FROSBridgeSetModelPoseSrv::Request> SetModelPoseRequest =
+		StaticCastSharedPtr<FROSBridgeSetModelPoseSrv::Request>(Request);
 
 	//Get Actor for given ID
-	AActor** Actor = Parent->Controller->IDMap.Find(Request_->GetUtagId());
+	AActor** Actor = Parent->Controller->IdToActorMap.Find(SetModelPoseRequest->GetUTagId());
 
 
 	if (!Actor) {
 		// Couldn't find Actor for ID 
-		UE_LOG(LogTemp, Warning, TEXT("Actor with id:\"%s\" does not exist and can therefore not be moved."), *Request_->GetUtagId());
+		UE_LOG(LogTemp, Warning, TEXT("Actor with id:\"%s\" does not exist and can therefore not be moved."), *SetModelPoseRequest->GetUTagId());
 		return MakeShareable<FROSBridgeSrv::SrvResponse>
-			(new FROSBridgeRelocateModelSrv::Response(false));
+			(new FROSBridgeSetModelPoseSrv::Response(false));
 	}
 
 
 	// Setup params
 	MoveAssetParams Params;
 	Params.Actor = *Actor;
-	Params.Location = Request_->GetLocation();
-	Params.Rotator = Request_->GetRotator();
+	Params.Location = SetModelPoseRequest->GetLocation();
+	Params.Rotator = SetModelPoseRequest->GetRotator();
 
 	GameThreadDoneFlag = false;
 	//Actor was found and will be relocated, in GameThread
@@ -106,10 +87,10 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> ARelocator::FROSRelocationServer::Callbac
 
 	// Wait for gamethread to be done
 	while (!GameThreadDoneFlag) {
-		FPlatformProcess::Sleep(1);
+		FPlatformProcess::Sleep(0.01);
 	}
 	return MakeShareable<FROSBridgeSrv::SrvResponse>
-		(new FROSBridgeRelocateModelSrv::Response(ServiceSuccess));
+		(new FROSBridgeSetModelPoseSrv::Response(ServiceSuccess));
 }
 
 void  ARelocator::FROSRelocationServer::SetGameThreadDoneFlag(bool Flag)

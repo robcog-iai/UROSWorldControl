@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "TagStatics.h"
+#include "ROSBridgeHandler.h"
 #include "ROSWorldControlManager.generated.h"
 
 //Forward declariation to avoid recursion
@@ -21,13 +21,13 @@ public:
 	// Sets default values for this actor's properties
 	AROSWorldControlManager();
 	UPROPERTY(EditAnywhere, Category = "RosBridge Websocket")
-	FString ServerAdress = TEXT("192.168.1.19");
+	FString ServerAdress;
 
 	UPROPERTY(EditAnywhere, Category = "RosBridge Websocket")
-	int ServerPort = 9090;
+	int ServerPort;
 
 	UPROPERTY(EditAnywhere, Category = "ROS")
-	FString NameSpace = TEXT("unreal");
+	FString Namespace;
 
 protected:
 	// Called when the game starts or when spawned
@@ -36,11 +36,14 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	void EndPlay(const EEndPlayReason::Type Reason);
 	ARelocator* GetRelocator();
 	ASpawner* GetSpawner();
-	TMap<FString, AActor*> IDMap;
+	TMap<FString, AActor*> IdToActorMap;
 
 private:
+	TSharedPtr<FROSBridgeHandler> Handler;
+
 	ARelocator* Relocator;
 	ASpawner* Spawner;
 	ARemover* Remover;
