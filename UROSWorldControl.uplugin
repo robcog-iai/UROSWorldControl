@@ -1,0 +1,31 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "UROSWorldControl",
+	"Description": "",
+	"Category": "Other",
+	"CreatedBy": "Bjoern Veit",
+	"CreatedByURL": "",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "UROSWorldControl",
+			"Type": "Developer",
+			"LoadingPhase": "Default"
+		}
+	],
+	 "Plugins": [
+     {
+       "Name": "UROSBridge",
+       "Enabled": true
+     },{
+       "Name": "UTags",
+       "Enabled": true
+     }]
+}
