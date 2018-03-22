@@ -3,6 +3,7 @@
 #include "ROSBridgeSrv.h"
 #include "Pose.h"
 #include "ROSBridge/msgs/Tag.h"
+#include "StaticMeshDescription.h"
 
 class UROSBRIDGE_API FROSBridgeSpawnServiceSrv : public FROSBridgeSrv {
 protected :
@@ -16,42 +17,28 @@ public:
 
 	class Request : public SrvRequest{
 	private:
-		FString PathToMesh;
-		FString PathToMaterial;
-		geometry_msgs::Pose Pose;
-		TArray<UTagMsg> Tags;
-
+		UStaticMeshDescription Description;
 	public:
 		Request() {}
 
-		FString GetPathToMesh() { return PathToMesh; }
-		FString GetPathToMaterial() { return PathToMaterial; }
+		FString GetPathToMesh() { return Description.GetPathToMesh(); }
+		FString GetPathToMaterial() { return Description.GetPathToMaterial(); }
 
-		TArray<UTagMsg> GetTags() { return Tags; }
+		TArray<UTagMsg> GetTags() { return Description.GetTags(); }
 		
 		FVector GetLocation()
 		{ 
-			return Pose.GetPosition().GetVector(); 
+			return Description.GetLocation();
 		}
 
 		FRotator GetRotator()
 		{
-			return FRotator::FRotator(Pose.GetOrientation().GetQuat()); 
+			return Description.GetRotator();
 		}
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
 		{
-			PathToMesh = JsonObject->GetStringField("path_to_mesh");
-			PathToMaterial = JsonObject->GetStringField("path_to_material");
-			Pose = geometry_msgs::Pose::GetFromJson(JsonObject->GetObjectField("pose"));
-	
-			TArray<TSharedPtr<FJsonValue>> TagsPtrArray = JsonObject->GetArrayField(TEXT("tags"));
-			for (auto &ptr : TagsPtrArray)
-			{
-				UTagMsg Tag;
-				Tag.FromJson(ptr->AsObject());
-				Tags.Add(Tag);
-			} 
+			Description.FromJson(JsonObject->GetObjectField("static_mesh_description"));		
 		}
 
 		static Request GetFromJson(TSharedPtr<FJsonObject> JsonObject) 
@@ -63,27 +50,15 @@ public:
 
 		virtual FString ToString() const override
 		{
-			return TEXT("FROSBridgeSpawnService::Request { Mesh = ")
-						+ PathToMesh + TEXT(", Material = ") + PathToMaterial + TEXT("} ");
+			return TEXT("FROSBridgeSpawnService::Request {%s} "), Description.ToString();
 
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const 
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-			Object->SetStringField("path_to_mesh", PathToMesh);
-			Object->SetStringField("path_to_material", PathToMaterial);
-			Object->SetObjectField("pose", Pose.ToJsonObject());
+			Object->SetObjectField("static_mesh_description", Description.ToJsonObject());
 			
-			TArray<TSharedPtr<FJsonValue>> TagsPtrArray;
-			for (auto &Tag : Tags) 
-			{
-				TSharedPtr<FJsonValue> Ptr = MakeShareable(new FJsonValueObject(Tag.ToJsonObject()));
-				TagsPtrArray.Add(Ptr);
-			}
-			Object->SetArrayField("tags", TagsPtrArray);
-			
-
 			return Object;
 		}
 
@@ -93,8 +68,7 @@ public:
 	class Response : public SrvResponse {
 	private:
 		bool bSuccess;
-
-	public:
+			public:
 		Response() {}
 		Response(bool Success) : bSuccess(Success) {}
 		bool GetSuccess() const { return bSuccess; }

@@ -7,9 +7,9 @@
 #include "ROSBridgeSrvServer.h"
 #include "ROSBridgeHandler.h"
 #include "SpawnModel.h"
+#include "SpawnSemanticMap.h"
 #include "ROSWorldControlManager.h"
 #include "Spawner.generated.h"
-
 
 struct SpawnAssetParams {
 	FString PathOfMesh;
@@ -73,6 +73,32 @@ public:
 
 	};
 
+
+	class FROSSpawnSemanticMapServer final : public FROSBridgeSrvServer
+	{
+	private:
+		ASpawner * Parent;
+		bool GameThreadDoneFlag;
+		bool ServiceSuccess;
+
+
+		void SetGameThreadDoneFlag(bool Flag);
+		void SetServiceSuccess(bool Success);
+
+	public:
+		FROSSpawnSemanticMapServer(FString Namespace, FString Name, ASpawner* InParent) :
+			FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("unreal_msgs/SpawnSemanticMap"))
+		{
+			Parent = InParent;
+		}
+
+
+		TSharedPtr<FROSBridgeSrv::SrvRequest> FromJson(TSharedPtr<FJsonObject> JsonObject) const override;
+
+		TSharedPtr<FROSBridgeSrv::SrvResponse> Callback(TSharedPtr<FROSBridgeSrv::SrvRequest> Request) override;
+
+
+	};
 private:
 
 

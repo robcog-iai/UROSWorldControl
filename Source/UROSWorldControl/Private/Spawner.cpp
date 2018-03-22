@@ -188,3 +188,95 @@ void ASpawner::FROSSpawnMeshServer::SetServiceSuccess(bool bSuccess)
 {
 	ServiceSuccess = bSuccess;
 }
+
+void ASpawner::FROSSpawnSemanticMapServer::SetGameThreadDoneFlag(bool Flag)
+{
+	GameThreadDoneFlag = Flag;
+}
+
+void ASpawner::FROSSpawnSemanticMapServer::SetServiceSuccess(bool bSuccess)
+{
+	ServiceSuccess = bSuccess;
+}
+
+TSharedPtr<FROSBridgeSrv::SrvRequest> ASpawner::FROSSpawnSemanticMapServer::FromJson(TSharedPtr<FJsonObject> JsonObject) const
+{
+	TSharedPtr<FROSBridgeSpawnSemanticMapSrv::Request> Request_ =
+		MakeShareable(new FROSBridgeSpawnSemanticMapSrv::Request());
+	Request_->FromJson(JsonObject);
+	return TSharedPtr<FROSBridgeSrv::SrvRequest>(Request_);
+}
+
+TSharedPtr<FROSBridgeSrv::SrvResponse> ASpawner::FROSSpawnSemanticMapServer::Callback(TSharedPtr<FROSBridgeSrv::SrvRequest> Request)
+{
+
+	TSharedPtr<FROSBridgeSpawnSemanticMapSrv::Request> SpawnSemanticMapRequest =
+		StaticCastSharedPtr<FROSBridgeSpawnSemanticMapSrv::Request>(Request);
+
+	// Destroy all StaticMeshes to get clean level.
+
+	// Execute on game thread
+	GameThreadDoneFlag = false;
+	AsyncTask(ENamedThreads::GameThread, [=]()
+	{	
+		
+		for (TActorIterator<AStaticMeshActor> ActorItr(Parent->GetWorld()); ActorItr; ++ActorItr)
+		{
+			ActorItr->Destroy();
+		}
+		Parent->Controller->IdToActorMap.Empty();
+		SetGameThreadDoneFlag(true);
+	}
+	);
+
+
+	// Wait for gamethread to be done
+	while (!GameThreadDoneFlag) {
+		FPlatformProcess::Sleep(0.01);
+	}
+
+
+	// Spawn everything in the SemanticMap
+	TArray<UStaticMeshDescription>* Descriptions = SpawnSemanticMapRequest->GetStaticMeshDescriptions();
+
+	bool bAllSucceded = true;
+	for (auto Mesh : *Descriptions) 
+	{
+		SpawnAssetParams Params;
+		Params.PathOfMesh = Mesh.GetPathToMesh();
+		Params.PathOfMaterial = Mesh.GetPathToMaterial();
+		Params.Location = Mesh.GetLocation();
+		Params.Rotator = Mesh.GetRotator();
+		Params.Tags = Mesh.GetTags();
+
+		GameThreadDoneFlag = false;
+		// Execute on game thread
+		AsyncTask(ENamedThreads::GameThread, [=]()
+		{
+			bool success = Parent->SpawnAsset(Params.PathOfMesh,
+				Params.PathOfMaterial,
+				Params.Location,
+				Params.Rotator,
+				Params.Tags);
+			SetServiceSuccess(success);
+			SetGameThreadDoneFlag(true);
+		}
+		);
+
+		// Wait for gamethread to be done
+		while (!GameThreadDoneFlag) {
+			FPlatformProcess::Sleep(0.01);
+		}
+
+		if (!ServiceSuccess)
+		{
+			bAllSucceded = false;
+		}
+	}
+
+	return MakeShareable<FROSBridgeSrv::SrvResponse>
+		(new FROSBridgeSpawnServiceSrv::Response(bAllSucceded));
+
+
+
+}

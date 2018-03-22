@@ -18,6 +18,11 @@
 			"Name": "UROSWorldControl",
 			"Type": "Developer",
 			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "SemanticMapEditor",
+			"Type": "Editor",
+			"LoadingPhase": "Default"
 		}
 	],
 	 "Plugins": [

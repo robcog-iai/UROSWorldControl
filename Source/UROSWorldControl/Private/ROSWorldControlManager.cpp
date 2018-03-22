@@ -9,7 +9,8 @@
 AROSWorldControlManager::AROSWorldControlManager()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
+	bServicesPulished = false;
 
 	ServerAdress = TEXT("127.0.0.1");
 	ServerPort = 9090;
@@ -22,31 +23,65 @@ void AROSWorldControlManager::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// This check is needed if the Serices got pulished before the game started (e.g. by the Editor).
+	if (!bServicesPulished)
+	{
+		ConnectToROSBridge();
+	}
+	
+}
+
+// Called every frame
+void AROSWorldControlManager::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+}
+
+
+void AROSWorldControlManager::EndPlay(const EEndPlayReason::Type Reason)
+{
+	// Disconnect the handler before parent ends
+	Handler->Disconnect();
+
+	Super::EndPlay(Reason);
+}
+
+void AROSWorldControlManager::ConnectToROSBridge()
+{
+
 	UWorld* World = GetWorld();
 	if (!World) {
 		UE_LOG(LogTemp, Warning, TEXT("Couldn't find the World."));
 		return;
 	}
-	
 
 	// Setup IDMap
 	IdToActorMap = FTagStatics::GetKeyValuesToActor(GetWorld(), "SemLog", "Id");
 
 
 	// Spawn Relocator into the world
-	Relocator = World->SpawnActor<ARelocator>();
-	Relocator->Controller = this;
+	if (!Relocator)
+	{
+		Relocator = World->SpawnActor<ARelocator>();
+		Relocator->Controller = this;
+	}
 
 
 	// Spawn Spawner into the world
-	Spawner = World->SpawnActor<ASpawner>();
-	Spawner->Controller = this;
+	if(!Spawner) 
+	{
+		Spawner = World->SpawnActor<ASpawner>();
+		Spawner->Controller = this;
+	}
 
 	// Spawn the Remover into the world
-	Remover = World->SpawnActor<ARemover>();
-	Remover->Controller = this;
+	if (!Remover)
+	{
+		Remover = World->SpawnActor<ARemover>();
+		Remover->Controller = this;
+	}
 
-	
+
 	// Set websocket server address to ws 
 	Handler = MakeShareable<FROSBridgeHandler>(new FROSBridgeHandler(ServerAdress, ServerPort));
 
@@ -55,6 +90,10 @@ void AROSWorldControlManager::BeginPlay()
 	//Add spawn_model service
 	TSharedPtr<ASpawner::FROSSpawnMeshServer> SpawnServer = MakeShareable<ASpawner::FROSSpawnMeshServer>(new ASpawner::FROSSpawnMeshServer(Namespace, TEXT("spawn_model"), Spawner));
 	Handler->AddServiceServer(SpawnServer);
+
+	//Add spawn_semantic_map service
+	TSharedPtr<ASpawner::FROSSpawnSemanticMapServer> SpawnSemanticMapServer = MakeShareable<ASpawner::FROSSpawnSemanticMapServer>(new ASpawner::FROSSpawnSemanticMapServer(Namespace, TEXT("spawn_semantic_map"), Spawner));
+	Handler->AddServiceServer(SpawnSemanticMapServer);
 
 	// Add set_model_pose service 
 	TSharedPtr<ARelocator::FROSRelocationServer> RelocateServer = MakeShareable<ARelocator::FROSRelocationServer>(new ARelocator::FROSRelocationServer(Namespace, TEXT("set_model_pose"), Relocator));
@@ -68,25 +107,8 @@ void AROSWorldControlManager::BeginPlay()
 
 	// Connect to ROSBridge Websocket server.
 	Handler->Connect();
-
+	bServicesPulished = true;
 }
-
-// Called every frame
-void AROSWorldControlManager::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
-
-void AROSWorldControlManager::EndPlay(const EEndPlayReason::Type Reason)
-{
-	// Disconnect the handler before parent ends
-	Handler->Disconnect();
-
-	Super::EndPlay(Reason);
-}
-
 
 ARelocator * AROSWorldControlManager::GetRelocator()
 {
