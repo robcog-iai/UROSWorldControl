@@ -2,6 +2,7 @@
 
 #include "Relocator.h"
 #include "ROSBridge/srv/SetModelPose.h"
+#include "HelperFunctions.h"
 
 // Sets default values
 ARelocator::ARelocator()
@@ -56,12 +57,15 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> ARelocator::FROSRelocationServer::Callbac
 		StaticCastSharedPtr<FROSBridgeSetModelPoseSrv::Request>(Request);
 
 	//Get Actor for given ID
-	AActor** Actor = Parent->Controller->IdToActorMap.Find(SetModelPoseRequest->GetUTagId());
+	unreal_msgs::InstanceId Id = SetModelPoseRequest->GetInstanceId();
+	FString UniqueId = UROSWorldControlHelper::GetUniqueIdOfInstanceID(&Id);
+	
+	AActor** Actor = Parent->Controller->IdToActorMap.Find(UniqueId);
 
 
 	if (!Actor) {
 		// Couldn't find Actor for ID 
-		UE_LOG(LogTemp, Warning, TEXT("Actor with id:\"%s\" does not exist and can therefore not be moved."), *SetModelPoseRequest->GetUTagId());
+		UE_LOG(LogTemp, Warning, TEXT("Actor with id:\"%s\" does not exist and can therefore not be moved."), *UniqueId);
 		return MakeShareable<FROSBridgeSrv::SrvResponse>
 			(new FROSBridgeSetModelPoseSrv::Response(false));
 	}

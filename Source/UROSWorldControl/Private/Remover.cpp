@@ -2,6 +2,7 @@
 
 #include "Remover.h"
 #include "ROSBridge/srv/RemoveModel.h"
+#include "HelperFunctions.h"
 
 // Sets default values
 ARemover::ARemover()
@@ -15,7 +16,7 @@ ARemover::ARemover()
 void ARemover::BeginPlay()
 {
 	Super::BeginPlay();
-	}
+}
 
 // Called every frame
 void ARemover::Tick(float DeltaTime)
@@ -38,36 +39,40 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> ARemover::FROSRemoveModelServer::Callback
 		StaticCastSharedPtr<FROSBridgeRemoveModelSrv::Request>(Request);
 
 	AActor* ActorToBeRemoved;
-	
-		// get and remove Actor with given UtagID of Controller IDMap
-		if(Parent->Controller->IdToActorMap.RemoveAndCopyValue(RemoveModelRequest->GetUtagId(), ActorToBeRemoved)){
-			// Actor was found and will be destroyed on GameThread
-			GameThreadDoneFlag = false;
-			AsyncTask(ENamedThreads::GameThread, [=]()
-			{
-				bool bSuccess = ActorToBeRemoved->Destroy();
-				SetServiceSuccess(bSuccess);
-				SetGameThreadDoneFlag(true);
-			}
-			);
 
-			// Wait for gamethread to be done
-			while (!GameThreadDoneFlag) {
-				FPlatformProcess::Sleep(0.01);
-			}
+	// get and remove Actor with given UtagID of Controller IDMap
 
-			return TSharedPtr<FROSBridgeSrv::SrvResponse>
-				(new FROSBridgeRemoveModelSrv::Response(ServiceSuccess));
-		} 
-		else
+	unreal_msgs::InstanceId Id = RemoveModelRequest->GetInstanceId();
+	FString UniqueId = UROSWorldControlHelper::GetUniqueIdOfInstanceID(&Id);
+
+	if (Parent->Controller->IdToActorMap.RemoveAndCopyValue(UniqueId, ActorToBeRemoved)) {
+		// Actor was found and will be destroyed on GameThread
+		GameThreadDoneFlag = false;
+		AsyncTask(ENamedThreads::GameThread, [=]()
 		{
-			// the given UtagID was not found.
-			UE_LOG(LogTemp, Warning, TEXT("Actor with id:\"%s\" does not exist and can therefore not be removed."), *RemoveModelRequest->GetUtagId());
-			return TSharedPtr<FROSBridgeSrv::SrvResponse>
-				(new FROSBridgeRemoveModelSrv::Response(false));
+			bool bSuccess = ActorToBeRemoved->Destroy();
+			SetServiceSuccess(bSuccess);
+			SetGameThreadDoneFlag(true);
+		}
+		);
+
+		// Wait for gamethread to be done
+		while (!GameThreadDoneFlag) {
+			FPlatformProcess::Sleep(0.01);
 		}
 
-		
+		return TSharedPtr<FROSBridgeSrv::SrvResponse>
+			(new FROSBridgeRemoveModelSrv::Response(ServiceSuccess));
+	}
+	else
+	{
+		// the given UtagID was not found.
+		UE_LOG(LogTemp, Warning, TEXT("Actor with id:\"%s\" does not exist and can therefore not be removed."), *RemoveModelRequest->GetInstanceId().GetId());
+		return TSharedPtr<FROSBridgeSrv::SrvResponse>
+			(new FROSBridgeRemoveModelSrv::Response(false));
+	}
+
+
 }
 
 

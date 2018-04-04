@@ -1,83 +1,80 @@
 #pragma once
 #include "ROSBridgeMsg.h"
+#include "string.h"
+#include "string.h"
+#include "string.h"
 
 
-class UTagMsg : public FROSBridgeMsg
+
+namespace unreal_msgs
 {
-	FString TagType;
-	FString Key;
-	FString Value;
-	
-
-public:
-	UTagMsg(){}
-
-	UTagMsg(FString InTagType, FString InKey, FString InValue)
+	class Tag : public FROSBridgeMsg
 	{
-		UTagMsg();
-		TagType = InTagType;
-		Key = InKey;
-		Value = InValue;
-	}
+		FString  TagType;
+		FString  Key;
+		FString  Value;
 
-	~UTagMsg() override {}
 
-	FString GetTagType()
-	{
-		return TagType;
-	}
+	public:
+		Tag() {}
 
-	FString GetKey()
-	{
-		return Key;
-	}
+		Tag(FString  InTagType, FString  InKey, FString  InValue)
+		{
+			Tag();
+			TagType = InTagType;
+			Key = InKey;
+			Value = InValue;
+		}
 
-	FString GetValue()
-	{
-		return Value;
-	}
+		FString  GetTagType()
+		{
+			return TagType;
+		}
 
-	void SetKey(FString InKey)
-	{
-		Key = InKey;
-	}
+		FString  GetKey()
+		{
+			return Key;
+		}
 
-	void SetValue(FString InValue)
-	{
-		Value = InValue;
-	}
+		FString  GetValue()
+		{
+			return Value;
+		}
 
-	void SetTagType(FString InTagType)
-	{
-		TagType = InTagType;
-	}
+		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
+		{
+			TagType = JsonObject->GetStringField("tag_type");
+			Key = JsonObject->GetStringField("key");
+			Value = JsonObject->GetStringField("value");
+		}
 
-	virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
-	{
-		Key = JsonObject->GetStringField("key");
-		Value = JsonObject->GetStringField("value");
-		TagType = JsonObject->GetStringField("tag_type");
-	}
+		static Tag GetFromJson(TSharedPtr<FJsonObject> JsonObject)
+		{
+			Tag Result;
+			Result.FromJson(JsonObject);
+			return Result;
+		}
 
-	virtual FString ToString() const override
-	{
-		return TEXT("String { TagType = \"" + TagType + "\", Key = \"" + Key + "\" and Value = \"" + Value + "\" }");
-	}
+		virtual FString ToString() const override
+		{
+			return TEXT("Tag {tag_type = %s, key = %s, value = %s"), TagType, Key, Value;
+		}
 
-	virtual TSharedPtr<FJsonObject> ToJsonObject() const override
-	{
-		TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-		Object->SetStringField(TEXT("key"), Key);
-		Object->SetStringField(TEXT("value"), Value);
-		Object->SetStringField(TEXT("tag_type"), TagType);
-		return Object;
-	}
+		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
+		{
+			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
+			Object->SetStringField(TEXT("tag_type"), TagType);
+			Object->SetStringField(TEXT("key"), Key);
+			Object->SetStringField(TEXT("value"), Value);
+			return Object;
+		}
 
-	virtual FString ToYamlString() const override
-	{
-		FString OutputString;
-		TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
-		FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
-		return OutputString;
-	}
-};
+		virtual FString ToYamlString() const override
+		{
+			FString OutputString;
+			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
+			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
+			return OutputString;
+		}
+	};
+}

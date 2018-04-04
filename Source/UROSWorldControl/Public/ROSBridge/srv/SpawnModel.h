@@ -2,8 +2,7 @@
 
 #include "ROSBridgeSrv.h"
 #include "Pose.h"
-#include "ROSBridge/msgs/Tag.h"
-#include "StaticMeshDescription.h"
+#include "ModelDescription.h"
 
 class UROSBRIDGE_API FROSBridgeSpawnServiceSrv : public FROSBridgeSrv {
 protected :
@@ -17,28 +16,19 @@ public:
 
 	class Request : public SrvRequest{
 	private:
-		UStaticMeshDescription Description;
+		unreal_msgs::ModelDescription ModelDescription;
 	public:
 		Request() {}
 
-		FString GetPathToMesh() { return Description.GetPathToMesh(); }
-		FString GetPathToMaterial() { return Description.GetPathToMaterial(); }
-
-		TArray<UTagMsg> GetTags() { return Description.GetTags(); }
-		
-		FVector GetLocation()
-		{ 
-			return Description.GetLocation();
-		}
-
-		FRotator GetRotator()
+		unreal_msgs::ModelDescription GetModelDescription()
 		{
-			return Description.GetRotator();
+			return ModelDescription;
 		}
+
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
 		{
-			Description.FromJson(JsonObject->GetObjectField("static_mesh_description"));		
+			ModelDescription.FromJson(JsonObject->GetObjectField("model_description"));
 		}
 
 		static Request GetFromJson(TSharedPtr<FJsonObject> JsonObject) 
@@ -50,14 +40,14 @@ public:
 
 		virtual FString ToString() const override
 		{
-			return TEXT("FROSBridgeSpawnService::Request {%s} "), Description.ToString();
+			return TEXT("FROSBridgeSpawnService::Request {%s} "), ModelDescription.ToString();
 
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const 
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-			Object->SetObjectField("static_mesh_description", Description.ToJsonObject());
+			Object->SetObjectField("static_mesh_description", ModelDescription.ToJsonObject());
 			
 			return Object;
 		}
@@ -68,15 +58,30 @@ public:
 	class Response : public SrvResponse {
 	private:
 		bool bSuccess;
+		unreal_msgs::InstanceId InstanceId;
 			public:
 		Response() {}
-		Response(bool Success) : bSuccess(Success) {}
+		Response(bool Success, unreal_msgs::InstanceId InInstanceId) 
+		{
+			bSuccess = Success;
+			InstanceId = InInstanceId;
+		}
 		bool GetSuccess() const { return bSuccess; }
 		void SetSuccess(bool Success) { bSuccess = Success; }
+
+		unreal_msgs::InstanceId GetInstanceId() {
+			return InstanceId;
+		}
+
+		void SetInstanceId(unreal_msgs::InstanceId InInstanceId)
+		{
+			InstanceId = InInstanceId;
+		}
 		
 		virtual void FromJson(TSharedPtr<FJsonObject> JSonObject) override
 		{
 			bSuccess = JSonObject->GetBoolField("success");
+			InstanceId.FromJson(JSonObject->GetObjectField("instance_id"));
 		}
 
 		static Response GetFromJson(TSharedPtr<FJsonObject> JSonObject)
@@ -88,13 +93,14 @@ public:
 
 		virtual FString ToString() const override
 		{
-			return TEXT("FROSBridgeSpawnService::Response { %s }"), bSuccess ? TEXT("True") : TEXT("False");
+			return TEXT("FROSBridgeSpawnService::Response { Success: %s, InstanceId: %s }"), bSuccess ? TEXT("True") : TEXT("False"), InstanceId.ToString();
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 			Object->SetBoolField("success", bSuccess);
+			Object->SetObjectField("instance_id", InstanceId.ToJsonObject());
 			return Object;
 		}
 	};

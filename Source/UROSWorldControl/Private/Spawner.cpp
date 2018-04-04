@@ -5,7 +5,9 @@
 #include "Engine/StaticMesh.h"
 #include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
 #include "TagStatics.h"
-
+#include "HelperFunctions.h"
+#include <string>
+#include <algorithm>
 
 // Sets default values
 ASpawner::ASpawner()
@@ -41,7 +43,7 @@ void ASpawner::Tick(float DeltaTime)
 }
 
 
-bool ASpawner::SpawnAsset(const FString PathToMesh, const FString PathOfMaterial, const FVector Location, const FRotator Rotation, const TArray<UTagMsg> Tags)
+bool ASpawner::SpawnAsset(const FString PathToMesh, const FString PathOfMaterial, const FVector Location, const FRotator Rotation, const TArray<unreal_msgs::Tag> Tags, unreal_msgs::InstanceId* InstanceId )
 {
 	//Check if Path is empty
 	if (PathToMesh.IsEmpty()) {
@@ -79,10 +81,46 @@ bool ASpawner::SpawnAsset(const FString PathToMesh, const FString PathOfMaterial
 		return false;
 	}
 
-	//Actual Spawning MeshComponent
-	AStaticMeshActor* SpawnedItem = World->SpawnActor<AStaticMeshActor>(Location, Rotation, SpawnParams);
+	AStaticMeshActor* SpawnedItem;
 
+	FString Name = InstanceId->GetModelClassName();
+	if (InstanceId->GetId().IsEmpty())
+	{
+		//ID needs to be generated
+		FString Id = GenerateId(4);
+		InstanceId->SetId(Id);
+	}
+
+	FString UniqueId = UROSWorldControlHelper::GetUniqueIdOfInstanceID(InstanceId);
+
+	if (Controller->IdToActorMap.Find(UniqueId) == nullptr)
+	{
+		//Actual Spawning MeshComponent
+		SpawnedItem = World->SpawnActor<AStaticMeshActor>(Location, Rotation, SpawnParams);
+		//Assigning the Mesh and Material to the Component
+		SpawnedItem->SetMobility(EComponentMobility::Movable);
+		SpawnedItem->GetStaticMeshComponent()->SetStaticMesh(Mesh);
+		SpawnedItem->GetStaticMeshComponent()->SetMaterial(0, Material);
+
+		//Add this object to id refrence map
+		Controller->IdToActorMap.Add(UniqueId, SpawnedItem);
+	}
+	else
+	{
+		//ID is already taken
+		UE_LOG(LogTemp, Warning, TEXT("Semlog id: \"%s\" is not unique, therefore nothing was spawned."), *UniqueId);
+		return false;
+	}
+
+	//Id tag to Actor
+	FTagStatics::AddKeyValuePair(
+		SpawnedItem,
+		TEXT("SemLog"),
+		TEXT("id"),
+		UniqueId);
 	
+	
+	//Add other Tags to Actor
 	for (auto Tag : Tags)
 	{
 		FTagStatics::AddKeyValuePair(
@@ -90,9 +128,13 @@ bool ASpawner::SpawnAsset(const FString PathToMesh, const FString PathOfMaterial
 			Tag.GetTagType(),
 			Tag.GetKey(),
 			Tag.GetValue());
-
+	}
+	
+	
+	/*
 		//Check if current Tag ist SemLog;id
 		if (Tag.GetTagType().Equals(TEXT("SemLog")) && Tag.GetKey().Equals(TEXT("id"))) {
+			bHasId = true;
 			// check if ID was already taken
 			if (Controller->IdToActorMap.Find(Tag.GetValue()) == nullptr) 
 			{
@@ -113,10 +155,9 @@ bool ASpawner::SpawnAsset(const FString PathToMesh, const FString PathOfMaterial
 				UE_LOG(LogTemp, Warning, TEXT("Semlog id: \"%s\" is not unique, therefore nothing was spawned."), *Tag.GetValue());
 				return false;
 			}
-			
-			
 		}
 	}
+			*/		
 
 	return true;
 }
@@ -150,11 +191,13 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> ASpawner::FROSSpawnMeshServer::Callback(T
 		StaticCastSharedPtr<FROSBridgeSpawnServiceSrv::Request>(Request);
 
 	SpawnAssetParams Params;
-	Params.PathOfMesh = SpawnMeshRequest->GetPathToMesh();
-	Params.PathOfMaterial = SpawnMeshRequest->GetPathToMaterial();
-	Params.Location = SpawnMeshRequest->GetLocation();
-	Params.Rotator = SpawnMeshRequest->GetRotator();
-	Params.Tags = SpawnMeshRequest->GetTags();
+	Params.PathOfMesh = SpawnMeshRequest->GetModelDescription().GetMeshDescription().GetPathToMesh();
+	Params.PathOfMaterial = SpawnMeshRequest->GetModelDescription().GetMeshDescription().GetPathToMaterial();
+	Params.Location = SpawnMeshRequest->GetModelDescription().GetPose().GetPosition().GetVector();
+	Params.Rotator = FRotator(SpawnMeshRequest->GetModelDescription().GetPose().GetOrientation().GetQuat());
+	Params.Tags = SpawnMeshRequest->GetModelDescription().GetTags();
+	unreal_msgs::InstanceId Id = SpawnMeshRequest->GetModelDescription().GetInstanceId();
+	Params.InstanceId = &Id;
 	
 	GameThreadDoneFlag = false;
 	// Execute on game thread
@@ -164,7 +207,8 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> ASpawner::FROSSpawnMeshServer::Callback(T
 			Params.PathOfMaterial,
 			Params.Location,
 			Params.Rotator,
-			Params.Tags);
+			Params.Tags,
+			Params.InstanceId);
 		SetServiceSuccess(success);
 		SetGameThreadDoneFlag(true);
 	}
@@ -176,7 +220,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> ASpawner::FROSSpawnMeshServer::Callback(T
 	}
 
 	return MakeShareable<FROSBridgeSrv::SrvResponse>
-		(new FROSBridgeSpawnServiceSrv::Response(ServiceSuccess));
+		(new FROSBridgeSpawnServiceSrv::Response(ServiceSuccess, Id));
 }
 
 void ASpawner::FROSSpawnMeshServer::SetGameThreadDoneFlag(bool Flag)
@@ -199,10 +243,26 @@ void ASpawner::FROSSpawnSemanticMapServer::SetServiceSuccess(bool bSuccess)
 	ServiceSuccess = bSuccess;
 }
 
+FString FORCEINLINE ASpawner::GenerateId(int Length) {
+	auto RandChar = []() -> char
+	{
+		const char CharSet[] =
+			"0123456789"
+			"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+			"abcdefghijklmnopqrstuvwxyz";
+		const size_t MaxIndex = (sizeof(CharSet) - 1);
+		return CharSet[rand() % MaxIndex];
+	};
+	std::string RandString(Length, 0);
+	std::generate_n(RandString.begin(), Length, RandChar);
+	// Return as Fstring
+	return FString(RandString.c_str());
+}
+
 TSharedPtr<FROSBridgeSrv::SrvRequest> ASpawner::FROSSpawnSemanticMapServer::FromJson(TSharedPtr<FJsonObject> JsonObject) const
 {
-	TSharedPtr<FROSBridgeSpawnSemanticMapSrv::Request> Request_ =
-		MakeShareable(new FROSBridgeSpawnSemanticMapSrv::Request());
+	TSharedPtr<FROSBridgeSpawnMultipleModelsSrv::Request> Request_ =
+		MakeShareable(new FROSBridgeSpawnMultipleModelsSrv::Request());
 	Request_->FromJson(JsonObject);
 	return TSharedPtr<FROSBridgeSrv::SrvRequest>(Request_);
 }
@@ -210,11 +270,11 @@ TSharedPtr<FROSBridgeSrv::SrvRequest> ASpawner::FROSSpawnSemanticMapServer::From
 TSharedPtr<FROSBridgeSrv::SrvResponse> ASpawner::FROSSpawnSemanticMapServer::Callback(TSharedPtr<FROSBridgeSrv::SrvRequest> Request)
 {
 
-	TSharedPtr<FROSBridgeSpawnSemanticMapSrv::Request> SpawnSemanticMapRequest =
-		StaticCastSharedPtr<FROSBridgeSpawnSemanticMapSrv::Request>(Request);
+	TSharedPtr<FROSBridgeSpawnMultipleModelsSrv::Request> SpawnSemanticMapRequest =
+		StaticCastSharedPtr<FROSBridgeSpawnMultipleModelsSrv::Request>(Request);
 
 	// Destroy all StaticMeshes to get clean level.
-
+/*
 	// Execute on game thread
 	GameThreadDoneFlag = false;
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -229,25 +289,30 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> ASpawner::FROSSpawnSemanticMapServer::Cal
 	}
 	);
 
-
 	// Wait for gamethread to be done
 	while (!GameThreadDoneFlag) {
 		FPlatformProcess::Sleep(0.01);
 	}
+	*/
 
 
-	// Spawn everything in the SemanticMap
-	TArray<UStaticMeshDescription>* Descriptions = SpawnSemanticMapRequest->GetStaticMeshDescriptions();
+	// Spawns everything in the SemanticMap
+	TArray<unreal_msgs::ModelDescription>* Descriptions = SpawnSemanticMapRequest->GetModelDescriptions();
+
+	TArray<bool> SuccessList;
+	TArray<unreal_msgs::InstanceId> InstanceIds;
 
 	bool bAllSucceded = true;
-	for (auto Mesh : *Descriptions) 
+	for (auto Descript : *Descriptions) 
 	{
 		SpawnAssetParams Params;
-		Params.PathOfMesh = Mesh.GetPathToMesh();
-		Params.PathOfMaterial = Mesh.GetPathToMaterial();
-		Params.Location = Mesh.GetLocation();
-		Params.Rotator = Mesh.GetRotator();
-		Params.Tags = Mesh.GetTags();
+		Params.PathOfMesh = Descript.GetMeshDescription().GetPathToMesh();
+		Params.PathOfMaterial = Descript.GetMeshDescription().GetPathToMaterial();
+		Params.Location = Descript.GetPose().GetPosition().GetVector();
+		Params.Rotator = FRotator(Descript.GetPose().GetOrientation().GetQuat());
+		Params.Tags = Descript.GetTags();
+		unreal_msgs::InstanceId Id = Descript.GetInstanceId();
+		Params.InstanceId = &Id;
 
 		GameThreadDoneFlag = false;
 		// Execute on game thread
@@ -257,7 +322,8 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> ASpawner::FROSSpawnSemanticMapServer::Cal
 				Params.PathOfMaterial,
 				Params.Location,
 				Params.Rotator,
-				Params.Tags);
+				Params.Tags,
+				Params.InstanceId);
 			SetServiceSuccess(success);
 			SetGameThreadDoneFlag(true);
 		}
@@ -267,15 +333,13 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> ASpawner::FROSSpawnSemanticMapServer::Cal
 		while (!GameThreadDoneFlag) {
 			FPlatformProcess::Sleep(0.01);
 		}
-
-		if (!ServiceSuccess)
-		{
-			bAllSucceded = false;
-		}
+		InstanceIds.Add(Id);
+		SuccessList.Add(ServiceSuccess);
 	}
 
+	//TODO fill this
 	return MakeShareable<FROSBridgeSrv::SrvResponse>
-		(new FROSBridgeSpawnServiceSrv::Response(bAllSucceded));
+		(new FROSBridgeSpawnMultipleModelsSrv::Response(SuccessList, InstanceIds));
 
 
 

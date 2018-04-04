@@ -92,7 +92,7 @@ void AROSWorldControlManager::ConnectToROSBridge()
 	Handler->AddServiceServer(SpawnServer);
 
 	//Add spawn_semantic_map service
-	TSharedPtr<ASpawner::FROSSpawnSemanticMapServer> SpawnSemanticMapServer = MakeShareable<ASpawner::FROSSpawnSemanticMapServer>(new ASpawner::FROSSpawnSemanticMapServer(Namespace, TEXT("spawn_semantic_map"), Spawner));
+	TSharedPtr<ASpawner::FROSSpawnSemanticMapServer> SpawnSemanticMapServer = MakeShareable<ASpawner::FROSSpawnSemanticMapServer>(new ASpawner::FROSSpawnSemanticMapServer(Namespace, TEXT("spawn_multiple_models"), Spawner));
 	Handler->AddServiceServer(SpawnSemanticMapServer);
 
 	// Add set_model_pose service 

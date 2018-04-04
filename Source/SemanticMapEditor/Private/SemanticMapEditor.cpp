@@ -16,13 +16,11 @@ static const FName SemanticMapEditorTabName("Connect to ROSBridge");
 
 FSemanticMapEditorModule::FSemanticMapEditorModule()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Hello Friend!"));
 }
 
 void FSemanticMapEditorModule::StartupModule()
 {
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
-	UE_LOG(LogTemp, Warning, TEXT("Du auch hier ?"));
 	FSemanticMapEditorStyle::Initialize();
 	FSemanticMapEditorStyle::ReloadTextures();
 
@@ -68,8 +66,6 @@ void FSemanticMapEditorModule::PluginButtonClicked()
 	World = GEditor->GetEditorWorldContext().World();
 	for (TActorIterator<AROSWorldControlManager> ActorItr(World); ActorItr; ++ActorItr)
 	{
-		// Same as with the Object Iterator, access the subclass instance with the * or -> operators.s
-		UE_LOG(LogTemp, Warning, TEXT("ActorName: %s"), *ActorItr->GetName());
 		AROSWorldControlManager* Controller = *ActorItr;
 
 		Controller->ConnectToROSBridge();
