@@ -44,7 +44,7 @@ public:
 	//Object pointed to by PathOfMaterial has to be a UMaterial.
 	bool SpawnAsset(const FString PathToMesh, const FString PathOfMaterial, const FVector Location, const FRotator Rotation, const TArray<unreal_msgs::Tag> Tags, unreal_msgs::InstanceId * InstanceId);
 
-
+	
 
 
 	class FROSSpawnMeshServer final : public FROSBridgeSrvServer
@@ -102,8 +102,7 @@ public:
 private:
 
 
-	UStaticMesh * LoadMesh(const FString Path);
-
-	UMaterialInterface * LoadMaterial(const FString Path);
+	UStaticMesh * LoadMesh(const FString Path, unreal_msgs::InstanceId * InstanceId);
+	UMaterialInterface * LoadMaterial(const FString Path, unreal_msgs::InstanceId * InstanceId);
 	FString GenerateId(int Length);
 };

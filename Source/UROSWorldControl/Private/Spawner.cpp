@@ -45,12 +45,6 @@ void ASpawner::Tick(float DeltaTime)
 
 bool ASpawner::SpawnAsset(const FString PathToMesh, const FString PathOfMaterial, const FVector Location, const FRotator Rotation, const TArray<unreal_msgs::Tag> Tags, unreal_msgs::InstanceId* InstanceId )
 {
-	//Check if Path is empty
-	if (PathToMesh.IsEmpty()) {
-		UE_LOG(LogTemp, Warning, TEXT("Path to the spawning asset, was empty."));
-		return false;
-	}
-
 	UWorld* World = GetWorld();
 	//Check if World is avialable
 	if (!World) {
@@ -65,7 +59,7 @@ bool ASpawner::SpawnAsset(const FString PathToMesh, const FString PathOfMaterial
 
 
 	//Load Mesh and check if it succeded.
-	UStaticMesh* Mesh = LoadMesh(PathToMesh);
+	UStaticMesh* Mesh = LoadMesh(PathToMesh, InstanceId);
 	if (!Mesh)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Path does not point to a static mesh"));
@@ -74,7 +68,7 @@ bool ASpawner::SpawnAsset(const FString PathToMesh, const FString PathOfMaterial
 
 
 	//Load Material and check if it succeded
-	UMaterialInterface* Material = LoadMaterial(PathOfMaterial);
+	UMaterialInterface* Material = LoadMaterial(PathOfMaterial, InstanceId);
 	if (!Material)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Path does not point to a Material"));
@@ -162,15 +156,64 @@ bool ASpawner::SpawnAsset(const FString PathToMesh, const FString PathOfMaterial
 	return true;
 }
 
-UStaticMesh * ASpawner::LoadMesh(const FString Path)
+UStaticMesh * ASpawner::LoadMesh(const FString Path, unreal_msgs::InstanceId* InstanceId)
 {
-	UStaticMesh* Mesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), nullptr, *Path));
+
+	UStaticMesh* Mesh = nullptr;
+	if (Path.IsEmpty()) 
+	{
+		//Check default path for Class, since no Path was given
+		//StaticMesh'/Game/Models/Sphere/SM_Sphere.SM_Sphere'
+		FString ModelClassName = InstanceId->GetModelClassName();
+		FString Ns = InstanceId->GetNs();
+		FString DefaultPath;
+		if (Ns.IsEmpty()) 
+		{
+			// without Namespace
+			DefaultPath = TEXT("StaticMesh'/Game/Models/") + ModelClassName + TEXT("/SM_") + ModelClassName + TEXT(".SM_") + ModelClassName + TEXT("'");
+		}
+		else
+		{
+			// with Namespace
+			DefaultPath = TEXT("StaticMesh'/Game/Models/") + Ns + TEXT("/") + ModelClassName + TEXT("/SM_") + ModelClassName + TEXT(".SM_") + ModelClassName + TEXT("'");
+		}
+
+		Mesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), nullptr, *DefaultPath));
+	}
+	else {
+		//Load Mesh From Path
+		Mesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), nullptr, *Path));
+	}
 	return Mesh;
 }
 
-UMaterialInterface * ASpawner::LoadMaterial(const FString Path)
+UMaterialInterface * ASpawner::LoadMaterial(const FString Path, unreal_msgs::InstanceId* InstanceId)
 {
-	UMaterialInterface* Material = Cast<UMaterialInterface>(StaticLoadObject(UMaterialInterface::StaticClass(), nullptr, *Path));
+
+	UMaterialInterface* Material = nullptr;
+	if (Path.IsEmpty())
+	{
+		//Check default path for Class, since no Path was given
+		FString ModelClassName = InstanceId->GetModelClassName();
+		FString Ns = InstanceId->GetNs();
+		FString DefaultPath;
+		if (Ns.IsEmpty())
+		{
+			// without Namespace
+			DefaultPath = TEXT("Material'/Game/Models/") + ModelClassName + TEXT("/M_") + ModelClassName + TEXT(".M_") + ModelClassName + TEXT("'");
+		}
+		else
+		{
+			// with Namespace
+			DefaultPath = TEXT("Material'/Game/Models/") + Ns + TEXT("/") + ModelClassName + TEXT("/M_") + ModelClassName + TEXT(".M_") + ModelClassName + TEXT("'");
+		}
+
+		Material = Cast<UMaterialInterface>(StaticLoadObject(UMaterialInterface::StaticClass(), nullptr, *DefaultPath));
+	}
+	else {
+		Material = Cast<UMaterialInterface>(StaticLoadObject(UMaterialInterface::StaticClass(), nullptr, *Path));
+	}
+
 	return Material;
 }
 
