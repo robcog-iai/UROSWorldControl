@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "ModuleManager.h"
 #include "Editor.h"
+#include "ROSWorldControlManager.h"
 
 
 class FToolBarBuilder;
@@ -13,6 +14,7 @@ class FMenuBuilder;
 class FSemanticMapEditorModule : public IModuleInterface
 {
 public:
+
 	FSemanticMapEditorModule();
 	/** IModuleInterface implementation */
 	virtual void StartupModule() override;
@@ -23,6 +25,12 @@ public:
 	
 private:
 	UWorld * World;
+	FString ServerAdress;
+	int ServerPort;
+	FString Namespace;
+	
+	ROSWorldControlManager* Controller;
+		
 	void AddToolbarExtension(FToolBarBuilder& Builder);
 	void AddMenuExtension(FMenuBuilder& Builder);
 

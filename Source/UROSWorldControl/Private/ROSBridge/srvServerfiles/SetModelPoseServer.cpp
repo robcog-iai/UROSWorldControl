@@ -1,34 +1,9 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Relocator.h"
-#include "ROSBridge/srv/SetModelPose.h"
-#include "HelperFunctions.h"
-
-// Sets default values
-ARelocator::ARelocator()
-{
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
-}
-
-// Called when the game starts or when spawned
-void ARelocator::BeginPlay()
-{
-	Super::BeginPlay();
-
-}
-
-// Called every frame
-void ARelocator::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
+#include "SetModelPoseServer.h"
 
 
 
-
-bool ARelocator::Relocate(AActor* Actor, FVector Location, FRotator Rotator)
+bool FROSSetModelPoseServer::Relocate(AActor* Actor, FVector Location, FRotator Rotator)
 {
 
 	if (Actor->TeleportTo(Location, Rotator) == false)
@@ -42,7 +17,8 @@ bool ARelocator::Relocate(AActor* Actor, FVector Location, FRotator Rotator)
 }
 
 
-TSharedPtr<FROSBridgeSrv::SrvRequest> ARelocator::FROSRelocationServer::FromJson(TSharedPtr<FJsonObject> JsonObject) const
+
+TSharedPtr<FROSBridgeSrv::SrvRequest> FROSSetModelPoseServer::FromJson(TSharedPtr<FJsonObject> JsonObject) const
 {
 	TSharedPtr<FROSBridgeSetModelPoseSrv::Request> Request_ =
 		MakeShareable(new FROSBridgeSetModelPoseSrv::Request());
@@ -50,7 +26,7 @@ TSharedPtr<FROSBridgeSrv::SrvRequest> ARelocator::FROSRelocationServer::FromJson
 	return TSharedPtr<FROSBridgeSrv::SrvRequest>(Request_);
 }
 
-TSharedPtr<FROSBridgeSrv::SrvResponse> ARelocator::FROSRelocationServer::Callback(TSharedPtr<FROSBridgeSrv::SrvRequest> Request)
+TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSetModelPoseServer::Callback(TSharedPtr<FROSBridgeSrv::SrvRequest> Request)
 {
 
 	TSharedPtr<FROSBridgeSetModelPoseSrv::Request> SetModelPoseRequest =
@@ -59,8 +35,8 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> ARelocator::FROSRelocationServer::Callbac
 	//Get Actor for given ID
 	unreal_msgs::InstanceId Id = SetModelPoseRequest->GetInstanceId();
 	FString UniqueId = UROSWorldControlHelper::GetUniqueIdOfInstanceID(&Id);
-	
-	AActor** Actor = Parent->Controller->IdToActorMap.Find(UniqueId);
+
+	AActor** Actor = Controller->IdToActorMap.Find(UniqueId);
 
 
 	if (!Actor) {
@@ -81,7 +57,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> ARelocator::FROSRelocationServer::Callbac
 	//Actor was found and will be relocated, in GameThread
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		bool success = Parent->Relocate(Params.Actor,
+		bool success = Relocate(Params.Actor,
 			Params.Location,
 			Params.Rotator);
 		SetServiceSuccess(success);
@@ -97,12 +73,13 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> ARelocator::FROSRelocationServer::Callbac
 		(new FROSBridgeSetModelPoseSrv::Response(ServiceSuccess));
 }
 
-void  ARelocator::FROSRelocationServer::SetGameThreadDoneFlag(bool Flag)
+void  FROSSetModelPoseServer::SetGameThreadDoneFlag(bool Flag)
 {
 	GameThreadDoneFlag = Flag;
 }
 
-void ARelocator::FROSRelocationServer::SetServiceSuccess(bool Success)
+void FROSSetModelPoseServer::SetServiceSuccess(bool Success)
 {
 	ServiceSuccess = Success;
 }
+

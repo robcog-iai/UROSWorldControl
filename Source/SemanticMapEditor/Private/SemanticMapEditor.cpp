@@ -16,6 +16,11 @@ static const FName SemanticMapEditorTabName("Connect to ROSBridge");
 
 FSemanticMapEditorModule::FSemanticMapEditorModule()
 {
+	//ServerAdress = TEXT("127.0.0.1");
+	ServerAdress = TEXT("192.168.1.19");
+	ServerPort = 9090;
+	Namespace = TEXT("unreal");
+	Controller = new ROSWorldControlManager(World, ServerAdress, ServerPort, Namespace);
 }
 
 void FSemanticMapEditorModule::StartupModule()
@@ -62,15 +67,16 @@ void FSemanticMapEditorModule::ShutdownModule()
 void FSemanticMapEditorModule::PluginButtonClicked()
 {
 	// Put your "OnButtonClicked" stuff here
-	
-	World = GEditor->GetEditorWorldContext().World();
-	for (TActorIterator<AROSWorldControlManager> ActorItr(World); ActorItr; ++ActorItr)
-	{
-		AROSWorldControlManager* Controller = *ActorItr;
 
-		Controller->ConnectToROSBridge();
-		return;
+	//delete to ensure disconnecting form Rosbridge if button is pressed multiple times
+	World = GEditor->GetEditorWorldContext().World();
+	
+	if (Controller) {
+		Controller->DisconnectFromROSBridge();
 	}
+	Controller = new ROSWorldControlManager(World, ServerAdress, ServerPort, Namespace);
+	Controller->ConnectToROSBridge();
+
 }
 
 void FSemanticMapEditorModule::AddMenuExtension(FMenuBuilder& Builder)

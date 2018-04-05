@@ -1,31 +1,7 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Remover.h"
-#include "ROSBridge/srv/RemoveModel.h"
-#include "HelperFunctions.h"
+#include "RemoveModelServer.h"
 
-// Sets default values
-ARemover::ARemover()
-{
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
-}
-
-// Called when the game starts or when spawned
-void ARemover::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-// Called every frame
-void ARemover::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
-
-TSharedPtr<FROSBridgeSrv::SrvRequest> ARemover::FROSRemoveModelServer::FromJson(TSharedPtr<FJsonObject> JsonObject) const
+TSharedPtr<FROSBridgeSrv::SrvRequest> FROSRemoveModelServer::FromJson(TSharedPtr<FJsonObject> JsonObject) const
 {
 	TSharedPtr<FROSBridgeRemoveModelSrv::Request> Request_ =
 		MakeShareable(new FROSBridgeRemoveModelSrv::Request());
@@ -33,7 +9,7 @@ TSharedPtr<FROSBridgeSrv::SrvRequest> ARemover::FROSRemoveModelServer::FromJson(
 	return TSharedPtr<FROSBridgeSrv::SrvRequest>(Request_);
 }
 
-TSharedPtr<FROSBridgeSrv::SrvResponse> ARemover::FROSRemoveModelServer::Callback(TSharedPtr<FROSBridgeSrv::SrvRequest> Request)
+TSharedPtr<FROSBridgeSrv::SrvResponse> FROSRemoveModelServer::Callback(TSharedPtr<FROSBridgeSrv::SrvRequest> Request)
 {
 	TSharedPtr<FROSBridgeRemoveModelSrv::Request> RemoveModelRequest =
 		StaticCastSharedPtr<FROSBridgeRemoveModelSrv::Request>(Request);
@@ -45,7 +21,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> ARemover::FROSRemoveModelServer::Callback
 	unreal_msgs::InstanceId Id = RemoveModelRequest->GetInstanceId();
 	FString UniqueId = UROSWorldControlHelper::GetUniqueIdOfInstanceID(&Id);
 
-	if (Parent->Controller->IdToActorMap.RemoveAndCopyValue(UniqueId, ActorToBeRemoved)) {
+	if (Controller->IdToActorMap.RemoveAndCopyValue(UniqueId, ActorToBeRemoved)) {
 		// Actor was found and will be destroyed on GameThread
 		GameThreadDoneFlag = false;
 		AsyncTask(ENamedThreads::GameThread, [=]()
@@ -76,12 +52,12 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> ARemover::FROSRemoveModelServer::Callback
 }
 
 
-void  ARemover::FROSRemoveModelServer::SetGameThreadDoneFlag(bool Flag)
+void  FROSRemoveModelServer::SetGameThreadDoneFlag(bool Flag)
 {
 	GameThreadDoneFlag = Flag;
 }
 
-void ARemover::FROSRemoveModelServer::SetServiceSuccess(bool Success)
+void FROSRemoveModelServer::SetServiceSuccess(bool Success)
 {
 	ServiceSuccess = Success;
 }

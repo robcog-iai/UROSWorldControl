@@ -1,107 +1,54 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "ROSWorldControlManager.h"
-#include "Spawner.h"
-#include "Relocator.h"
-#include "Remover.h"
+#include "SpawnModelsServer.h"
+#include "SetModelPoseServer.h"
+#include "RemoveModelServer.h"
 
-// Sets default values
-AROSWorldControlManager::AROSWorldControlManager()
+ROSWorldControlManager::ROSWorldControlManager(UWorld * InWorld, FString InServerAdress, int InServerPort, FString InNamespace)
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-	bServicesPulished = false;
-
-	ServerAdress = TEXT("127.0.0.1");
-	ServerPort = 9090;
-	Namespace = TEXT("unreal");
+	World = InWorld;
+	ServerAdress = InServerAdress;
+	ServerPort = InServerPort;
+	Namespace = InNamespace;
 
 }
 
-// Called when the game starts or when spawned
-void AROSWorldControlManager::BeginPlay()
+void ROSWorldControlManager::ConnectToROSBridge()
 {
-	Super::BeginPlay();
-
-	// This check is needed if the Serices got pulished before the game started (e.g. by the Editor).
-	if (!bServicesPulished)
-	{
-		ConnectToROSBridge();
-	}
-	
-}
-
-// Called every frame
-void AROSWorldControlManager::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
-
-void AROSWorldControlManager::EndPlay(const EEndPlayReason::Type Reason)
-{
-	// Disconnect the handler before parent ends
-	Handler->Disconnect();
-
-	Super::EndPlay(Reason);
-}
-
-void AROSWorldControlManager::ConnectToROSBridge()
-{
-
-	UWorld* World = GetWorld();
 	if (!World) {
 		UE_LOG(LogTemp, Warning, TEXT("Couldn't find the World."));
 		return;
 	}
 
 	// Setup IDMap
-	IdToActorMap = FTagStatics::GetKeyValuesToActor(GetWorld(), "SemLog", "Id");
+	IdToActorMap = FTagStatics::GetKeyValuesToActor(World, "SemLog", "Id");
 
-
-	// Spawn Relocator into the world
-	if (!Relocator)
-	{
-		Relocator = World->SpawnActor<ARelocator>();
-		Relocator->Controller = this;
-	}
-
-
-	// Spawn Spawner into the world
-	if(!Spawner) 
-	{
-		Spawner = World->SpawnActor<ASpawner>();
-		Spawner->Controller = this;
-	}
-
-	// Spawn the Remover into the world
-	if (!Remover)
-	{
-		Remover = World->SpawnActor<ARemover>();
-		Remover->Controller = this;
-	}
-
-
+	
 	// Set websocket server address to ws 
 	Handler = MakeShareable<FROSBridgeHandler>(new FROSBridgeHandler(ServerAdress, ServerPort));
 
 	// Add servers
 
 	//Add spawn_model service
-	TSharedPtr<ASpawner::FROSSpawnMeshServer> SpawnServer = MakeShareable<ASpawner::FROSSpawnMeshServer>(new ASpawner::FROSSpawnMeshServer(Namespace, TEXT("spawn_model"), Spawner));
+	TSharedPtr<FROSSpawnModelServer> SpawnServer = 
+		MakeShareable<FROSSpawnModelServer>(new FROSSpawnModelServer(Namespace, TEXT("spawn_model"), World, this));
 	Handler->AddServiceServer(SpawnServer);
 
 	//Add spawn_semantic_map service
-	TSharedPtr<ASpawner::FROSSpawnSemanticMapServer> SpawnSemanticMapServer = MakeShareable<ASpawner::FROSSpawnSemanticMapServer>(new ASpawner::FROSSpawnSemanticMapServer(Namespace, TEXT("spawn_multiple_models"), Spawner));
+	TSharedPtr<FROSSpawnMultipleModelsServer> SpawnSemanticMapServer = 
+		MakeShareable<FROSSpawnMultipleModelsServer>(new FROSSpawnMultipleModelsServer(Namespace, TEXT("spawn_multiple_models"), World, this));
 	Handler->AddServiceServer(SpawnSemanticMapServer);
 
 	// Add set_model_pose service 
-	TSharedPtr<ARelocator::FROSRelocationServer> RelocateServer = MakeShareable<ARelocator::FROSRelocationServer>(new ARelocator::FROSRelocationServer(Namespace, TEXT("set_model_pose"), Relocator));
+	TSharedPtr<FROSSetModelPoseServer> RelocateServer = 
+		MakeShareable<FROSSetModelPoseServer>(new FROSSetModelPoseServer(Namespace, TEXT("set_model_pose"), World, this));
 	Handler->AddServiceServer(RelocateServer);
 
 
 	// Add delete_model service
-	TSharedPtr<ARemover::FROSRemoveModelServer> RemoveServer = MakeShareable<ARemover::FROSRemoveModelServer>(new ARemover::FROSRemoveModelServer(Namespace, TEXT("delete_model"), Remover));
+	TSharedPtr<FROSRemoveModelServer> RemoveServer = 
+		MakeShareable<FROSRemoveModelServer>(new FROSRemoveModelServer(Namespace, TEXT("delete_model"), World, this));
 	Handler->AddServiceServer(RemoveServer);
 
 
@@ -110,13 +57,14 @@ void AROSWorldControlManager::ConnectToROSBridge()
 	bServicesPulished = true;
 }
 
-ARelocator * AROSWorldControlManager::GetRelocator()
+void ROSWorldControlManager::DisconnectFromROSBridge()
 {
-	return Relocator;
+	if (Handler.IsValid()) {
+		Handler->Disconnect();
+	}
 }
 
-ASpawner * AROSWorldControlManager::GetSpawner()
+bool ROSWorldControlManager::isConnected()
 {
-	return Spawner;
+	return Handler->IsClientConnected();
 }
-
