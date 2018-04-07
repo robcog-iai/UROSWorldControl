@@ -36,14 +36,9 @@ protected:
 	bool ServiceSuccess;
 
 	bool SpawnAsset(const FString PathToMesh, const FString PathOfMaterial, const FVector Location, const FRotator Rotation, const TArray<unreal_msgs::Tag> Tags, unreal_msgs::InstanceId * InstanceId);
-	UStaticMesh * LoadMesh(const FString Path, unreal_msgs::InstanceId * InstanceId);
-	UMaterialInterface * LoadMaterial(const FString Path, unreal_msgs::InstanceId * InstanceId);
-	FString GenerateId(int Length);
 
 	void SetGameThreadDoneFlag(bool Flag);
 	void SetServiceSuccess(bool Success);
-
-
 	// This is used by the spawn mutliple models server, otherwise it would have the wrong type
 	FROSSpawnModelServer(FString Namespace, FString Name, UWorld * InWorld, ROSWorldControlManager * InController, FString Type) :
 		FROSBridgeSrvServer(Namespace + TEXT("/") + Name, Type)
@@ -51,6 +46,13 @@ protected:
 		Controller = InController;
 		World = InWorld;
 	}
+
+private:
+	UStaticMesh * LoadMesh(const FString Path, unreal_msgs::InstanceId * InstanceId);
+	UMaterialInterface * LoadMaterial(const FString Path, unreal_msgs::InstanceId * InstanceId);
+	FString FormatNamespace(FString Ns);
+	FString GenerateId(int Length);
+
 
 public:
 	ROSWorldControlManager * Controller;

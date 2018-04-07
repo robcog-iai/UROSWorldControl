@@ -151,7 +151,7 @@ UStaticMesh * FROSSpawnModelServer::LoadMesh(const FString Path, unreal_msgs::In
 		else
 		{
 			// with Namespace
-			DefaultPath = TEXT("StaticMesh'/Game/Models/") + Ns + TEXT("/") + ModelClassName + TEXT("/SM_") + ModelClassName + TEXT(".SM_") + ModelClassName + TEXT("'");
+			DefaultPath = TEXT("StaticMesh'/Game/Models/") + FormatNamespace(Ns) + TEXT("/") + ModelClassName + TEXT("/SM_") + ModelClassName + TEXT(".SM_") + ModelClassName + TEXT("'");
 		}
 
 		Mesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), nullptr, *DefaultPath));
@@ -180,8 +180,9 @@ UMaterialInterface * FROSSpawnModelServer::LoadMaterial(const FString Path, unre
 		}
 		else
 		{
+
 			// with Namespace
-			DefaultPath = TEXT("Material'/Game/Models/") + Ns + TEXT("/") + ModelClassName + TEXT("/M_") + ModelClassName + TEXT(".M_") + ModelClassName + TEXT("'");
+			DefaultPath = TEXT("Material'/Game/Models/") + FormatNamespace(Ns) + TEXT("/") + ModelClassName + TEXT("/M_") + ModelClassName + TEXT(".M_") + ModelClassName + TEXT("'");
 		}
 
 		Material = Cast<UMaterialInterface>(StaticLoadObject(UMaterialInterface::StaticClass(), nullptr, *DefaultPath));
@@ -191,6 +192,15 @@ UMaterialInterface * FROSSpawnModelServer::LoadMaterial(const FString Path, unre
 	}
 
 	return Material;
+}
+
+FString FROSSpawnModelServer::FormatNamespace(FString Ns)
+{
+	FString NewNs;
+	NewNs = Ns.TrimStartAndEnd();
+	NewNs.RemoveFromStart(TEXT("/"));
+	NewNs.RemoveFromEnd(TEXT("/"));
+	return NewNs;
 }
 
 FString FORCEINLINE FROSSpawnModelServer::GenerateId(int Length) {
