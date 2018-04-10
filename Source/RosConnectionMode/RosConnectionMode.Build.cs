@@ -2,15 +2,15 @@
 
 using UnrealBuildTool;
 
-public class SemanticMapEditor : ModuleRules
+public class RosConnectionMode : ModuleRules
 {
-	public SemanticMapEditor(ReadOnlyTargetRules Target) : base(Target)
+	public RosConnectionMode(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		
 		PublicIncludePaths.AddRange(
 			new string[] {
-				"SemanticMapEditor/Public"
+				"RosConnectionMode/Public"
 				// ... add public include paths required here ...
 			}
 			);
@@ -18,7 +18,7 @@ public class SemanticMapEditor : ModuleRules
 		
 		PrivateIncludePaths.AddRange(
 			new string[] {
-				"SemanticMapEditor/Private",
+                "RosConnectionMode/Private",
 				// ... add other private include paths required here ...
 			}
 			);
@@ -37,14 +37,15 @@ public class SemanticMapEditor : ModuleRules
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Projects",
-				"InputCore",
-				"UnrealEd",
-				"LevelEditor",
 				"CoreUObject",
 				"Engine",
 				"Slate",
 				"SlateCore",
+				"InputCore",
+				"UnrealEd",
+                "PropertyEditor",
+                "LevelEditor",
+
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

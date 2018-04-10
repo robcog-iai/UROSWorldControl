@@ -14,16 +14,16 @@
 	"IsBetaVersion": false,
 	"Installed": false,
 	"Modules": [
-		{
-			"Name": "UROSWorldControl",
-			"Type": "Developer",
-			"LoadingPhase": "Default"
-		},
-		{
-			"Name": "SemanticMapEditor",
-			"Type": "Editor",
-			"LoadingPhase": "Default"
-		}
+        {
+            "Name": "UROSWorldControl",
+            "Type": "Developer",
+            "LoadingPhase": "Default"
+        },
+        {
+            "Name": "RosConnectionMode",
+            "Type": "Editor",
+            "LoadingPhase": "Default"
+        }
 	],
 	 "Plugins": [
      {
