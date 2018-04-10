@@ -58,7 +58,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSetModelPoseServer::Callback(TSharedP
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		bool success = Relocate(Params.Actor,
-			Params.Location,
+			Params.Location*100.f,
 			Params.Rotator);
 		SetServiceSuccess(success);
 		SetGameThreadDoneFlag(true);

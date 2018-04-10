@@ -46,7 +46,7 @@ bool FROSSpawnModelServer::SpawnAsset(const FString PathToMesh, const FString Pa
 	if (Controller->IdToActorMap.Find(UniqueId) == nullptr)
 	{
 		//Actual Spawning MeshComponent
-		SpawnedItem = World->SpawnActor<AStaticMeshActor>(Location, Rotation, SpawnParams);
+		SpawnedItem = World->SpawnActor<AStaticMeshActor>(Location*100.f, Rotation, SpawnParams);
 		//Assigning the Mesh and Material to the Component
 		SpawnedItem->SetMobility(EComponentMobility::Movable);
 		SpawnedItem->GetStaticMeshComponent()->SetStaticMesh(Mesh);
