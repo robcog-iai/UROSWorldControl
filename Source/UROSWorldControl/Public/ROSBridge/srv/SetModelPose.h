@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ROSBridgeSrv.h"
+#include "InstanceId.h"
 #include "Pose.h"
 
 class UROSBRIDGE_API FROSBridgeSetModelPoseSrv : public FROSBridgeSrv {
@@ -15,12 +16,12 @@ public:
 
 	class Request : public SrvRequest {
 	private:
-		FString UTagID;
+		unreal_msgs::InstanceId InstanceId;
 		geometry_msgs::Pose Pose;
 
 	public:
 		Request() {}
-		FString GetUTagId() { return UTagID; };
+		unreal_msgs::InstanceId GetInstanceId() { return InstanceId; };
 
 		FVector GetLocation()
 		{
@@ -34,8 +35,8 @@ public:
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
-			UTagID = JsonObject->GetStringField("UTagID");
-			Pose = geometry_msgs::Pose::GetFromJson(JsonObject->GetObjectField("Pose"));
+			InstanceId.FromJson(JsonObject->GetObjectField("instance_id"));
+			Pose.FromJson(JsonObject->GetObjectField("pose"));
 		}
 
 		static Request GetFromJson(TSharedPtr<FJsonObject> JsonObject)
@@ -47,7 +48,7 @@ public:
 
 		virtual FString ToString() const override
 		{
-			return TEXT("FROSBridgeSetModelPoseSrv::Request { UTagID = ") + UTagID +
+			return TEXT("FROSBridgeSetModelPoseSrv::Request { InstanceID = ") + InstanceId.ToString() +
 				TEXT(", Location = ") + Pose.GetPosition().GetVector().ToString() + 
 				TEXT(" and Rotator  = ") + FRotator::FRotator(Pose.GetOrientation().GetQuat()).ToString() + 
 				TEXT("} ");
@@ -57,8 +58,8 @@ public:
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-			Object->SetStringField("UTagID", UTagID);
-			Object->SetObjectField("Pose", Pose.ToJsonObject());
+			Object->SetObjectField("instance_id", InstanceId.ToJsonObject());
+			Object->SetObjectField("pose", Pose.ToJsonObject());
 
 			return Object;
 		}
@@ -78,7 +79,7 @@ public:
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JSonObject) override
 		{
-			bSuccess = JSonObject->GetBoolField("succeded");
+			bSuccess = JSonObject->GetBoolField("success");
 		}
 
 		static Response GetFromJson(TSharedPtr<FJsonObject> JSonObject)
@@ -96,7 +97,7 @@ public:
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-			Object->SetBoolField("succeded", bSuccess);
+			Object->SetBoolField("success", bSuccess);
 			return Object;
 		}
 	};

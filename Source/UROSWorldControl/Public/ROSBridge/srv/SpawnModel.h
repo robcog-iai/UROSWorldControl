@@ -2,7 +2,7 @@
 
 #include "ROSBridgeSrv.h"
 #include "Pose.h"
-#include "ROSBridge/msgs/Tag.h"
+#include "ModelDescription.h"
 
 class UROSBRIDGE_API FROSBridgeSpawnServiceSrv : public FROSBridgeSrv {
 protected :
@@ -16,42 +16,19 @@ public:
 
 	class Request : public SrvRequest{
 	private:
-		FString PathToMesh;
-		FString PathToMaterial;
-		geometry_msgs::Pose Pose;
-		TArray<UTagMsg> Tags;
-
+		unreal_msgs::ModelDescription ModelDescription;
 	public:
 		Request() {}
 
-		FString GetPathToMesh() { return PathToMesh; }
-		FString GetPathToMaterial() { return PathToMaterial; }
-
-		TArray<UTagMsg> GetTags() { return Tags; }
-		
-		FVector GetLocation()
-		{ 
-			return Pose.GetPosition().GetVector(); 
-		}
-
-		FRotator GetRotator()
+		unreal_msgs::ModelDescription GetModelDescription()
 		{
-			return FRotator::FRotator(Pose.GetOrientation().GetQuat()); 
+			return ModelDescription;
 		}
+
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
 		{
-			PathToMesh = JsonObject->GetStringField("PathToMesh");
-			PathToMaterial = JsonObject->GetStringField("PathToMaterial");
-			Pose = geometry_msgs::Pose::GetFromJson(JsonObject->GetObjectField("Pose"));
-	
-			TArray<TSharedPtr<FJsonValue>> TagsPtrArray = JsonObject->GetArrayField(TEXT("Tags"));
-			for (auto &ptr : TagsPtrArray)
-			{
-				UTagMsg Tag;
-				Tag.FromJson(ptr->AsObject());
-				Tags.Add(Tag);
-			} 
+			ModelDescription.FromJson(JsonObject->GetObjectField("model_description"));
 		}
 
 		static Request GetFromJson(TSharedPtr<FJsonObject> JsonObject) 
@@ -63,27 +40,15 @@ public:
 
 		virtual FString ToString() const override
 		{
-			return TEXT("FROSBridgeSpawnService::Request { Mesh = ")
-						+ PathToMesh + TEXT(", Material = ") + PathToMaterial + TEXT("} ");
+			return TEXT("FROSBridgeSpawnService::Request {%s} "), ModelDescription.ToString();
 
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const 
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-			Object->SetStringField("PathToMesh", PathToMesh);
-			Object->SetStringField("PathToMaterial", PathToMaterial);
-			Object->SetObjectField("Pose", Pose.ToJsonObject());
+			Object->SetObjectField("static_mesh_description", ModelDescription.ToJsonObject());
 			
-			TArray<TSharedPtr<FJsonValue>> TagsPtrArray;
-			for (auto &Tag : Tags) 
-			{
-				TSharedPtr<FJsonValue> Ptr = MakeShareable(new FJsonValueObject(Tag.ToJsonObject()));
-				TagsPtrArray.Add(Ptr);
-			}
-			Object->SetArrayField("Tags", TagsPtrArray);
-			
-
 			return Object;
 		}
 
@@ -93,16 +58,30 @@ public:
 	class Response : public SrvResponse {
 	private:
 		bool bSuccess;
-
-	public:
+		unreal_msgs::InstanceId InstanceId;
+			public:
 		Response() {}
-		Response(bool Success) : bSuccess(Success) {}
+		Response(bool Success, unreal_msgs::InstanceId InInstanceId) 
+		{
+			bSuccess = Success;
+			InstanceId = InInstanceId;
+		}
 		bool GetSuccess() const { return bSuccess; }
 		void SetSuccess(bool Success) { bSuccess = Success; }
+
+		unreal_msgs::InstanceId GetInstanceId() {
+			return InstanceId;
+		}
+
+		void SetInstanceId(unreal_msgs::InstanceId InInstanceId)
+		{
+			InstanceId = InInstanceId;
+		}
 		
 		virtual void FromJson(TSharedPtr<FJsonObject> JSonObject) override
 		{
-			bSuccess = JSonObject->GetBoolField("succeded");
+			bSuccess = JSonObject->GetBoolField("success");
+			InstanceId.FromJson(JSonObject->GetObjectField("instance_id"));
 		}
 
 		static Response GetFromJson(TSharedPtr<FJsonObject> JSonObject)
@@ -114,13 +93,14 @@ public:
 
 		virtual FString ToString() const override
 		{
-			return TEXT("FROSBridgeSpawnService::Response { %s }"), bSuccess ? TEXT("True") : TEXT("False");
+			return TEXT("FROSBridgeSpawnService::Response { Success: %s, InstanceId: %s }"), bSuccess ? TEXT("True") : TEXT("False"), InstanceId.ToString();
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-			Object->SetBoolField("succeded", bSuccess);
+			Object->SetBoolField("success", bSuccess);
+			Object->SetObjectField("instance_id", InstanceId.ToJsonObject());
 			return Object;
 		}
 	};

@@ -1,50 +1,28 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "ROSWorldControlManager.h"
-#include "Spawner.h"
-#include "Relocator.h"
-#include "Remover.h"
+#include "SpawnModelsServer.h"
+#include "SetModelPoseServer.h"
+#include "RemoveModelServer.h"
 
-// Sets default values
-AROSWorldControlManager::AROSWorldControlManager()
+ROSWorldControlManager::ROSWorldControlManager(UWorld * InWorld, FString InServerAdress, int InServerPort, FString InNamespace)
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
-
-	ServerAdress = TEXT("127.0.0.1");
-	ServerPort = 9090;
-	Namespace = TEXT("unreal");
+	World = InWorld;
+	ServerAdress = InServerAdress;
+	ServerPort = InServerPort;
+	Namespace = InNamespace;
 
 }
 
-// Called when the game starts or when spawned
-void AROSWorldControlManager::BeginPlay()
+void ROSWorldControlManager::ConnectToROSBridge()
 {
-	Super::BeginPlay();
-
-	UWorld* World = GetWorld();
 	if (!World) {
 		UE_LOG(LogTemp, Warning, TEXT("Couldn't find the World."));
 		return;
 	}
-	
 
 	// Setup IDMap
-	IdToActorMap = FTagStatics::GetKeyValuesToActor(GetWorld(), "SemLog", "Id");
-
-
-	// Spawn Relocator into the world
-	Relocator = World->SpawnActor<ARelocator>();
-	Relocator->Controller = this;
-
-
-	// Spawn Spawner into the world
-	Spawner = World->SpawnActor<ASpawner>();
-	Spawner->Controller = this;
-
-	// Spawn the Remover into the world
-	Remover = World->SpawnActor<ARemover>();
-	Remover->Controller = this;
+	IdToActorMap = FTagStatics::GetKeyValuesToActor(World, "SemLog", "Id");
 
 	
 	// Set websocket server address to ws 
@@ -53,48 +31,40 @@ void AROSWorldControlManager::BeginPlay()
 	// Add servers
 
 	//Add spawn_model service
-	TSharedPtr<ASpawner::FROSSpawnMeshServer> SpawnServer = MakeShareable<ASpawner::FROSSpawnMeshServer>(new ASpawner::FROSSpawnMeshServer(Namespace, TEXT("spawn_model"), Spawner));
+	TSharedPtr<FROSSpawnModelServer> SpawnServer = 
+		MakeShareable<FROSSpawnModelServer>(new FROSSpawnModelServer(Namespace, TEXT("spawn_model"), World, this));
 	Handler->AddServiceServer(SpawnServer);
 
+	//Add spawn_semantic_map service
+	TSharedPtr<FROSSpawnMultipleModelsServer> SpawnSemanticMapServer = 
+		MakeShareable<FROSSpawnMultipleModelsServer>(new FROSSpawnMultipleModelsServer(Namespace, TEXT("spawn_multiple_models"), World, this));
+	Handler->AddServiceServer(SpawnSemanticMapServer);
+
 	// Add set_model_pose service 
-	TSharedPtr<ARelocator::FROSRelocationServer> RelocateServer = MakeShareable<ARelocator::FROSRelocationServer>(new ARelocator::FROSRelocationServer(Namespace, TEXT("set_model_pose"), Relocator));
+	TSharedPtr<FROSSetModelPoseServer> RelocateServer = 
+		MakeShareable<FROSSetModelPoseServer>(new FROSSetModelPoseServer(Namespace, TEXT("set_model_pose"), World, this));
 	Handler->AddServiceServer(RelocateServer);
 
 
 	// Add delete_model service
-	TSharedPtr<ARemover::FROSRemoveModelServer> RemoveServer = MakeShareable<ARemover::FROSRemoveModelServer>(new ARemover::FROSRemoveModelServer(Namespace, TEXT("delete_model"), Remover));
+	TSharedPtr<FROSRemoveModelServer> RemoveServer = 
+		MakeShareable<FROSRemoveModelServer>(new FROSRemoveModelServer(Namespace, TEXT("delete_model"), World, this));
 	Handler->AddServiceServer(RemoveServer);
 
 
 	// Connect to ROSBridge Websocket server.
 	Handler->Connect();
-
+	bServicesPulished = true;
 }
 
-// Called every frame
-void AROSWorldControlManager::Tick(float DeltaTime)
+void ROSWorldControlManager::DisconnectFromROSBridge()
 {
-	Super::Tick(DeltaTime);
-
+	if (Handler.IsValid()) {
+		Handler->Disconnect();
+	}
 }
 
-
-void AROSWorldControlManager::EndPlay(const EEndPlayReason::Type Reason)
+bool ROSWorldControlManager::isConnected()
 {
-	// Disconnect the handler before parent ends
-	Handler->Disconnect();
-
-	Super::EndPlay(Reason);
+	return Handler->IsClientConnected();
 }
-
-
-ARelocator * AROSWorldControlManager::GetRelocator()
-{
-	return Relocator;
-}
-
-ASpawner * AROSWorldControlManager::GetSpawner()
-{
-	return Spawner;
-}
-

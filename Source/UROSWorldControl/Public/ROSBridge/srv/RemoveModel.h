@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ROSBridgeSrv.h"
+#include "InstanceId.h"
 
 class UROSBRIDGE_API FROSBridgeRemoveModelSrv : public FROSBridgeSrv {
 protected:
@@ -14,15 +15,19 @@ public:
 
 	class Request : public SrvRequest {
 	private:
-		FString UTagID;
+		unreal_msgs::InstanceId InstanceId;
 
 	public:
 		Request() {}
-		FString GetUtagId() { return UTagID; };
+
+		unreal_msgs::InstanceId GetInstanceId() 
+		{ 
+			return InstanceId;
+		};
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
-			UTagID = JsonObject->GetStringField("UTagID");
+			InstanceId.FromJson(JsonObject->GetObjectField("instance_id"));
 		}
 
 		static Request GetFromJson(TSharedPtr<FJsonObject> JsonObject)
@@ -34,14 +39,14 @@ public:
 
 		virtual FString ToString() const override
 		{
-			return TEXT("FROSBridgeRemoveModelSrv::Request { UTagID = ") + UTagID + TEXT("} ");
+			return TEXT("FROSBridgeRemoveModelSrv::Request { InstanceId = ") + InstanceId.ToString() + TEXT("} ");
 
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-			Object->SetStringField("UTagID", UTagID);
+			Object->SetObjectField("instance_id", InstanceId.ToJsonObject());
 
 			return Object;
 		}
@@ -60,7 +65,7 @@ public:
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JSonObject) override
 		{
-			bSuccess = JSonObject->GetBoolField("succeded");
+			bSuccess = JSonObject->GetBoolField("success");
 		}
 
 		static Response GetFromJson(TSharedPtr<FJsonObject> JSonObject)
@@ -78,7 +83,7 @@ public:
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-			Object->SetBoolField("succeded", bSuccess);
+			Object->SetBoolField("success", bSuccess);
 			return Object;
 		}
 	};

@@ -5,46 +5,35 @@
 #include "GameFramework/Actor.h"
 #include "TagStatics.h"
 #include "ROSBridgeHandler.h"
-#include "ROSWorldControlManager.generated.h"
 
 //Forward declariation to avoid recursion
-class ASpawner;
-class ARelocator;
-class ARemover;
+class SpawnModelServer;
+class SpawnMultipleModelsServer;
+class SetModelPoseServer;
+class RemoveModelServer;
 
-UCLASS()
-class UROSWORLDCONTROL_API AROSWorldControlManager : public AActor
-{
-	GENERATED_BODY()
-	
+class UROSWORLDCONTROL_API ROSWorldControlManager
+{	
 public:	
 	// Sets default values for this actor's properties
-	AROSWorldControlManager();
-	UPROPERTY(EditAnywhere, Category = "RosBridge Websocket")
+	ROSWorldControlManager(UWorld* InWorld, FString InServerAdress, int InServerPort, FString InNamespace);
+	~ROSWorldControlManager();
+	
 	FString ServerAdress;
-
-	UPROPERTY(EditAnywhere, Category = "RosBridge Websocket")
 	int ServerPort;
-
-	UPROPERTY(EditAnywhere, Category = "ROS")
 	FString Namespace;
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	UWorld* World;
 
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-	void EndPlay(const EEndPlayReason::Type Reason);
-	ARelocator* GetRelocator();
-	ASpawner* GetSpawner();
+	void ConnectToROSBridge();
+	void DisconnectFromROSBridge();
+	bool isConnected();
+
 	TMap<FString, AActor*> IdToActorMap;
 
 private:
+	ROSWorldControlManager() {};
 	TSharedPtr<FROSBridgeHandler> Handler;
 
-	ARelocator* Relocator;
-	ASpawner* Spawner;
-	ARemover* Remover;
+	bool bServicesPulished;
 };
