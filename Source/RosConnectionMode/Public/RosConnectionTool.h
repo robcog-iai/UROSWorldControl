@@ -28,6 +28,9 @@ public:
 	UFUNCTION(Exec)
 	void ConnectToRosBridge();
 
+	UFUNCTION(Exec)
+	void ClearMap();
+
 	void SetParent(FRosConnectionMode* NewParent)
 	{
 		ParentMode = NewParent;

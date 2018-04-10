@@ -17,3 +17,13 @@ void URosConnectionTool::ConnectToRosBridge()
 	Controller = new ROSWorldControlManager(World, ServerAdress, ServerPort, Namespace);
 	Controller->ConnectToROSBridge();
 }
+
+
+void URosConnectionTool::ClearMap()
+{
+	for (auto Element : Controller->IdToActorMap)
+	{
+		Element.Value->Destroy();
+	}
+	Controller->IdToActorMap.Empty();
+}
