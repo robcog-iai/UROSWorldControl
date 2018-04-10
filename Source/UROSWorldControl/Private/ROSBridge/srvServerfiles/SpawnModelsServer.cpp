@@ -1,7 +1,6 @@
 #include "SpawnModelsServer.h"
 
-bool FROSSpawnModelServer::SpawnAsset(const FString PathToMesh, const FString PathOfMaterial, const FVector Location, const FRotator Rotation, const TArray<unreal_msgs::Tag> Tags, unreal_msgs::InstanceId* InstanceId)
-{
+bool FROSSpawnModelServer::SpawnAsset(const SpawnAssetParams Params) {
 	//Check if World is avialable
 	if (!World) {
 		UE_LOG(LogTemp, Warning, TEXT("Couldn't find the World."));
@@ -15,7 +14,7 @@ bool FROSSpawnModelServer::SpawnAsset(const FString PathToMesh, const FString Pa
 
 
 	//Load Mesh and check if it succeded.
-	UStaticMesh* Mesh = LoadMesh(PathToMesh, InstanceId);
+	UStaticMesh* Mesh = LoadMesh(Params.PathOfMesh, Params.InstanceId);
 	if (!Mesh)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Path does not point to a static mesh"));
@@ -24,7 +23,7 @@ bool FROSSpawnModelServer::SpawnAsset(const FString PathToMesh, const FString Pa
 
 
 	//Load Material and check if it succeded
-	UMaterialInterface* Material = LoadMaterial(PathOfMaterial, InstanceId);
+	UMaterialInterface* Material = LoadMaterial(Params.PathOfMaterial, Params.InstanceId);
 	if (!Material)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Path does not point to a Material"));
@@ -33,24 +32,40 @@ bool FROSSpawnModelServer::SpawnAsset(const FString PathToMesh, const FString Pa
 
 	AStaticMeshActor* SpawnedItem;
 
-	FString Name = InstanceId->GetModelClassName();
-	if (InstanceId->GetId().IsEmpty())
+	FString Name = Params.InstanceId->GetModelClassName();
+	if (Params.InstanceId->GetId().IsEmpty())
 	{
 		//ID needs to be generated
 		FString Id = GenerateId(4);
-		InstanceId->SetId(Id);
+		Params.InstanceId->SetId(Id);
 	}
 
-	FString UniqueId = UROSWorldControlHelper::GetUniqueIdOfInstanceID(InstanceId);
+	FString UniqueId = UROSWorldControlHelper::GetUniqueIdOfInstanceID(Params.InstanceId);
 
 	if (Controller->IdToActorMap.Find(UniqueId) == nullptr)
 	{
 		//Actual Spawning MeshComponent
-		SpawnedItem = World->SpawnActor<AStaticMeshActor>(Location*100.f, Rotation, SpawnParams);
-		//Assigning the Mesh and Material to the Component
+		SpawnedItem = World->SpawnActor<AStaticMeshActor>(Params.Location*100.f, Params.Rotator
+			, SpawnParams);
+
+		// Needs to be movable if the game is running.
 		SpawnedItem->SetMobility(EComponentMobility::Movable);
+		//Assigning the Mesh and Material to the Component
 		SpawnedItem->GetStaticMeshComponent()->SetStaticMesh(Mesh);
 		SpawnedItem->GetStaticMeshComponent()->SetMaterial(0, Material);
+
+		
+		if (Params.bIsStatic) {
+			SpawnedItem->GetStaticMeshComponent()->SetSimulatePhysics(false);
+			SpawnedItem->GetStaticMeshComponent()->bGenerateOverlapEvents = false;
+			SpawnedItem->SetMobility(EComponentMobility::Static);
+		} 
+		else
+		{
+			SpawnedItem->GetStaticMeshComponent()->SetSimulatePhysics(true);
+			SpawnedItem->GetStaticMeshComponent()->bGenerateOverlapEvents = true;
+			SpawnedItem->SetMobility(EComponentMobility::Movable);
+		}
 
 		//Add this object to id refrence map
 		Controller->IdToActorMap.Add(UniqueId, SpawnedItem);
@@ -71,7 +86,7 @@ bool FROSSpawnModelServer::SpawnAsset(const FString PathToMesh, const FString Pa
 
 
 	//Add other Tags to Actor
-	for (auto Tag : Tags)
+	for (auto Tag : Params.Tags)
 	{
 		FTagStatics::AddKeyValuePair(
 			SpawnedItem,
@@ -105,18 +120,15 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnModelServer::Callback(TSharedPtr
 	Params.Rotator = FRotator(SpawnMeshRequest->GetModelDescription().GetPose().GetOrientation().GetQuat());
 	Params.Tags = SpawnMeshRequest->GetModelDescription().GetTags();
 	unreal_msgs::InstanceId Id = SpawnMeshRequest->GetModelDescription().GetInstanceId();
+	Params.bIsStatic = SpawnMeshRequest->GetModelDescription().IsStatic();
 	Params.InstanceId = &Id;
+
 
 	GameThreadDoneFlag = false;
 	// Execute on game thread
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		bool success = SpawnAsset(Params.PathOfMesh,
-			Params.PathOfMaterial,
-			Params.Location,
-			Params.Rotator,
-			Params.Tags,
-			Params.InstanceId);
+		bool success = SpawnAsset(Params);
 		SetServiceSuccess(success);
 		SetGameThreadDoneFlag(true);
 	}
@@ -260,6 +272,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnMultipleModelsServer::Callback(T
 		Params.Location = Descript.GetPose().GetPosition().GetVector();
 		Params.Rotator = FRotator(Descript.GetPose().GetOrientation().GetQuat());
 		Params.Tags = Descript.GetTags();
+		Params.bIsStatic = Descript.IsStatic();
 		unreal_msgs::InstanceId Id = Descript.GetInstanceId();
 		Params.InstanceId = &Id;
 
@@ -267,12 +280,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnMultipleModelsServer::Callback(T
 		// Execute on game thread
 		AsyncTask(ENamedThreads::GameThread, [=]()
 		{
-			bool success = SpawnAsset(Params.PathOfMesh,
-				Params.PathOfMaterial,
-				Params.Location,
-				Params.Rotator,
-				Params.Tags,
-				Params.InstanceId);
+			bool success = SpawnAsset(Params);
 			SetServiceSuccess(success);
 			SetGameThreadDoneFlag(true);
 		}

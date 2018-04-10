@@ -28,6 +28,7 @@ protected:
 		FRotator Rotator;
 		TArray<unreal_msgs::Tag> Tags;
 		unreal_msgs::InstanceId* InstanceId;
+		bool bIsStatic;
 	};
 
 	FROSSpawnModelServer() {};
@@ -35,7 +36,7 @@ protected:
 	bool GameThreadDoneFlag;
 	bool ServiceSuccess;
 
-	bool SpawnAsset(const FString PathToMesh, const FString PathOfMaterial, const FVector Location, const FRotator Rotation, const TArray<unreal_msgs::Tag> Tags, unreal_msgs::InstanceId * InstanceId);
+	bool SpawnAsset(const SpawnAssetParams Params);
 
 	void SetGameThreadDoneFlag(bool Flag);
 	void SetServiceSuccess(bool Success);

@@ -14,18 +14,20 @@ namespace unreal_msgs
 		unreal_msgs::MeshDescription MeshDescription;
 		geometry_msgs::Pose Pose;
 		TArray<unreal_msgs::Tag> Tags;
+		bool bIsStatic;
 
 
 	public:
 		ModelDescription() {}
 
-		ModelDescription(unreal_msgs::InstanceId InInstanceId, unreal_msgs::MeshDescription InMeshDescription, geometry_msgs::Pose InPose, TArray<unreal_msgs::Tag> InTags)
+		ModelDescription(unreal_msgs::InstanceId InInstanceId, unreal_msgs::MeshDescription InMeshDescription, geometry_msgs::Pose InPose, TArray<unreal_msgs::Tag> InTags, bool InbIsStatic)
 		{
 			ModelDescription();
 			InstanceId = InInstanceId;
 			MeshDescription = InMeshDescription;
 			Pose = InPose;
 			Tags = InTags;
+			bIsStatic = InbIsStatic;
 		}
 
 		unreal_msgs::InstanceId GetInstanceId()
@@ -48,11 +50,16 @@ namespace unreal_msgs
 			return Tags;
 		}
 
+		bool IsStatic() {
+			return bIsStatic;
+		}
+
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
 			InstanceId.FromJson(JsonObject->GetObjectField("instance_id"));
 			MeshDescription.FromJson(JsonObject->GetObjectField("mesh_description"));
 			Pose.FromJson(JsonObject->GetObjectField("pose"));
+			bIsStatic = JsonObject->GetBoolField("is_static");
 			Tags.Empty();
 			TArray<TSharedPtr<FJsonValue>> TagsPtrArray = JsonObject->GetArrayField(TEXT("tags"));
 			for (auto &ptr : TagsPtrArray)
@@ -73,7 +80,7 @@ namespace unreal_msgs
 
 		virtual FString ToString() const override
 		{
-			return TEXT("ModelDescription {instance_id = %s, mesh_description = %s, pose = %s, tags size = %s"), InstanceId.ToString(), MeshDescription.ToString(), Pose.ToString(), FString::FromInt(Tags.Num());
+			return TEXT("ModelDescription {instance_id = %s, mesh_description = %s, pose = %s,% tags size = %s"), InstanceId.ToString(), MeshDescription.ToString(), Pose.ToString(), FString::FromInt(Tags.Num());
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
@@ -82,6 +89,7 @@ namespace unreal_msgs
 			Object->SetObjectField(TEXT("instance_id"), InstanceId.ToJsonObject());
 			Object->SetObjectField(TEXT("mesh_description"), MeshDescription.ToJsonObject());
 			Object->SetObjectField(TEXT("pose"), Pose.ToJsonObject());
+			Object->SetBoolField(TEXT("is_static"), bIsStatic);
 			TArray<TSharedPtr<FJsonValue>> TagsPtrArray;
 			for (auto &Entry : Tags)
 			{
