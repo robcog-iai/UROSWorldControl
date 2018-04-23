@@ -22,7 +22,7 @@ void ROSWorldControlManager::ConnectToROSBridge()
 	}
 
 	// Setup IDMap
-	IdToActorMap = FTagStatics::GetKeyValuesToActor(World, "SemLog", "Id");
+	IdToActorMap = FTags::GetKeyValuesToActor(World, "SemLog", "Id");
 
 	
 	// Set websocket server address to ws 

@@ -12,8 +12,10 @@
 #include "Engine/StaticMeshActor.h"
 #include "Engine/StaticMesh.h"
 #include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
-#include "TagStatics.h"
+#include "Tags.h"
+#include "FileManagerGeneric.h"
 #include "HelperFunctions.h"
+#include "Ids.h"
 #include <string>
 #include <algorithm>
 

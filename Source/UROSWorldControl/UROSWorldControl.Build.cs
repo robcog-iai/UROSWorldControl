@@ -30,7 +30,9 @@ public class UROSWorldControl : ModuleRules
 				"Core",
                 "UROSBridge",
                 "UTags",
-				// ... add other public dependencies that you statically link with here ...
+                "UIds",
+                "UConversions",
+                // ... add other public dependencies that you statically link with here ...
 			}
 			);
 			

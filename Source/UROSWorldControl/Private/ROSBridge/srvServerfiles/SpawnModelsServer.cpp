@@ -32,7 +32,7 @@ bool FROSSpawnModelServer::SpawnAsset(const SpawnAssetParams Params) {
 
 
 	AStaticMeshActor* SpawnedItem;
-	
+
 
 	FString Name = Params.InstanceId->GetModelClassName();
 	if (Params.InstanceId->GetId().IsEmpty())
@@ -55,12 +55,12 @@ bool FROSSpawnModelServer::SpawnAsset(const SpawnAssetParams Params) {
 		SpawnedItem->GetStaticMeshComponent()->SetStaticMesh(Mesh);
 		SpawnedItem->GetStaticMeshComponent()->SetMaterial(0, Material);
 		SpawnedItem->SetActorLabel(UniqueId);
-		
+
 		if (Params.bIsStatic) {
 			SpawnedItem->GetStaticMeshComponent()->SetSimulatePhysics(false);
 			SpawnedItem->GetStaticMeshComponent()->bGenerateOverlapEvents = false;
 			SpawnedItem->SetMobility(EComponentMobility::Static);
-		} 
+		}
 		else
 		{
 			SpawnedItem->GetStaticMeshComponent()->SetSimulatePhysics(true);
@@ -79,7 +79,7 @@ bool FROSSpawnModelServer::SpawnAsset(const SpawnAssetParams Params) {
 	}
 
 	//Id tag to Actor
-	FTagStatics::AddKeyValuePair(
+	FTags::AddKeyValuePair(
 		SpawnedItem,
 		TEXT("SemLog"),
 		TEXT("id"),
@@ -89,7 +89,7 @@ bool FROSSpawnModelServer::SpawnAsset(const SpawnAssetParams Params) {
 	//Add other Tags to Actor
 	for (auto Tag : Params.Tags)
 	{
-		FTagStatics::AddKeyValuePair(
+		FTags::AddKeyValuePair(
 			SpawnedItem,
 			Tag.GetTagType(),
 			Tag.GetKey(),
@@ -173,6 +173,31 @@ UStaticMesh * FROSSpawnModelServer::LoadMesh(const FString Path, unreal_msgs::In
 		//Load Mesh From Path
 		Mesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), nullptr, *Path));
 	}
+	if (Mesh == nullptr) 
+	{
+		//Look for file Recursively
+		const FString ModelClassName = InstanceId->GetModelClassName();
+		const FString Filename = TEXT("SM_") + ModelClassName + TEXT(".uasset");
+		TArray<FString> FileLocations;
+		FFileManagerGeneric Fm;
+		Fm.FindFilesRecursive(FileLocations, *FPaths::ProjectContentDir().Append(TEXT("Models/")), *Filename, true, false, true);
+		for (auto Loc : FileLocations)
+		{
+			//Try all found files until one works.
+			if (Mesh == nullptr)
+			{
+				int First = Loc.Find("/Models");
+				Loc.RemoveAt(0, First);
+				int Last;
+				Loc.FindLastChar('.', Last);
+				Loc.RemoveAt(Last, Loc.Len() - Last);
+				
+				FString Path = "StaticMesh'/Game" + Loc + ".SM_" + ModelClassName + "'";
+				Mesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), nullptr, *Path));
+			}
+		}
+	}
+
 	return Mesh;
 }
 
@@ -202,6 +227,30 @@ UMaterialInterface * FROSSpawnModelServer::LoadMaterial(const FString Path, unre
 	}
 	else {
 		Material = Cast<UMaterialInterface>(StaticLoadObject(UMaterialInterface::StaticClass(), nullptr, *Path));
+	}
+	if (Material == nullptr)
+	{
+		//Look for file Recursively
+		const FString ModelClassName = InstanceId->GetModelClassName();
+		const FString Filename = TEXT("M_") + ModelClassName + TEXT(".uasset");
+		TArray<FString> FileLocations;
+		FFileManagerGeneric Fm;
+		Fm.FindFilesRecursive(FileLocations, *FPaths::ProjectContentDir().Append(TEXT("Models/")), *Filename, true, false, true);
+		for (auto Loc : FileLocations)
+		{
+			//Try all found files until one works.
+			if (Material == nullptr)
+			{
+				int First = Loc.Find("/Models");
+				Loc.RemoveAt(0, First);
+				int Last;
+				Loc.FindLastChar('.', Last);
+				Loc.RemoveAt(Last, Loc.Len() - Last);
+
+				FString Path = "Material'/Game" + Loc + ".M_" + ModelClassName + "'";
+				Material = Cast<UMaterialInterface>(StaticLoadObject(UMaterialInterface::StaticClass(), nullptr, *Path));
+			}
+		}
 	}
 
 	return Material;

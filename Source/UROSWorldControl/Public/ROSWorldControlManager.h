@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "TagStatics.h"
+#include "Tags.h"
 #include "ROSBridgeHandler.h"
 
 //Forward declariation to avoid recursion

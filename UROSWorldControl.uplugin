@@ -30,7 +30,7 @@
        "Name": "UROSBridge",
        "Enabled": true
      },{
-       "Name": "UTags",
+       "Name": "UUTils",
        "Enabled": true
      }]
 }
