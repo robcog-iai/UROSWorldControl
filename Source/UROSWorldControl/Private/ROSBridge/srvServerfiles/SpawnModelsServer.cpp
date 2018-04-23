@@ -30,7 +30,9 @@ bool FROSSpawnModelServer::SpawnAsset(const SpawnAssetParams Params) {
 		return false;
 	}
 
+
 	AStaticMeshActor* SpawnedItem;
+	
 
 	FString Name = Params.InstanceId->GetModelClassName();
 	if (Params.InstanceId->GetId().IsEmpty())
@@ -45,15 +47,14 @@ bool FROSSpawnModelServer::SpawnAsset(const SpawnAssetParams Params) {
 	if (Controller->IdToActorMap.Find(UniqueId) == nullptr)
 	{
 		//Actual Spawning MeshComponent
-		SpawnedItem = World->SpawnActor<AStaticMeshActor>(Params.Location*100.f, Params.Rotator
-			, SpawnParams);
+		SpawnedItem = World->SpawnActor<AStaticMeshActor>(Params.Location*100.f, Params.Rotator, SpawnParams);
 
 		// Needs to be movable if the game is running.
 		SpawnedItem->SetMobility(EComponentMobility::Movable);
 		//Assigning the Mesh and Material to the Component
 		SpawnedItem->GetStaticMeshComponent()->SetStaticMesh(Mesh);
 		SpawnedItem->GetStaticMeshComponent()->SetMaterial(0, Material);
-
+		SpawnedItem->SetActorLabel(UniqueId);
 		
 		if (Params.bIsStatic) {
 			SpawnedItem->GetStaticMeshComponent()->SetSimulatePhysics(false);
