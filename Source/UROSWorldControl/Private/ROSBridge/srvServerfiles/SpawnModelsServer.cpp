@@ -125,20 +125,16 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnModelServer::Callback(TSharedPtr
 	Params.InstanceId = &Id;
 
 
-	GameThreadDoneFlag = false;
 	// Execute on game thread
-	AsyncTask(ENamedThreads::GameThread, [=]()
+	FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
 	{
 		bool success = SpawnAsset(Params);
 		SetServiceSuccess(success);
-		SetGameThreadDoneFlag(true);
-	}
-	);
 
-	// Wait for gamethread to be done
-	while (!GameThreadDoneFlag) {
-		FPlatformProcess::Sleep(0.01);
-	}
+	}, TStatId(), NULL, ENamedThreads::GameThread);
+
+	//wait code above to complete
+	FTaskGraphInterface::Get().WaitUntilTaskCompletes(Task);
 
 	return MakeShareable<FROSBridgeSrv::SrvResponse>
 		(new FROSBridgeSpawnServiceSrv::Response(ServiceSuccess, Id));
@@ -326,22 +322,17 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnMultipleModelsServer::Callback(T
 		unreal_msgs::InstanceId Id = Descript.GetInstanceId();
 		Params.InstanceId = &Id;
 
-		GameThreadDoneFlag = false;
 		// Execute on game thread
-		AsyncTask(ENamedThreads::GameThread, [=]()
+		FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
 		{
 			bool success = SpawnAsset(Params);
 			SetServiceSuccess(success);
-			SetGameThreadDoneFlag(true);
-		}
-		);
+		}, TStatId(), NULL, ENamedThreads::GameThread);
 
-		// Wait for gamethread to be done
-		while (!GameThreadDoneFlag) {
-			FPlatformProcess::Sleep(0.01);
-		}
+		//wait code above to complete
+		FTaskGraphInterface::Get().WaitUntilTaskCompletes(Task);
 		InstanceIds.Add(Id);
-		SuccessList.Add(ServiceSuccess);
+		SuccessList.Add(ServiceSuccess); 
 	}
 
 	return MakeShareable<FROSBridgeSrv::SrvResponse>
