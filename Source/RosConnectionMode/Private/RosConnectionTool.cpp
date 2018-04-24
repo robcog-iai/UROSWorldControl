@@ -15,7 +15,16 @@ void URosConnectionTool::ConnectToRosBridge()
 		Controller->DisconnectFromROSBridge();
 	}
 	Controller = new ROSWorldControlManager(World, ServerAdress, ServerPort, Namespace);
-	Controller->ConnectToROSBridge();
+	
+	// Setup Callbacks
+	FWebsocketInfoCallBack ErrorCallback;
+	ErrorCallback.AddUObject(this, &URosConnectionTool::ConnectionErrorCallback);
+
+	FWebsocketInfoCallBack ConnectedCallback;
+	ConnectedCallback.AddUObject(this, &URosConnectionTool::ConnectedCallback);
+
+	Controller->ConnectToROSBridge(ErrorCallback, ConnectedCallback);
+	Connected = Controller->IsConnected();
 }
 
 
@@ -26,4 +35,12 @@ void URosConnectionTool::ClearMap()
 		Element.Value->Destroy();
 	}
 	Controller->IdToActorMap.Empty();
+}
+
+void URosConnectionTool::ConnectionErrorCallback() {
+	Connected = false;
+}
+
+void URosConnectionTool::ConnectedCallback() {
+	Connected = true;
 }

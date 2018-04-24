@@ -14,7 +14,7 @@ ROSWorldControlManager::ROSWorldControlManager(UWorld * InWorld, FString InServe
 
 }
 
-void ROSWorldControlManager::ConnectToROSBridge()
+void ROSWorldControlManager::ConnectToROSBridge(FWebsocketInfoCallBack CustomErrorCallbacks, FWebsocketInfoCallBack CustomConnectedCallbacks)
 {
 	if (!World) {
 		UE_LOG(LogTemp, Warning, TEXT("Couldn't find the World."));
@@ -24,30 +24,30 @@ void ROSWorldControlManager::ConnectToROSBridge()
 	// Setup IDMap
 	IdToActorMap = FTags::GetKeyValuesToActor(World, "SemLog", "Id");
 
-	
+
 	// Set websocket server address to ws 
-	Handler = MakeShareable<FROSBridgeHandler>(new FROSBridgeHandler(ServerAdress, ServerPort));
+	Handler = MakeShareable<FROSBridgeHandler>(new FROSBridgeHandler(ServerAdress, ServerPort, CustomErrorCallbacks, CustomConnectedCallbacks));
 
 	// Add servers
 
 	//Add spawn_model service
-	TSharedPtr<FROSSpawnModelServer> SpawnServer = 
+	TSharedPtr<FROSSpawnModelServer> SpawnServer =
 		MakeShareable<FROSSpawnModelServer>(new FROSSpawnModelServer(Namespace, TEXT("spawn_model"), World, this));
 	Handler->AddServiceServer(SpawnServer);
 
 	//Add spawn_semantic_map service
-	TSharedPtr<FROSSpawnMultipleModelsServer> SpawnSemanticMapServer = 
+	TSharedPtr<FROSSpawnMultipleModelsServer> SpawnSemanticMapServer =
 		MakeShareable<FROSSpawnMultipleModelsServer>(new FROSSpawnMultipleModelsServer(Namespace, TEXT("spawn_multiple_models"), World, this));
 	Handler->AddServiceServer(SpawnSemanticMapServer);
 
 	// Add set_model_pose service 
-	TSharedPtr<FROSSetModelPoseServer> RelocateServer = 
+	TSharedPtr<FROSSetModelPoseServer> RelocateServer =
 		MakeShareable<FROSSetModelPoseServer>(new FROSSetModelPoseServer(Namespace, TEXT("set_model_pose"), World, this));
 	Handler->AddServiceServer(RelocateServer);
 
 
 	// Add delete_model service
-	TSharedPtr<FROSRemoveModelServer> RemoveServer = 
+	TSharedPtr<FROSRemoveModelServer> RemoveServer =
 		MakeShareable<FROSRemoveModelServer>(new FROSRemoveModelServer(Namespace, TEXT("delete_model"), World, this));
 	Handler->AddServiceServer(RemoveServer);
 
@@ -64,7 +64,7 @@ void ROSWorldControlManager::DisconnectFromROSBridge()
 	}
 }
 
-bool ROSWorldControlManager::isConnected()
+bool ROSWorldControlManager::IsConnected()
 {
 	return Handler->IsClientConnected();
 }

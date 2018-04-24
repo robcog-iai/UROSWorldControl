@@ -192,8 +192,8 @@ UStaticMesh * FROSSpawnModelServer::LoadMesh(const FString Path, unreal_msgs::In
 				Loc.FindLastChar('.', Last);
 				Loc.RemoveAt(Last, Loc.Len() - Last);
 				
-				FString Path = "StaticMesh'/Game" + Loc + ".SM_" + ModelClassName + "'";
-				Mesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), nullptr, *Path));
+				FString FoundPath = "StaticMesh'/Game" + Loc + ".SM_" + ModelClassName + "'";
+				Mesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), nullptr, *FoundPath));
 			}
 		}
 	}
@@ -247,8 +247,8 @@ UMaterialInterface * FROSSpawnModelServer::LoadMaterial(const FString Path, unre
 				Loc.FindLastChar('.', Last);
 				Loc.RemoveAt(Last, Loc.Len() - Last);
 
-				FString Path = "Material'/Game" + Loc + ".M_" + ModelClassName + "'";
-				Material = Cast<UMaterialInterface>(StaticLoadObject(UMaterialInterface::StaticClass(), nullptr, *Path));
+				FString FoundPath = "Material'/Game" + Loc + ".M_" + ModelClassName + "'";
+				Material = Cast<UMaterialInterface>(StaticLoadObject(UMaterialInterface::StaticClass(), nullptr, *FoundPath));
 			}
 		}
 	}

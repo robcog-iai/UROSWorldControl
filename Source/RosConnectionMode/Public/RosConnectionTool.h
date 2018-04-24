@@ -21,9 +21,13 @@ public:
 		FString ServerAdress = TEXT("127.0.0.1");
 	UPROPERTY(EditAnywhere, Category = "RosBridge Websocket")
 		int ServerPort = 9090;
-	
+
+	UPROPERTY(VisibleInstanceOnly, Category = "RosBridge Websocket")
+		bool Connected = false;
+
 	UPROPERTY(EditAnywhere, Category = "ROS")
 		FString Namespace = TEXT("unreal");
+
 
 	UFUNCTION(Exec)
 	void ConnectToRosBridge();
@@ -35,6 +39,9 @@ public:
 	{
 		ParentMode = NewParent;
 	}
+
+	void ConnectionErrorCallback();
+	void ConnectedCallback();
 
 private:
 	UWorld * World;

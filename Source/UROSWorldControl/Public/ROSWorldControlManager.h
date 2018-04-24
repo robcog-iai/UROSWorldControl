@@ -25,9 +25,9 @@ public:
 	UWorld* World;
 
 public:	
-	void ConnectToROSBridge();
+	void ConnectToROSBridge(FWebsocketInfoCallBack CustomErrorCallbacks, FWebsocketInfoCallBack CustomConnectedCallbacks);
 	void DisconnectFromROSBridge();
-	bool isConnected();
+	bool IsConnected();
 
 	TMap<FString, AActor*> IdToActorMap;
 
