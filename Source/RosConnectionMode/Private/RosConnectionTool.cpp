@@ -24,7 +24,6 @@ void URosConnectionTool::ConnectToRosBridge()
 	ConnectedCallback.AddUObject(this, &URosConnectionTool::ConnectedCallback);
 
 	Controller->ConnectToROSBridge(ErrorCallback, ConnectedCallback);
-	Connected = Controller->IsConnected();
 }
 
 
@@ -38,9 +37,15 @@ void URosConnectionTool::ClearMap()
 }
 
 void URosConnectionTool::ConnectionErrorCallback() {
-	Connected = false;
+	ConnectionStatus = TEXT("Not connected.");
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("Connection to RosBridge lost.")));
+
 }
 
 void URosConnectionTool::ConnectedCallback() {
-	Connected = true;
+	ConnectionStatus = TEXT("Connected to Rosbridge.");
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("You are now connected to RosBridge.")));
+
 }

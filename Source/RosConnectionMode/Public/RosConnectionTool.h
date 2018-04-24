@@ -17,13 +17,13 @@ class URosConnectionTool : public UObject
 public:
 	FRosConnectionMode* ParentMode;
 
+	UPROPERTY(VisibleInstanceOnly, Category = "RosBridge Websocket")
+		FString ConnectionStatus = TEXT("Not connected.");
 	UPROPERTY(EditAnywhere, Category = "RosBridge Websocket")
 		FString ServerAdress = TEXT("127.0.0.1");
 	UPROPERTY(EditAnywhere, Category = "RosBridge Websocket")
 		int ServerPort = 9090;
 
-	UPROPERTY(VisibleInstanceOnly, Category = "RosBridge Websocket")
-		bool Connected = false;
 
 	UPROPERTY(EditAnywhere, Category = "ROS")
 		FString Namespace = TEXT("unreal");
