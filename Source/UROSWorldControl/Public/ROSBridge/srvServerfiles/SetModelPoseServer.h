@@ -25,16 +25,11 @@ private:
 	FROSSetModelPoseServer();
 
 	UWorld * World;
-	bool GameThreadDoneFlag;
-	bool ServiceSuccess;
+	FThreadSafeBool ServiceSuccess;
 
 	ROSWorldControlManager* Controller;
 
 	bool Relocate(AActor* Actor, FVector Location, FRotator Rotator);
-
-	void SetGameThreadDoneFlag(bool Flag);
-
-	void SetServiceSuccess(bool Success);
 
 public:
 	FROSSetModelPoseServer(FString Namespace, FString Name, UWorld* InWorld,

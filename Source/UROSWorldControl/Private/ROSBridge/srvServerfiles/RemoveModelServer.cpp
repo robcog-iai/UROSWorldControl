@@ -18,24 +18,19 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSRemoveModelServer::Callback(TSharedPt
 
 	// get and remove Actor with given UtagID of Controller IDMap
 
-	unreal_msgs::InstanceId Id = RemoveModelRequest->GetInstanceId();
-	FString UniqueId = UROSWorldControlHelper::GetUniqueIdOfInstanceID(&Id);
+	FGuid UniqueId = RemoveModelRequest->GetInstanceId().GetId();
 
 	if (Controller->IdToActorMap.RemoveAndCopyValue(UniqueId, ActorToBeRemoved)) {
+		
 		// Actor was found and will be destroyed on GameThread
-		GameThreadDoneFlag = false;
-		AsyncTask(ENamedThreads::GameThread, [=]()
+		FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
 		{
-			bool bSuccess = ActorToBeRemoved->Destroy();
-			SetServiceSuccess(bSuccess);
-			SetGameThreadDoneFlag(true);
-		}
-		);
+			ServiceSuccess = ActorToBeRemoved->Destroy();
 
-		// Wait for gamethread to be done
-		while (!GameThreadDoneFlag) {
-			FPlatformProcess::Sleep(0.01);
-		}
+		}, TStatId(), NULL, ENamedThreads::GameThread);
+
+		//wait code above to complete
+		FTaskGraphInterface::Get().WaitUntilTaskCompletes(Task);
 
 		return TSharedPtr<FROSBridgeSrv::SrvResponse>
 			(new FROSBridgeRemoveModelSrv::Response(ServiceSuccess));
@@ -43,21 +38,10 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSRemoveModelServer::Callback(TSharedPt
 	else
 	{
 		// the given UtagID was not found.
-		UE_LOG(LogTemp, Warning, TEXT("Actor with id:\"%s\" does not exist and can therefore not be removed."), *RemoveModelRequest->GetInstanceId().GetId());
+		UE_LOG(LogTemp, Warning, TEXT("Actor with id:\"%s\" does not exist and can therefore not be removed."), *FIds::GuidToBase64(RemoveModelRequest->GetInstanceId().GetId()));
 		return TSharedPtr<FROSBridgeSrv::SrvResponse>
 			(new FROSBridgeRemoveModelSrv::Response(false));
 	}
 
 
-}
-
-
-void  FROSRemoveModelServer::SetGameThreadDoneFlag(bool Flag)
-{
-	GameThreadDoneFlag = Flag;
-}
-
-void FROSRemoveModelServer::SetServiceSuccess(bool Success)
-{
-	ServiceSuccess = Success;
 }

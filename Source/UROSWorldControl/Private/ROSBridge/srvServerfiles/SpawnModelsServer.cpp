@@ -17,7 +17,7 @@ bool FROSSpawnModelServer::SpawnAsset(const SpawnAssetParams Params) {
 	UStaticMesh* Mesh = LoadMesh(Params.PathOfMesh, Params.InstanceId);
 	if (!Mesh)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Path does not point to a static mesh"));
+		UE_LOG(LogTemp, Error, TEXT("Could not find a Mesh."));
 		return false;
 	}
 
@@ -26,23 +26,14 @@ bool FROSSpawnModelServer::SpawnAsset(const SpawnAssetParams Params) {
 	UMaterialInterface* Material = LoadMaterial(Params.PathOfMaterial, Params.InstanceId);
 	if (!Material)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Path does not point to a Material"));
+		UE_LOG(LogTemp, Error, TEXT("Could not find Material"));
 		return false;
 	}
 
 
 	AStaticMeshActor* SpawnedItem;
 
-
-	FString Name = Params.InstanceId->GetModelClassName();
-	if (Params.InstanceId->GetId().IsEmpty())
-	{
-		//ID needs to be generated
-		FString Id = GenerateId(4);
-		Params.InstanceId->SetId(Id);
-	}
-
-	FString UniqueId = UROSWorldControlHelper::GetUniqueIdOfInstanceID(Params.InstanceId);
+	FGuid UniqueId = Params.InstanceId->GetId();
 
 	if (Controller->IdToActorMap.Find(UniqueId) == nullptr)
 	{
@@ -54,7 +45,7 @@ bool FROSSpawnModelServer::SpawnAsset(const SpawnAssetParams Params) {
 		//Assigning the Mesh and Material to the Component
 		SpawnedItem->GetStaticMeshComponent()->SetStaticMesh(Mesh);
 		SpawnedItem->GetStaticMeshComponent()->SetMaterial(0, Material);
-		SpawnedItem->SetActorLabel(UniqueId);
+		SpawnedItem->SetActorLabel(UROSWorldControlHelper::GetUniqueNameOfInstanceID(Params.InstanceId));
 
 		if (Params.bIsStatic) {
 			SpawnedItem->GetStaticMeshComponent()->SetSimulatePhysics(false);
@@ -74,7 +65,7 @@ bool FROSSpawnModelServer::SpawnAsset(const SpawnAssetParams Params) {
 	else
 	{
 		//ID is already taken
-		UE_LOG(LogTemp, Warning, TEXT("Semlog id: \"%s\" is not unique, therefore nothing was spawned."), *UniqueId);
+		UE_LOG(LogTemp, Error, TEXT("Semlog id: \"%s\" is not unique, therefore nothing was spawned."), *FIds::GuidToBase64(UniqueId));
 		return false;
 	}
 
@@ -83,7 +74,7 @@ bool FROSSpawnModelServer::SpawnAsset(const SpawnAssetParams Params) {
 		SpawnedItem,
 		TEXT("SemLog"),
 		TEXT("id"),
-		UniqueId);
+		FIds::GuidToBase64(UniqueId));
 
 
 	//Add other Tags to Actor
@@ -128,8 +119,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnModelServer::Callback(TSharedPtr
 	// Execute on game thread
 	FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
 	{
-		bool success = SpawnAsset(Params);
-		SetServiceSuccess(success);
+		ServiceSuccess = SpawnAsset(Params);
 
 	}, TStatId(), NULL, ENamedThreads::GameThread);
 
@@ -169,7 +159,7 @@ UStaticMesh * FROSSpawnModelServer::LoadMesh(const FString Path, unreal_msgs::In
 		//Load Mesh From Path
 		Mesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), nullptr, *Path));
 	}
-	if (Mesh == nullptr) 
+	if (Mesh == nullptr)
 	{
 		//Look for file Recursively
 		const FString ModelClassName = InstanceId->GetModelClassName();
@@ -187,7 +177,7 @@ UStaticMesh * FROSSpawnModelServer::LoadMesh(const FString Path, unreal_msgs::In
 				int Last;
 				Loc.FindLastChar('.', Last);
 				Loc.RemoveAt(Last, Loc.Len() - Last);
-				
+
 				FString FoundPath = "StaticMesh'/Game" + Loc + ".SM_" + ModelClassName + "'";
 				Mesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), nullptr, *FoundPath));
 			}
@@ -278,18 +268,6 @@ FString FORCEINLINE FROSSpawnModelServer::GenerateId(int Length) {
 }
 
 
-void FROSSpawnModelServer::SetGameThreadDoneFlag(bool Flag)
-{
-	GameThreadDoneFlag = Flag;
-}
-
-void FROSSpawnModelServer::SetServiceSuccess(bool bSuccess)
-{
-	ServiceSuccess = bSuccess;
-}
-
-
-
 TSharedPtr<FROSBridgeSrv::SrvRequest> FROSSpawnMultipleModelsServer::FromJson(TSharedPtr<FJsonObject> JsonObject) const
 {
 	TSharedPtr<FROSBridgeSpawnMultipleModelsSrv::Request> Request_ =
@@ -325,19 +303,16 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnMultipleModelsServer::Callback(T
 		// Execute on game thread
 		FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
 		{
-			bool success = SpawnAsset(Params);
-			SetServiceSuccess(success);
+			ServiceSuccess = SpawnAsset(Params);
 		}, TStatId(), NULL, ENamedThreads::GameThread);
 
 		//wait code above to complete
 		FTaskGraphInterface::Get().WaitUntilTaskCompletes(Task);
 		InstanceIds.Add(Id);
-		SuccessList.Add(ServiceSuccess); 
+		SuccessList.Add(ServiceSuccess);
 	}
 
 	return MakeShareable<FROSBridgeSrv::SrvResponse>
 		(new FROSBridgeSpawnMultipleModelsSrv::Response(SuccessList, InstanceIds));
-
-
 
 }

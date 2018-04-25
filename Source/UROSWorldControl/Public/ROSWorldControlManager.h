@@ -29,7 +29,7 @@ public:
 	void DisconnectFromROSBridge();
 	bool IsConnected();
 
-	TMap<FString, AActor*> IdToActorMap;
+	TMap<FGuid, AActor*> IdToActorMap;
 
 private:
 	ROSWorldControlManager() {};

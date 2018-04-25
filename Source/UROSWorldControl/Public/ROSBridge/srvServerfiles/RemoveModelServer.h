@@ -13,14 +13,9 @@ class FROSRemoveModelServer final : public FROSBridgeSrvServer
 private:
 	FROSRemoveModelServer();
 	UWorld* World;
-	bool GameThreadDoneFlag;
-	bool ServiceSuccess;
+	FThreadSafeBool ServiceSuccess;
 
 	ROSWorldControlManager* Controller;
-
-	void SetGameThreadDoneFlag(bool Flag);
-
-	void SetServiceSuccess(bool Success);
 
 public:
 	FROSRemoveModelServer(FString Namespace, FString Name, UWorld* InWorld,

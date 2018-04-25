@@ -40,7 +40,7 @@ public:
 
 		virtual FString ToString() const override
 		{
-			return TEXT("FROSBridgeSpawnService::Request {%s} "), ModelDescription.ToString();
+			return TEXT("RosWorldControlSpawnService::Request {%s} "), ModelDescription.ToString();
 
 		}
 
@@ -93,7 +93,7 @@ public:
 
 		virtual FString ToString() const override
 		{
-			return TEXT("FROSBridgeSpawnService::Response { Success: %s, InstanceId: %s }"), bSuccess ? TEXT("True") : TEXT("False"), InstanceId.ToString();
+			return TEXT("RosWorldControlSpawnService::Response { Success: %s, InstanceId: %s }"), bSuccess ? TEXT("True") : TEXT("False"), InstanceId.ToString();
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const

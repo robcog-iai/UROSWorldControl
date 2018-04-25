@@ -48,7 +48,7 @@ public:
 
 		virtual FString ToString() const override
 		{
-			return TEXT("FROSBridgeSetModelPoseSrv::Request { InstanceID = ") + InstanceId.ToString() +
+			return TEXT("RosWorldControlSetModelPoseSrv::Request { InstanceID = ") + InstanceId.ToString() +
 				TEXT(", Location = ") + Pose.GetPosition().GetVector().ToString() + 
 				TEXT(" and Rotator  = ") + FRotator::FRotator(Pose.GetOrientation().GetQuat()).ToString() + 
 				TEXT("} ");
@@ -91,7 +91,7 @@ public:
 
 		virtual FString ToString() const override
 		{
-			return TEXT("FROSBridgeSetModelPoseSrv::Request { %s }"), bSuccess ? TEXT("True") : TEXT("False");
+			return TEXT("RosWorldControlSetModelPoseSrv::Request { %s }"), bSuccess ? TEXT("True") : TEXT("False");
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const

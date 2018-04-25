@@ -39,7 +39,7 @@ public:
 
 		virtual FString ToString() const override
 		{
-			return TEXT("FROSBridgeRemoveModelSrv::Request { InstanceId = ") + InstanceId.ToString() + TEXT("} ");
+			return TEXT("RosWorldControlRemoveModelSrv::Request { InstanceId = ") + InstanceId.ToString() + TEXT("} ");
 
 		}
 
@@ -77,7 +77,7 @@ public:
 
 		virtual FString ToString() const override
 		{
-			return TEXT("FROSBridgeRemoveModelSrv::Request { %s }"), bSuccess ? TEXT("True") : TEXT("False");
+			return TEXT("RosWorldControlRemoveModelSrv::Response { %s }"), bSuccess ? TEXT("True") : TEXT("False");
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const

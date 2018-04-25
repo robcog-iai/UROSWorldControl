@@ -35,13 +35,11 @@ protected:
 
 	FROSSpawnModelServer() {};
 	UWorld * World;
-	bool GameThreadDoneFlag;
-	bool ServiceSuccess;
+
+	FThreadSafeBool ServiceSuccess;
 
 	bool SpawnAsset(const SpawnAssetParams Params);
 
-	void SetGameThreadDoneFlag(bool Flag);
-	void SetServiceSuccess(bool Success);
 	// This is used by the spawn mutliple models server, otherwise it would have the wrong type
 	FROSSpawnModelServer(FString Namespace, FString Name, UWorld * InWorld, ROSWorldControlManager * InController, FString Type) :
 		FROSBridgeSrvServer(Namespace + TEXT("/") + Name, Type)

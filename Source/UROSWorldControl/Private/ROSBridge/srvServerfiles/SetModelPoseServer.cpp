@@ -33,15 +33,14 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSetModelPoseServer::Callback(TSharedP
 		StaticCastSharedPtr<FROSBridgeSetModelPoseSrv::Request>(Request);
 
 	//Get Actor for given ID
-	unreal_msgs::InstanceId Id = SetModelPoseRequest->GetInstanceId();
-	FString UniqueId = UROSWorldControlHelper::GetUniqueIdOfInstanceID(&Id);
+	FGuid UniqueId = SetModelPoseRequest->GetInstanceId().GetId();
 
 	AActor** Actor = Controller->IdToActorMap.Find(UniqueId);
 
 
 	if (!Actor) {
 		// Couldn't find Actor for ID 
-		UE_LOG(LogTemp, Warning, TEXT("Actor with id:\"%s\" does not exist and can therefore not be moved."), *UniqueId);
+		UE_LOG(LogTemp, Warning, TEXT("Actor with id:\"%s\" does not exist and can therefore not be moved."), *FIds::GuidToBase64(UniqueId));
 		return MakeShareable<FROSBridgeSrv::SrvResponse>
 			(new FROSBridgeSetModelPoseSrv::Response(false));
 	}
@@ -53,33 +52,18 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSetModelPoseServer::Callback(TSharedP
 	Params.Location = SetModelPoseRequest->GetLocation();
 	Params.Rotator = SetModelPoseRequest->GetRotator();
 
-	GameThreadDoneFlag = false;
 	//Actor was found and will be relocated, in GameThread
-	AsyncTask(ENamedThreads::GameThread, [=]()
+	FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
 	{
-		bool success = Relocate(Params.Actor,
+		ServiceSuccess = Relocate(Params.Actor,
 			Params.Location*100.f,
 			Params.Rotator);
-		SetServiceSuccess(success);
-		SetGameThreadDoneFlag(true);
-	}
-	);
 
-	// Wait for gamethread to be done
-	while (!GameThreadDoneFlag) {
-		FPlatformProcess::Sleep(0.01);
-	}
+	}, TStatId(), NULL, ENamedThreads::GameThread);
+
+	//wait code above to complete
+	FTaskGraphInterface::Get().WaitUntilTaskCompletes(Task); 
+	
 	return MakeShareable<FROSBridgeSrv::SrvResponse>
 		(new FROSBridgeSetModelPoseSrv::Response(ServiceSuccess));
 }
-
-void  FROSSetModelPoseServer::SetGameThreadDoneFlag(bool Flag)
-{
-	GameThreadDoneFlag = Flag;
-}
-
-void FROSSetModelPoseServer::SetServiceSuccess(bool Success)
-{
-	ServiceSuccess = Success;
-}
-

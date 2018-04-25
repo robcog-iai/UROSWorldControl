@@ -43,7 +43,7 @@ public:
 
 		virtual FString ToString() const override
 		{
-			return TEXT("FROSBridgeSpawnMultipleModelsSrv::Request { Number of Models to Spawn: %s }"),
+			return TEXT("RosWorldControlSpawnMultipleModelsSrv::Request { Number of Models to Spawn: %s }"),
 				FString::FromInt(ModelDescriptions.Num());
 
 		}
@@ -111,7 +111,7 @@ public:
 
 		virtual FString ToString() const override
 		{
-			return TEXT("FROSBridgeSpawnMultipleModelsSrv::Response");
+			return TEXT("RosWorldControlSpawnMultipleModelsSrv::Response");
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const

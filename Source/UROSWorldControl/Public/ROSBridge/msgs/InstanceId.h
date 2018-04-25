@@ -1,7 +1,7 @@
 #pragma once
 #include "ROSBridgeMsg.h"
 #include "String.h"
-
+#include "Ids.h"
 
 
 namespace unreal_msgs
@@ -9,14 +9,14 @@ namespace unreal_msgs
 	class InstanceId : public FROSBridgeMsg
 	{
 		FString ClassName;
-		FString Id;
+		FGuid Id;
 		FString Ns;
 
 
 	public:
 		InstanceId() {}
 
-		InstanceId(FString InClassName, FString  InId, FString  InNs)
+		InstanceId(FString InClassName, FGuid  InId, FString  InNs)
 		{
 			InstanceId();
 			ClassName = InClassName;
@@ -29,12 +29,12 @@ namespace unreal_msgs
 			return ClassName;
 		}
 
-		FString  GetId()
+		FGuid  GetId()
 		{
 			return Id;
 		}
 
-		void SetId(FString InId)
+		void SetId(FGuid InId)
 		{
 			Id = InId;
 		}
@@ -47,7 +47,7 @@ namespace unreal_msgs
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
 			ClassName = JsonObject->GetStringField("class_name");
-			Id = JsonObject->GetStringField("id");
+			Id = FIds::Base64ToGuid(JsonObject->GetStringField("id"), true);
 			Ns = JsonObject->GetStringField("ns");
 		}
 
@@ -67,7 +67,7 @@ namespace unreal_msgs
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 			Object->SetStringField(TEXT("class_name"), ClassName);
-			Object->SetStringField(TEXT("id"), Id);
+			Object->SetStringField(TEXT("id"), FIds::GuidToBase64(Id));
 			Object->SetStringField(TEXT("ns"), Ns);
 			return Object;
 		}
