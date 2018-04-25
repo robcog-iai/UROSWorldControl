@@ -29,9 +29,14 @@ namespace unreal_msgs
 			return ClassName;
 		}
 
-		FGuid  GetId()
+		FGuid GetId()
 		{
 			return Id;
+		}
+
+		FString GetIdBase64()
+		{
+			return FIds::GuidToBase64(Id);
 		}
 
 		void SetId(FGuid InId)

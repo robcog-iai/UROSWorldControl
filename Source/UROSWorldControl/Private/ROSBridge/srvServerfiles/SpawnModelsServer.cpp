@@ -65,7 +65,7 @@ bool FROSSpawnModelServer::SpawnAsset(const SpawnAssetParams Params) {
 	else
 	{
 		//ID is already taken
-		UE_LOG(LogTemp, Error, TEXT("Semlog id: \"%s\" is not unique, therefore nothing was spawned."), *FIds::GuidToBase64(UniqueId));
+		UE_LOG(LogTemp, Error, TEXT("Semlog id: \"%s\" is not unique, therefore nothing was spawned."), *Params.InstanceId->GetIdBase64());
 		return false;
 	}
 
@@ -249,22 +249,6 @@ FString FROSSpawnModelServer::FormatNamespace(FString Ns)
 	NewNs.RemoveFromStart(TEXT("/"));
 	NewNs.RemoveFromEnd(TEXT("/"));
 	return NewNs;
-}
-
-FString FORCEINLINE FROSSpawnModelServer::GenerateId(int Length) {
-	auto RandChar = []() -> char
-	{
-		const char CharSet[] =
-			"0123456789"
-			"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-			"abcdefghijklmnopqrstuvwxyz";
-		const size_t MaxIndex = (sizeof(CharSet) - 1);
-		return CharSet[rand() % MaxIndex];
-	};
-	std::string RandString(Length, 0);
-	std::generate_n(RandString.begin(), Length, RandChar);
-	// Return as Fstring
-	return FString(RandString.c_str());
 }
 
 

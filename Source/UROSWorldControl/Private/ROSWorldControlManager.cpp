@@ -21,8 +21,15 @@ void ROSWorldControlManager::ConnectToROSBridge(FWebsocketInfoCallBack CustomErr
 		return;
 	}
 
+	IdToActorMap.Empty();
 	// Setup IDMap
-	IdToActorMap = FTags::GetKeyValuesToActor(World, "SemLog", "Id");
+	TMap<FString, AActor*> Base64Map;
+	Base64Map = FTags::GetKeyValuesToActor(World, "SemLog", "Id");
+	for (auto& Elem : Base64Map)
+	{
+		IdToActorMap.Add(FIds::Base64ToGuid(Elem.Key), Elem.Value);
+	}
+
 
 
 	// Set websocket server address to ws 

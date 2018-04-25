@@ -16,8 +16,6 @@
 #include "FileManagerGeneric.h"
 #include "HelperFunctions.h"
 #include "Ids.h"
-#include <string>
-#include <algorithm>
 
 
 class FROSSpawnModelServer : public FROSBridgeSrvServer
@@ -52,7 +50,6 @@ private:
 	UStaticMesh * LoadMesh(const FString Path, unreal_msgs::InstanceId * InstanceId);
 	UMaterialInterface * LoadMaterial(const FString Path, unreal_msgs::InstanceId * InstanceId);
 	FString FormatNamespace(FString Ns);
-	FString GenerateId(int Length);
 
 
 public:
