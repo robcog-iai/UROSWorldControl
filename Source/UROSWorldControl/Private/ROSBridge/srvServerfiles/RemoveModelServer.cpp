@@ -18,7 +18,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSRemoveModelServer::Callback(TSharedPt
 
 	// get and remove Actor with given UtagID of Controller IDMap
 
-	FGuid UniqueId = RemoveModelRequest->GetInstanceId().GetId();
+	FString UniqueId = RemoveModelRequest->GetInstanceId().GetId();
 
 	if (Controller->IdToActorMap.RemoveAndCopyValue(UniqueId, ActorToBeRemoved)) {
 		
@@ -38,7 +38,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSRemoveModelServer::Callback(TSharedPt
 	else
 	{
 		// the given UtagID was not found.
-		UE_LOG(LogTemp, Warning, TEXT("Actor with id:\"%s\" does not exist and can therefore not be removed."), *FIds::GuidToBase64(RemoveModelRequest->GetInstanceId().GetId()));
+		UE_LOG(LogTemp, Warning, TEXT("Actor with id:\"%s\" does not exist and can therefore not be removed."), *RemoveModelRequest->GetInstanceId().GetId());
 		return TSharedPtr<FROSBridgeSrv::SrvResponse>
 			(new FROSBridgeRemoveModelSrv::Response(false));
 	}

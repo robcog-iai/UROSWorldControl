@@ -33,14 +33,14 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSetModelPoseServer::Callback(TSharedP
 		StaticCastSharedPtr<FROSBridgeSetModelPoseSrv::Request>(Request);
 
 	//Get Actor for given ID
-	FGuid UniqueId = SetModelPoseRequest->GetInstanceId().GetId();
+	FString UniqueId = SetModelPoseRequest->GetInstanceId().GetId();
 
 	AActor** Actor = Controller->IdToActorMap.Find(UniqueId);
 
 
 	if (!Actor) {
 		// Couldn't find Actor for ID 
-		UE_LOG(LogTemp, Warning, TEXT("Actor with id:\"%s\" does not exist and can therefore not be moved."), *FIds::GuidToBase64(UniqueId));
+		UE_LOG(LogTemp, Warning, TEXT("Actor with id:\"%s\" does not exist and can therefore not be moved."), *UniqueId);
 		return MakeShareable<FROSBridgeSrv::SrvResponse>
 			(new FROSBridgeSetModelPoseSrv::Response(false));
 	}

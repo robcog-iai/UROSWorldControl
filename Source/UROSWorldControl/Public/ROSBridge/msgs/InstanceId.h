@@ -9,14 +9,14 @@ namespace unreal_msgs
 	class InstanceId : public FROSBridgeMsg
 	{
 		FString ClassName;
-		FGuid Id;
+		FString Id;
 		FString Ns;
 
 
 	public:
 		InstanceId() {}
 
-		InstanceId(FString InClassName, FGuid  InId, FString  InNs)
+		InstanceId(FString InClassName, FString  InId, FString  InNs)
 		{
 			InstanceId();
 			ClassName = InClassName;
@@ -29,17 +29,12 @@ namespace unreal_msgs
 			return ClassName;
 		}
 
-		FGuid GetId()
+		FString  GetId()
 		{
 			return Id;
 		}
 
-		FString GetIdBase64()
-		{
-			return FIds::GuidToBase64(Id);
-		}
-
-		void SetId(FGuid InId)
+		void SetId(FString InId)
 		{
 			Id = InId;
 		}
@@ -52,8 +47,14 @@ namespace unreal_msgs
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
 			ClassName = JsonObject->GetStringField("class_name");
-			Id = FIds::Base64ToGuid(JsonObject->GetStringField("id"), true);
+			Id = JsonObject->GetStringField("id");
 			Ns = JsonObject->GetStringField("ns");
+
+			if (Id.IsEmpty())
+			{
+				//ID needs to be generated	
+				Id = FIds::NewGuidInBase64();
+			}
 		}
 
 		static InstanceId GetFromJson(TSharedPtr<FJsonObject> JsonObject)
@@ -72,7 +73,7 @@ namespace unreal_msgs
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 			Object->SetStringField(TEXT("class_name"), ClassName);
-			Object->SetStringField(TEXT("id"), FIds::GuidToBase64(Id));
+			Object->SetStringField(TEXT("id"),Id);
 			Object->SetStringField(TEXT("ns"), Ns);
 			return Object;
 		}

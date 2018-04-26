@@ -33,7 +33,7 @@ bool FROSSpawnModelServer::SpawnAsset(const SpawnAssetParams Params) {
 
 	AStaticMeshActor* SpawnedItem;
 
-	FGuid UniqueId = Params.InstanceId->GetId();
+	FString UniqueId = Params.InstanceId->GetId();
 
 	if (Controller->IdToActorMap.Find(UniqueId) == nullptr)
 	{
@@ -65,7 +65,7 @@ bool FROSSpawnModelServer::SpawnAsset(const SpawnAssetParams Params) {
 	else
 	{
 		//ID is already taken
-		UE_LOG(LogTemp, Error, TEXT("Semlog id: \"%s\" is not unique, therefore nothing was spawned."), *Params.InstanceId->GetIdBase64());
+		UE_LOG(LogTemp, Error, TEXT("Semlog id: \"%s\" is not unique, therefore nothing was spawned."), *Params.InstanceId->GetId());
 		return false;
 	}
 
@@ -74,7 +74,7 @@ bool FROSSpawnModelServer::SpawnAsset(const SpawnAssetParams Params) {
 		SpawnedItem,
 		TEXT("SemLog"),
 		TEXT("id"),
-		FIds::GuidToBase64(UniqueId));
+		UniqueId);
 
 
 	//Add other Tags to Actor
