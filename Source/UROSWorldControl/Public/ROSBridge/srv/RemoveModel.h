@@ -15,12 +15,12 @@ public:
 
 	class Request : public SrvRequest {
 	private:
-		unreal_msgs::InstanceId InstanceId;
+		unreal_world_control_msgs::InstanceId InstanceId;
 
 	public:
 		Request() {}
 
-		unreal_msgs::InstanceId GetInstanceId() 
+		unreal_world_control_msgs::InstanceId GetInstanceId() 
 		{ 
 			return InstanceId;
 		};

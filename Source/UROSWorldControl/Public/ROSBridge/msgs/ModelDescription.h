@@ -6,21 +6,21 @@
 #include "Tag.h"
 
 
-namespace unreal_msgs
+namespace unreal_world_control_msgs
 {
 	class ModelDescription : public FROSBridgeMsg
 	{
-		unreal_msgs::InstanceId InstanceId;
-		unreal_msgs::MeshDescription MeshDescription;
+		unreal_world_control_msgs::InstanceId InstanceId;
+		unreal_world_control_msgs::MeshDescription MeshDescription;
 		geometry_msgs::Pose Pose;
-		TArray<unreal_msgs::Tag> Tags;
+		TArray<unreal_world_control_msgs::Tag> Tags;
 		bool bIsStatic;
 
 
 	public:
 		ModelDescription() {}
 
-		ModelDescription(unreal_msgs::InstanceId InInstanceId, unreal_msgs::MeshDescription InMeshDescription, geometry_msgs::Pose InPose, TArray<unreal_msgs::Tag> InTags, bool InbIsStatic)
+		ModelDescription(unreal_world_control_msgs::InstanceId InInstanceId, unreal_world_control_msgs::MeshDescription InMeshDescription, geometry_msgs::Pose InPose, TArray<unreal_world_control_msgs::Tag> InTags, bool InbIsStatic)
 		{
 			ModelDescription();
 			InstanceId = InInstanceId;
@@ -30,12 +30,12 @@ namespace unreal_msgs
 			bIsStatic = InbIsStatic;
 		}
 
-		unreal_msgs::InstanceId GetInstanceId()
+		unreal_world_control_msgs::InstanceId GetInstanceId()
 		{
 			return InstanceId;
 		}
 
-		unreal_msgs::MeshDescription GetMeshDescription()
+		unreal_world_control_msgs::MeshDescription GetMeshDescription()
 		{
 			return MeshDescription;
 		}
@@ -45,7 +45,7 @@ namespace unreal_msgs
 			return Pose;
 		}
 
-		TArray<unreal_msgs::Tag> GetTags()
+		TArray<unreal_world_control_msgs::Tag> GetTags()
 		{
 			return Tags;
 		}
@@ -64,7 +64,7 @@ namespace unreal_msgs
 			TArray<TSharedPtr<FJsonValue>> TagsPtrArray = JsonObject->GetArrayField(TEXT("tags"));
 			for (auto &ptr : TagsPtrArray)
 			{
-				unreal_msgs::Tag Entry;
+				unreal_world_control_msgs::Tag Entry;
 				Entry.FromJson(ptr->AsObject());
 				Tags.Add(Entry);
 			}

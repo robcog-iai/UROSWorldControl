@@ -111,7 +111,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnModelServer::Callback(TSharedPtr
 	Params.Location = SpawnMeshRequest->GetModelDescription().GetPose().GetPosition().GetVector();
 	Params.Rotator = FRotator(SpawnMeshRequest->GetModelDescription().GetPose().GetOrientation().GetQuat());
 	Params.Tags = SpawnMeshRequest->GetModelDescription().GetTags();
-	unreal_msgs::InstanceId Id = SpawnMeshRequest->GetModelDescription().GetInstanceId();
+	unreal_world_control_msgs::InstanceId Id = SpawnMeshRequest->GetModelDescription().GetInstanceId();
 	Params.bIsStatic = SpawnMeshRequest->GetModelDescription().IsStatic();
 	Params.InstanceId = &Id;
 
@@ -131,7 +131,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnModelServer::Callback(TSharedPtr
 }
 
 
-UStaticMesh * FROSSpawnModelServer::LoadMesh(const FString Path, unreal_msgs::InstanceId* InstanceId)
+UStaticMesh * FROSSpawnModelServer::LoadMesh(const FString Path, unreal_world_control_msgs::InstanceId* InstanceId)
 {
 
 	UStaticMesh* Mesh = nullptr;
@@ -187,7 +187,7 @@ UStaticMesh * FROSSpawnModelServer::LoadMesh(const FString Path, unreal_msgs::In
 	return Mesh;
 }
 
-UMaterialInterface * FROSSpawnModelServer::LoadMaterial(const FString Path, unreal_msgs::InstanceId* InstanceId)
+UMaterialInterface * FROSSpawnModelServer::LoadMaterial(const FString Path, unreal_world_control_msgs::InstanceId* InstanceId)
 {
 
 	UMaterialInterface* Material = nullptr;
@@ -266,10 +266,10 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnMultipleModelsServer::Callback(T
 	TSharedPtr<FROSBridgeSpawnMultipleModelsSrv::Request> SpawnSemanticMapRequest =
 		StaticCastSharedPtr<FROSBridgeSpawnMultipleModelsSrv::Request>(Request);
 
-	TArray<unreal_msgs::ModelDescription>* Descriptions = SpawnSemanticMapRequest->GetModelDescriptions();
+	TArray<unreal_world_control_msgs::ModelDescription>* Descriptions = SpawnSemanticMapRequest->GetModelDescriptions();
 
 	TArray<bool> SuccessList;
-	TArray<unreal_msgs::InstanceId> InstanceIds;
+	TArray<unreal_world_control_msgs::InstanceId> InstanceIds;
 
 	bool bAllSucceded = true;
 	for (auto Descript : *Descriptions)
@@ -281,7 +281,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnMultipleModelsServer::Callback(T
 		Params.Rotator = FRotator(Descript.GetPose().GetOrientation().GetQuat());
 		Params.Tags = Descript.GetTags();
 		Params.bIsStatic = Descript.IsStatic();
-		unreal_msgs::InstanceId Id = Descript.GetInstanceId();
+		unreal_world_control_msgs::InstanceId Id = Descript.GetInstanceId();
 		Params.InstanceId = &Id;
 
 		// Execute on game thread

@@ -4,7 +4,7 @@
 #include "Ids.h"
 
 
-namespace unreal_msgs
+namespace unreal_world_control_msgs
 {
 	class InstanceId : public FROSBridgeMsg
 	{

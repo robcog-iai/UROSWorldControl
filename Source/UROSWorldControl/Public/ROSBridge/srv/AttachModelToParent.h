@@ -2,41 +2,36 @@
 
 #include "ROSBridgeSrv.h"
 #include "InstanceId.h"
-#include "Pose.h"
 
-class UROSBRIDGE_API FROSBridgeSetModelPoseSrv : public FROSBridgeSrv {
+using namespace unreal_world_control_msgs;
+
+class UROSBRIDGE_API FROSBridgeAttachModelToParentSrv : public FROSBridgeSrv {
 protected:
 	FString Type;
 
+
 public:
-	FROSBridgeSetModelPoseSrv(FString Type_)
+	FROSBridgeAttachModelToParentSrv(FString Type_)
 	{
 		Type = Type_;
 	}
-
 	class Request : public SrvRequest {
 	private:
-		unreal_world_control_msgs::InstanceId InstanceId;
-		geometry_msgs::Pose Pose;
+		InstanceId Parent;
+		InstanceId Child;
+
 
 	public:
 		Request() {}
-		unreal_world_control_msgs::InstanceId GetInstanceId() { return InstanceId; };
 
-		FVector GetLocation()
-		{
-			return Pose.GetPosition().GetVector();
-		}
+		InstanceId GetParent() { return Parent; }
 
-		FRotator GetRotator()
-		{
-			return FRotator::FRotator(Pose.GetOrientation().GetQuat());
-		}
+		InstanceId GetChild() { return Child; }
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
-			InstanceId.FromJson(JsonObject->GetObjectField("instance_id"));
-			Pose.FromJson(JsonObject->GetObjectField("pose"));
+			Parent.FromJson(JsonObject->GetObjectField("parent_model"));
+			Child.FromJson(JsonObject->GetObjectField("child_model"));
 		}
 
 		static Request GetFromJson(TSharedPtr<FJsonObject> JsonObject)
@@ -48,19 +43,14 @@ public:
 
 		virtual FString ToString() const override
 		{
-			return TEXT("RosWorldControlSetModelPoseSrv::Request { InstanceID = ") + InstanceId.ToString() +
-				TEXT(", Location = ") + Pose.GetPosition().GetVector().ToString() + 
-				TEXT(" and Rotator  = ") + FRotator::FRotator(Pose.GetOrientation().GetQuat()).ToString() + 
-				TEXT("} ");
-
+			return TEXT("FROSBridgeAttachModelToParentSrv::Request {parent_model = %s, child_model = %s}"), Parent.ToString(), Child.ToString();
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-			Object->SetObjectField("instance_id", InstanceId.ToJsonObject());
-			Object->SetObjectField("pose", Pose.ToJsonObject());
-
+			Object->SetObjectField(TEXT("parent_model"), Parent.ToJsonObject());
+			Object->SetObjectField(TEXT("child_mode"), Child.ToJsonObject());
 			return Object;
 		}
 
@@ -91,7 +81,7 @@ public:
 
 		virtual FString ToString() const override
 		{
-			return TEXT("RosWorldControlSetModelPoseSrv::Request { %s }"), bSuccess ? TEXT("True") : TEXT("False");
+			return TEXT("FROSBridgeAttachModelToParentSrv::Request { %s }"), bSuccess ? TEXT("True") : TEXT("False");
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const
@@ -101,4 +91,5 @@ public:
 			return Object;
 		}
 	};
+
 };

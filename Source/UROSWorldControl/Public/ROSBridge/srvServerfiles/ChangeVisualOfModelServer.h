@@ -15,7 +15,7 @@ private:
 
 	ROSWorldControlManager* Controller;
 
-	bool ChangeVisual(unreal_msgs::MeshDescription MeshDescription, UStaticMeshComponent* MeshComponent);
+	bool ChangeVisual(unreal_world_control_msgs::MeshDescription MeshDescription, UStaticMeshComponent* MeshComponent);
 
 	void SetServiceSuccess(bool Success);
 

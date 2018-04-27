@@ -16,11 +16,11 @@ public:
 
 	class Request : public SrvRequest{
 	private:
-		unreal_msgs::ModelDescription ModelDescription;
+		unreal_world_control_msgs::ModelDescription ModelDescription;
 	public:
 		Request() {}
 
-		unreal_msgs::ModelDescription GetModelDescription()
+		unreal_world_control_msgs::ModelDescription GetModelDescription()
 		{
 			return ModelDescription;
 		}
@@ -58,10 +58,10 @@ public:
 	class Response : public SrvResponse {
 	private:
 		bool bSuccess;
-		unreal_msgs::InstanceId InstanceId;
+		unreal_world_control_msgs::InstanceId InstanceId;
 			public:
 		Response() {}
-		Response(bool Success, unreal_msgs::InstanceId InInstanceId) 
+		Response(bool Success, unreal_world_control_msgs::InstanceId InInstanceId) 
 		{
 			bSuccess = Success;
 			InstanceId = InInstanceId;
@@ -69,11 +69,11 @@ public:
 		bool GetSuccess() const { return bSuccess; }
 		void SetSuccess(bool Success) { bSuccess = Success; }
 
-		unreal_msgs::InstanceId GetInstanceId() {
+		unreal_world_control_msgs::InstanceId GetInstanceId() {
 			return InstanceId;
 		}
 
-		void SetInstanceId(unreal_msgs::InstanceId InInstanceId)
+		void SetInstanceId(unreal_world_control_msgs::InstanceId InInstanceId)
 		{
 			InstanceId = InInstanceId;
 		}

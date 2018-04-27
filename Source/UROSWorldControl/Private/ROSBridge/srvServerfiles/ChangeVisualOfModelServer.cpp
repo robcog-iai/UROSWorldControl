@@ -18,7 +18,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSChangeVisualOfModelServer::Callback(T
 	TSharedPtr<RosWorldControlChangeVisualOfModelsSrv::Request> ChangeVisualRequest =
 		StaticCastSharedPtr<RosWorldControlChangeVisualOfModelsSrv::Request>(Request);
 	
-	unreal_msgs::MeshDescription MeshDescription = ChangeVisualRequest->GetMeshDescription();
+	unreal_world_control_msgs::MeshDescription MeshDescription = ChangeVisualRequest->GetMeshDescription();
 	//Check if at least one Path was set.
 	if (MeshDescription.GetPathToMaterial().IsEmpty() && MeshDescription.GetPathToMesh().IsEmpty())
 	{
@@ -60,7 +60,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSChangeVisualOfModelServer::Callback(T
 
 }
 
-bool FROSChangeVisualOfModelServer::ChangeVisual(unreal_msgs::MeshDescription MeshDescription, UStaticMeshComponent* MeshComponent)
+bool FROSChangeVisualOfModelServer::ChangeVisual(unreal_world_control_msgs::MeshDescription MeshDescription, UStaticMeshComponent* MeshComponent)
 {
 
 	if (!MeshDescription.GetPathToMesh().IsEmpty())

@@ -26,8 +26,8 @@ protected:
 		FString PathOfMaterial;
 		FVector Location;
 		FRotator Rotator;
-		TArray<unreal_msgs::Tag> Tags;
-		unreal_msgs::InstanceId* InstanceId;
+		TArray<unreal_world_control_msgs::Tag> Tags;
+		unreal_world_control_msgs::InstanceId* InstanceId;
 		bool bIsStatic;
 	};
 
@@ -47,8 +47,8 @@ protected:
 	}
 
 private:
-	UStaticMesh * LoadMesh(const FString Path, unreal_msgs::InstanceId * InstanceId);
-	UMaterialInterface * LoadMaterial(const FString Path, unreal_msgs::InstanceId * InstanceId);
+	UStaticMesh * LoadMesh(const FString Path, unreal_world_control_msgs::InstanceId * InstanceId);
+	UMaterialInterface * LoadMaterial(const FString Path, unreal_world_control_msgs::InstanceId * InstanceId);
 	FString FormatNamespace(FString Ns);
 
 

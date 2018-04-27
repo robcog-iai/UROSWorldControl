@@ -3,7 +3,7 @@
 #include "ROSBridgeSrv.h"
 #include "ModelDescription.h"
 
-using namespace unreal_msgs;
+using namespace unreal_world_control_msgs;
 
 class UROSBRIDGE_API FROSBridgeSpawnMultipleModelsSrv : public FROSBridgeSrv {
 protected:

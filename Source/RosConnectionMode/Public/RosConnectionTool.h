@@ -27,13 +27,15 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "ROS")
 		FString Namespace = TEXT("unreal");
-
-
+	
 	UFUNCTION(Exec)
 	void ConnectToRosBridge();
 
 	UFUNCTION(Exec)
 	void ClearMap();
+
+	UFUNCTION(Exec)
+	void SetRelations();
 
 	void SetParent(FRosConnectionMode* NewParent)
 	{

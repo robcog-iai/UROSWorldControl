@@ -18,14 +18,14 @@ public:
 
 	class Request : public SrvRequest {
 	private:
-		unreal_msgs::InstanceId InstanceId;
-		unreal_msgs::MeshDescription MeshDescription;
+		unreal_world_control_msgs::InstanceId InstanceId;
+		unreal_world_control_msgs::MeshDescription MeshDescription;
 
 	public:
 		Request() {}
-		unreal_msgs::InstanceId GetInstanceId() { return InstanceId; };
+		unreal_world_control_msgs::InstanceId GetInstanceId() { return InstanceId; };
 
-		unreal_msgs::MeshDescription GetMeshDescription()
+		unreal_world_control_msgs::MeshDescription GetMeshDescription()
 		{
 			return MeshDescription;
 		}
