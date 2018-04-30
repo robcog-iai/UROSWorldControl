@@ -7,6 +7,7 @@
 #include "AttachModelToParentServer.h"
 #include "ChangeVisualOfModelServer.h"
 #include "SpawnPhysicsConstraintServer.h"
+#include "HighlightModelsServer.h"
 
 
 ROSWorldControlManager::ROSWorldControlManager(UWorld * InWorld, FString InServerAdress, int InServerPort, FString InNamespace)
@@ -68,6 +69,11 @@ void ROSWorldControlManager::ConnectToROSBridge(FWebsocketInfoCallBack CustomErr
 	TSharedPtr<FROSSpawnPhysicsConstraintServer> SpawnPhysicsConstraintServer =
 		MakeShareable<FROSSpawnPhysicsConstraintServer>(new FROSSpawnPhysicsConstraintServer(Namespace, TEXT("spawn_physics_constraint"), World, this));
 	Handler->AddServiceServer(SpawnPhysicsConstraintServer);
+	
+	// Add highlight_models service
+	TSharedPtr<FROSHighlightModelsServer> HighlightModelsServer =
+		MakeShareable<FROSHighlightModelsServer>(new FROSHighlightModelsServer(Namespace, TEXT("highlight_models"), World, this));
+	Handler->AddServiceServer(HighlightModelsServer);
 
 
 
