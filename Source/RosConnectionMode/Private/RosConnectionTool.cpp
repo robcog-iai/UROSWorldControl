@@ -36,32 +36,6 @@ void URosConnectionTool::ClearMap()
 	Controller->IdToActorMap.Empty();
 }
 
-void URosConnectionTool::SetRelations()
-{
-	if (Controller->IdToActorMap.Num() > 2) {
-
-		AActor* Parent = nullptr;
-		AActor* Child = nullptr;
-		int i = 0;
-		for (auto Entry : Controller->IdToActorMap) {
-			switch (i)
-			{
-			case 0:
-				Parent = Entry.Value;
-				break;
-			case 1:
-				Child = Entry.Value;
-				break;
-			}
-			i++;
-		}
-
-		if (Child) {
-			Child->AttachRootComponentToActor(Parent);
-		}
-
-	}
-}
 
 void URosConnectionTool::ConnectionErrorCallback() {
 	ConnectionStatus = TEXT("Not connected.");

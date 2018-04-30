@@ -34,8 +34,6 @@ public:
 	UFUNCTION(Exec)
 	void ClearMap();
 
-	UFUNCTION(Exec)
-	void SetRelations();
 
 	void SetParent(FRosConnectionMode* NewParent)
 	{
