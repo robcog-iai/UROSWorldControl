@@ -20,14 +20,14 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSHighlightModelsServer::Callback(TShar
 	bool bAllSucceded = true;
 	for (auto Instance : *InstanceIds)
 	{
-		AActor * ActorToBeHighlighted = *Controller->IdToActorMap.Find(Instance.GetId());
+		AActor ** ActorToBeHighlighted = Controller->IdToActorMap.Find(Instance.GetId());
 		// Execute on game thread
 		if (ActorToBeHighlighted)
 		{
 			FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
 			{
 				TArray<UStaticMeshComponent*> Components;
-				ActorToBeHighlighted->GetComponents<UStaticMeshComponent>(Components);
+				(*ActorToBeHighlighted)->GetComponents<UStaticMeshComponent>(Components);
 				for (auto Component : Components)
 				{
 					Component->SetRenderCustomDepth(true);
