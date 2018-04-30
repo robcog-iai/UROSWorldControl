@@ -33,9 +33,9 @@ private:
 	ROSWorldControlManager* Controller;
 
 	bool SpawnPhysicsConstraintActor(TSharedPtr<FROSBridgeSpawnPhysiscConstraintSrv::Request> Request);
-	void SetupProfileInstance(FConstraintProfileProperties* ProfileInstance, PhysicsConstraint Details);
-	void SetupAngularLimits(FConstraintInstance Instance, PhysicsConstraint Details);
-	void SetupLinearLimits(FConstraintInstance Instance, PhysicsConstraint Details);
+	void SetupProfileInstance(FConstraintProfileProperties* ProfileInstance, PhysicsConstraintDetails Details);
+	void SetupAngularLimits(FConstraintInstance Instance, PhysicsConstraintDetails Details);
+	void SetupLinearLimits(FConstraintInstance Instance, PhysicsConstraintDetails Details);
 	
 
 public:

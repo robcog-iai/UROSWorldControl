@@ -1,4 +1,4 @@
-#include "SpawnPhysicConstraintServer.h"
+#include "SpawnPhysicsConstraintServer.h"
 
 // SetAngularLimits for Physics Constraints
 static FORCEINLINE void SetAngularLimits(
@@ -92,7 +92,7 @@ static FORCEINLINE void SetLinearLimits(
 
 bool FROSSpawnPhysicsConstraintServer::SpawnPhysicsConstraintActor(TSharedPtr<FROSBridgeSpawnPhysiscConstraintSrv::Request> Request)
 {
-	PhysicsConstraint Details = Request->GetConstraintDetails();
+	PhysicsConstraintDetails Details = Request->GetConstraintDetails();
 	AActor* First = *Controller->IdToActorMap.Find(Details.GetFirstModel().GetId());
 	AActor* Second = *Controller->IdToActorMap.Find(Details.GetSecondModel().GetId());
 
@@ -117,6 +117,8 @@ bool FROSSpawnPhysicsConstraintServer::SpawnPhysicsConstraintActor(TSharedPtr<FR
 	ConstraintComponent->ConstraintActor1 = First;
 	ConstraintComponent->ConstraintActor2 = Second;
 
+	//Set pose of Component
+	ConstraintComponent->SetWorldLocationAndRotation(Request->GetLocation(), Request->GetQuat());
 
 	SetupProfileInstance(&ConstraintComponent->ConstraintInstance.ProfileInstance, Details);
 	SetupLinearLimits(ConstraintComponent->ConstraintInstance, Details);
@@ -126,15 +128,16 @@ bool FROSSpawnPhysicsConstraintServer::SpawnPhysicsConstraintActor(TSharedPtr<FR
 	return true;
 }
 
-void FROSSpawnPhysicsConstraintServer::SetupProfileInstance(FConstraintProfileProperties * ProfileInstance, PhysicsConstraint Details)
+void FROSSpawnPhysicsConstraintServer::SetupProfileInstance(FConstraintProfileProperties * ProfileInstance, PhysicsConstraintDetails Details)
 {
 	ProfileInstance->bDisableCollision = Details.GetDisabelCollision();
 	ProfileInstance->bEnableProjection = Details.GetEnableProjection();
 	ProfileInstance->ProjectionLinearTolerance = Details.GetProjectionLinearTolerance();
 	ProfileInstance->ProjectionAngularTolerance = Details.GetProjectionAngularTolerance();
+	ProfileInstance->bParentDominates = Details.GetParentDominates();
 }
 
-void FROSSpawnPhysicsConstraintServer::SetupAngularLimits(FConstraintInstance Instance, PhysicsConstraint Details)
+void FROSSpawnPhysicsConstraintServer::SetupAngularLimits(FConstraintInstance Instance, PhysicsConstraintDetails Details)
 {
 	unreal_world_control_msgs::AngularLimits AngLimit = Details.GetAngularLimits();
 
@@ -158,7 +161,7 @@ void FROSSpawnPhysicsConstraintServer::SetupAngularLimits(FConstraintInstance In
 
 }
 
-void FROSSpawnPhysicsConstraintServer::SetupLinearLimits(FConstraintInstance Instance, PhysicsConstraint Details)
+void FROSSpawnPhysicsConstraintServer::SetupLinearLimits(FConstraintInstance Instance, PhysicsConstraintDetails Details)
 {
 	unreal_world_control_msgs::LinearLimits LinLimit = Details.GetLinearLimits();
 

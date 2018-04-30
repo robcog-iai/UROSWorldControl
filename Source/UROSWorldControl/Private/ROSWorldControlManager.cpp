@@ -4,6 +4,10 @@
 #include "SpawnModelsServer.h"
 #include "SetModelPoseServer.h"
 #include "RemoveModelServer.h"
+#include "AttachModelToParentServer.h"
+#include "ChangeVisualOfModelServer.h"
+#include "SpawnPhysicsConstraintServer.h"
+
 
 ROSWorldControlManager::ROSWorldControlManager(UWorld * InWorld, FString InServerAdress, int InServerPort, FString InNamespace)
 {
@@ -49,6 +53,22 @@ void ROSWorldControlManager::ConnectToROSBridge(FWebsocketInfoCallBack CustomErr
 	TSharedPtr<FROSRemoveModelServer> RemoveServer =
 		MakeShareable<FROSRemoveModelServer>(new FROSRemoveModelServer(Namespace, TEXT("delete_model"), World, this));
 	Handler->AddServiceServer(RemoveServer);
+
+	// Add attach_model_to_parent service
+	TSharedPtr<FROSAttachModelToParentServer> AttachModelToParentServer =
+		MakeShareable<FROSAttachModelToParentServer>(new FROSAttachModelToParentServer(Namespace, TEXT("attach_model_to_parent"), World, this));
+	Handler->AddServiceServer(AttachModelToParentServer);
+
+	// Add change_visual_of_model service
+	TSharedPtr<FROSChangeVisualOfModelServer> ChangeVisualOfModelServer =
+		MakeShareable<FROSChangeVisualOfModelServer>(new FROSChangeVisualOfModelServer(Namespace, TEXT("change_visual_of_model"), World, this));
+	Handler->AddServiceServer(ChangeVisualOfModelServer);
+	
+	// Add spawn_physics_constraint service
+	TSharedPtr<FROSSpawnPhysicsConstraintServer> SpawnPhysicsConstraintServer =
+		MakeShareable<FROSSpawnPhysicsConstraintServer>(new FROSSpawnPhysicsConstraintServer(Namespace, TEXT("spawn_physics_constraint"), World, this));
+	Handler->AddServiceServer(SpawnPhysicsConstraintServer);
+
 
 
 	// Connect to ROSBridge Websocket server.

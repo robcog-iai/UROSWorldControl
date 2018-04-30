@@ -17,12 +17,12 @@ public:
 	}
 	class Request : public SrvRequest {
 	private:
-		PhysicsConstraint ConstraintDetails;
+		PhysicsConstraintDetails ConstraintDetails;
 		geometry_msgs::Pose Pose;
 	public:
 		Request() {}
 
-		PhysicsConstraint GetConstraintDetails() 
+		PhysicsConstraintDetails GetConstraintDetails() 
 		{ 
 			return ConstraintDetails; 
 		}
@@ -37,6 +37,12 @@ public:
 			return FRotator::FRotator(Pose.GetOrientation().GetQuat());
 		}
 
+		FQuat GetQuat()
+		{
+			return Pose.GetOrientation().GetQuat();
+		}
+
+		
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
 			ConstraintDetails.FromJson(JsonObject->GetObjectField("constraint_details"));

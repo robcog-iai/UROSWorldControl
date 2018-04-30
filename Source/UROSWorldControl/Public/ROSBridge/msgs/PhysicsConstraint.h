@@ -8,11 +8,11 @@
 
 namespace unreal_world_control_msgs
 {
-	class PhysicsConstraint : public FROSBridgeMsg
+	class PhysicsConstraintDetails : public FROSBridgeMsg
 	{
 		unreal_world_control_msgs::InstanceId FirstModel;
 		unreal_world_control_msgs::InstanceId SecondModel;
-		bool bDisabelCollision;
+		bool bDisableCollision;
 		bool bEnableProjection;
 		float ProjectionLinearTolerance;
 		float ProjectionAngularTolerance;
@@ -22,17 +22,17 @@ namespace unreal_world_control_msgs
 
 
 	public:
-		PhysicsConstraint() {}
+		PhysicsConstraintDetails() {}
 
-		PhysicsConstraint(unreal_world_control_msgs::InstanceId InFirstModel, unreal_world_control_msgs::InstanceId InSecondModel,
-			bool InDisabelCollision, bool InEnableProjection,
+		PhysicsConstraintDetails(unreal_world_control_msgs::InstanceId InFirstModel, unreal_world_control_msgs::InstanceId InSecondModel,
+			bool InDisableCollision, bool InEnableProjection,
 			float InProjectionLinearTolerance, float InProjectionAngularTolerance, bool InParentDominates,
 			unreal_world_control_msgs::LinearLimits InLinearLimits, unreal_world_control_msgs::AngularLimits InAngularLimits)
 		{
-			PhysicsConstraint();
+			PhysicsConstraintDetails();
 			FirstModel = InFirstModel;
 			SecondModel = InSecondModel;
-			bDisabelCollision = InDisabelCollision;
+			bDisableCollision = InDisableCollision;
 			bEnableProjection = InEnableProjection;
 			ProjectionLinearTolerance = InProjectionLinearTolerance;
 			ProjectionAngularTolerance = InProjectionAngularTolerance;
@@ -53,7 +53,7 @@ namespace unreal_world_control_msgs
 
 		bool GetDisabelCollision()
 		{
-			return bDisabelCollision;
+			return bDisableCollision;
 		}
 
 		bool GetEnableProjection()
@@ -90,7 +90,7 @@ namespace unreal_world_control_msgs
 		{
 			FirstModel.FromJson(JsonObject->GetObjectField("first_model"));
 			SecondModel.FromJson(JsonObject->GetObjectField("second_model"));
-			bDisabelCollision = JsonObject->GetBoolField("disabel_collision");
+			bDisableCollision = JsonObject->GetBoolField("disable_collision");
 			bEnableProjection = JsonObject->GetBoolField("enable_projection");
 			ProjectionLinearTolerance = JsonObject->GetNumberField("projection_linear_tolerance");
 			ProjectionAngularTolerance = JsonObject->GetNumberField("projection_angular_tolerance");
@@ -99,17 +99,17 @@ namespace unreal_world_control_msgs
 			AngularLimits.FromJson(JsonObject->GetObjectField("angular_limits"));
 		}
 
-		static PhysicsConstraint GetFromJson(TSharedPtr<FJsonObject> JsonObject)
+		static PhysicsConstraintDetails GetFromJson(TSharedPtr<FJsonObject> JsonObject)
 		{
-			PhysicsConstraint Result;
+			PhysicsConstraintDetails Result;
 			Result.FromJson(JsonObject);
 			return Result;
 		}
 
 		virtual FString ToString() const override
 		{
-			return TEXT("PhysicsConstraint {first_model = %s, second_model = %s, disabel_collision = %s, enable_projection = %s, projection_linear_tolerance = %s, projection_angular_tolerance = %s, parent_dominates = %s, linear_limits = %s, angular_limits = %s"), 
-				FirstModel.ToString(), SecondModel.ToString(), bDisabelCollision ? TEXT("True") : TEXT("False"), 
+			return TEXT("PhysicsConstraint {first_model = %s, second_model = %s, disable_collision = %s, enable_projection = %s, projection_linear_tolerance = %s, projection_angular_tolerance = %s, parent_dominates = %s, linear_limits = %s, angular_limits = %s"), 
+				FirstModel.ToString(), SecondModel.ToString(), bDisableCollision ? TEXT("True") : TEXT("False"), 
 				bEnableProjection ? TEXT("True") : TEXT("False"), FString::SanitizeFloat(ProjectionLinearTolerance),
 				FString::SanitizeFloat(ProjectionAngularTolerance), bParentDominates ? TEXT("True") : TEXT("False"),
 				LinearLimits.ToString(), AngularLimits.ToString();
@@ -120,7 +120,7 @@ namespace unreal_world_control_msgs
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 			Object->SetObjectField(TEXT("first_model"), FirstModel.ToJsonObject());
 			Object->SetObjectField(TEXT("second_model"), SecondModel.ToJsonObject());
-			Object->SetBoolField(TEXT("disabel_collision"), bDisabelCollision);
+			Object->SetBoolField(TEXT("disable_collision"), bDisableCollision);
 			Object->SetBoolField(TEXT("enable_projection"), bEnableProjection);
 			Object->SetNumberField(TEXT("projection_linear_tolerance"), ProjectionLinearTolerance);
 			Object->SetNumberField(TEXT("projection_angular_tolerance"), ProjectionAngularTolerance);
