@@ -31,7 +31,7 @@ private:
 public:
 	FROSHighlightModelsServer(FString Namespace, FString Name, UWorld* InWorld,
 		ROSWorldControlManager* InController) :
-		FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("unreal_world_control_msgs/SetModelPose"))
+		FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("unreal_world_control_msgs/HighlightModel"))
 	{
 		World = InWorld;
 		Controller = InController;
