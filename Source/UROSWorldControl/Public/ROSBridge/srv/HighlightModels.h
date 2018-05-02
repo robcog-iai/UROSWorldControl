@@ -17,11 +17,26 @@ public:
 	class Request : public SrvRequest {
 	private:
 		TArray<InstanceId> InstanceIds;
+		bool bToBeHighlighted;
+		int32 ColorIndex;
 
 	public:
 		Request() {}
 
-		TArray<InstanceId>* GetInstanceIds() { return &InstanceIds; }
+		TArray<InstanceId>* GetInstanceIds()
+		{
+			return &InstanceIds;
+		}
+
+		int32 GetColorIndex()
+		{
+			return ColorIndex;
+		}
+
+		bool GetToBeHighlighted()
+		{
+			return bToBeHighlighted;
+		}
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
@@ -32,6 +47,8 @@ public:
 				Id.FromJson(ptr->AsObject());
 				InstanceIds.Add(Id);
 			}
+			bToBeHighlighted = JsonObject->GetBoolField(TEXT("to_be_highlighted"));
+			int ColorIndex = JsonObject->GetNumberField(TEXT("color_index"));
 		}
 
 		static Request GetFromJson(TSharedPtr<FJsonObject> JsonObject)

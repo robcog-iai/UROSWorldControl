@@ -10,10 +10,10 @@ TSharedPtr<FROSBridgeSrv::SrvRequest> FROSHighlightModelsServer::FromJson(TShare
 
 TSharedPtr<FROSBridgeSrv::SrvResponse> FROSHighlightModelsServer::Callback(TSharedPtr<FROSBridgeSrv::SrvRequest> Request)
 {
-	TSharedPtr<FROSBridgeHighlightModelsSrv::Request> SpawnSemanticMapRequest =
+	TSharedPtr<FROSBridgeHighlightModelsSrv::Request> HighlightModelsRequest =
 		StaticCastSharedPtr<FROSBridgeHighlightModelsSrv::Request>(Request);
 
-	TArray<unreal_world_control_msgs::InstanceId>* InstanceIds = SpawnSemanticMapRequest->GetInstanceIds();
+	TArray<unreal_world_control_msgs::InstanceId>* InstanceIds = HighlightModelsRequest->GetInstanceIds();
 
 	TArray<bool> SuccessList;
 
@@ -30,7 +30,8 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSHighlightModelsServer::Callback(TShar
 				(*ActorToBeHighlighted)->GetComponents<UStaticMeshComponent>(Components);
 				for (auto Component : Components)
 				{
-					Component->SetRenderCustomDepth(true);
+					Component->SetRenderCustomDepth(HighlightModelsRequest->GetToBeHighlighted());
+					Component->CustomDepthStencilValue = HighlightModelsRequest->GetColorIndex();
 				}
 
 			}, TStatId(), NULL, ENamedThreads::GameThread);

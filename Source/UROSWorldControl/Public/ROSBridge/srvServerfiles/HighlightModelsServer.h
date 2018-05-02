@@ -25,9 +25,6 @@ private:
 	FThreadSafeBool ServiceSuccess;
 
 	ROSWorldControlManager* Controller;
-
-	bool Relocate(AActor* Actor, FVector Location, FRotator Rotator);
-
 public:
 	FROSHighlightModelsServer(FString Namespace, FString Name, UWorld* InWorld,
 		ROSWorldControlManager* InController) :
