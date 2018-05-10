@@ -7,7 +7,7 @@
 #include "Styling/ISlateStyle.h"
 #include "Styling/SlateStyle.h"
 
-class FRosConnectionModeModule : public IModuleInterface
+class FUnrealWorldControlEdModeModule : public IModuleInterface
 {
 public:
 

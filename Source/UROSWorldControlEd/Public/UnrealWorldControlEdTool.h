@@ -3,19 +3,19 @@
 #include "CoreMinimal.h"
 #include "UObject/ObjectMacros.h"
 #include "UObject/Object.h"
-#include "RosConnectionMode.h"
+#include "UnrealWorldControlEdMode.h"
 #include "ROSWorldControlManager.h"
-#include "RosConnectionTool.generated.h"
+#include "UnrealWorldControlEdTool.generated.h"
 
-class FRosConnectionMode;
+class FUnrealWorldControlEdMode;
 
 UCLASS()
-class URosConnectionTool : public UObject
+class UUnrealWorldControlEdTool : public UObject
 {
 	GENERATED_UCLASS_BODY()
 
 public:
-	FRosConnectionMode* ParentMode;
+	FUnrealWorldControlEdMode* ParentMode;
 
 	UPROPERTY(VisibleInstanceOnly, Category = "RosBridge Websocket")
 		FString ConnectionStatus = TEXT("Not connected.");
@@ -35,7 +35,7 @@ public:
 	void ClearMap();
 
 
-	void SetParent(FRosConnectionMode* NewParent)
+	void SetParent(FUnrealWorldControlEdMode* NewParent)
 	{
 		ParentMode = NewParent;
 	}

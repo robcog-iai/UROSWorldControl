@@ -35,25 +35,25 @@ void ROSWorldControlManager::ConnectToROSBridge(FWebsocketInfoCallBack CustomErr
 	// Add servers
 
 	//Add spawn_model service
-	TSharedPtr<FROSSpawnModelServer> SpawnServer =
+	TSharedPtr<FROSSpawnModelServer> SpawnModelServer =
 		MakeShareable<FROSSpawnModelServer>(new FROSSpawnModelServer(Namespace, TEXT("spawn_model"), World, this));
-	Handler->AddServiceServer(SpawnServer);
+	Handler->AddServiceServer(SpawnModelServer);
 
 	//Add spawn_semantic_map service
-	TSharedPtr<FROSSpawnMultipleModelsServer> SpawnSemanticMapServer =
+	TSharedPtr<FROSSpawnMultipleModelsServer> SpawnMultipleModelsServer =
 		MakeShareable<FROSSpawnMultipleModelsServer>(new FROSSpawnMultipleModelsServer(Namespace, TEXT("spawn_multiple_models"), World, this));
-	Handler->AddServiceServer(SpawnSemanticMapServer);
+	Handler->AddServiceServer(SpawnMultipleModelsServer);
 
 	// Add set_model_pose service 
-	TSharedPtr<FROSSetModelPoseServer> RelocateServer =
+	TSharedPtr<FROSSetModelPoseServer> SetModelPoseServer =
 		MakeShareable<FROSSetModelPoseServer>(new FROSSetModelPoseServer(Namespace, TEXT("set_model_pose"), World, this));
-	Handler->AddServiceServer(RelocateServer);
+	Handler->AddServiceServer(SetModelPoseServer);
 
 
 	// Add delete_model service
-	TSharedPtr<FROSRemoveModelServer> RemoveServer =
+	TSharedPtr<FROSRemoveModelServer> DeleteModelServer =
 		MakeShareable<FROSRemoveModelServer>(new FROSRemoveModelServer(Namespace, TEXT("delete_model"), World, this));
-	Handler->AddServiceServer(RemoveServer);
+	Handler->AddServiceServer(DeleteModelServer);
 
 	// Add attach_model_to_parent service
 	TSharedPtr<FROSAttachModelToParentServer> AttachModelToParentServer =

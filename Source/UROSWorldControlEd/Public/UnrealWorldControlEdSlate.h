@@ -5,18 +5,18 @@
 #include "CoreMinimal.h"
 #include "Widgets/DeclarativeSyntaxSupport.h"
 #include "Widgets/SCompoundWidget.h"
-#include "RosConnectionMode.h"
+#include "UnrealWorldControlEdMode.h"
 #include "Toolkits/IToolkitHost.h"
 #include "AssetThumbnail.h"
 #include "Toolkits/BaseToolkit.h"
 #include "Editor.h"
 
 class IDetailsView;
-class SRosConnection;
+class SUnrealWorldControlEd;
 class SErrorText;
 struct FPropertyAndParent;
 
-class FRosConnectionModeToolkit : public FModeToolkit
+class FUnrealWorldControlEdModeToolkit : public FModeToolkit
 {
 public:	
 	/** FModeToolkit interface */
@@ -25,35 +25,35 @@ public:
 	/** IToolkit interface */
 	virtual FName GetToolkitFName() const override;
 	virtual FText GetBaseToolkitName() const override;
-	virtual FRosConnectionMode* GetEditorMode() const override;
+	virtual FUnrealWorldControlEdMode* GetEditorMode() const override;
 	virtual TSharedPtr<class SWidget> GetInlineContent() const override;
 	
 
 private:
 	/** Geometry tools widget */
-	TSharedPtr<SRosConnection> RosConnectionWidgets;
+	TSharedPtr<SUnrealWorldControlEd> UnrealWorldControlEdWidgets;
 };
 
 /**
 * Slate widgets for the New Editor Mode
 */
-class SRosConnection : public SCompoundWidget
+class SUnrealWorldControlEd : public SCompoundWidget
 {
 public:
-	SLATE_BEGIN_ARGS(SRosConnection) {}
+	SLATE_BEGIN_ARGS(SUnrealWorldControlEd) {}
 	SLATE_END_ARGS()
 
-	void Construct(const FArguments& InArgs, TSharedRef<FRosConnectionModeToolkit> InParentToolkit);
+	void Construct(const FArguments& InArgs, TSharedRef<FUnrealWorldControlEdModeToolkit> InParentToolkit);
 
 	void RefreshDetailPanel();
 	
 protected:
 
-	class FRosConnectionMode* GetEditorMode() const;
+	class FUnrealWorldControlEdMode* GetEditorMode() const;
 
 	FText GetErrorText() const;
 
-	bool GetRosConnectionIsEnabled() const;
+	bool GetUnrealWorldControlEdIsEnabled() const;
 
 	bool GetIsPropertyVisible(const FPropertyAndParent& PropertyAndParent) const;
 

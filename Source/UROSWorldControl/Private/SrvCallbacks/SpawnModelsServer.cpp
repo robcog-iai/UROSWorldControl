@@ -24,11 +24,7 @@ bool FROSSpawnModelServer::SpawnAsset(const SpawnAssetParams Params) {
 
 	//Load Material and check if it succeded
 	UMaterialInterface* Material = LoadMaterial(Params.PathOfMaterial, Params.InstanceId);
-	if (!Material)
-	{
-		UE_LOG(LogTemp, Error, TEXT("Could not find Material"));
-		return false;
-	}
+
 
 
 	AStaticMeshActor* SpawnedItem;
@@ -44,7 +40,10 @@ bool FROSSpawnModelServer::SpawnAsset(const SpawnAssetParams Params) {
 		SpawnedItem->SetMobility(EComponentMobility::Movable);
 		//Assigning the Mesh and Material to the Component
 		SpawnedItem->GetStaticMeshComponent()->SetStaticMesh(Mesh);
-		SpawnedItem->GetStaticMeshComponent()->SetMaterial(0, Material);
+		if (Material)
+		{
+			SpawnedItem->GetStaticMeshComponent()->SetMaterial(0, Material);
+		}
 		SpawnedItem->SetActorLabel(UROSWorldControlHelper::GetUniqueNameOfInstanceID(Params.InstanceId));
 
 		if (Params.bIsStatic) {
@@ -189,7 +188,7 @@ UStaticMesh * FROSSpawnModelServer::LoadMesh(const FString Path, unreal_world_co
 
 UMaterialInterface * FROSSpawnModelServer::LoadMaterial(const FString Path, unreal_world_control_msgs::InstanceId* InstanceId)
 {
-
+	/*
 	UMaterialInterface* Material = nullptr;
 	if (Path.IsEmpty())
 	{
@@ -238,8 +237,18 @@ UMaterialInterface * FROSSpawnModelServer::LoadMaterial(const FString Path, unre
 			}
 		}
 	}
-
 	return Material;
+	*/
+
+	UMaterialInterface* Material = nullptr;
+	if (Path.IsEmpty())
+	{
+		return nullptr;
+	}
+	else
+	{
+		return Cast<UMaterialInterface>(StaticLoadObject(UMaterialInterface::StaticClass(), nullptr, *Path));
+	}
 }
 
 FString FROSSpawnModelServer::FormatNamespace(FString Ns)

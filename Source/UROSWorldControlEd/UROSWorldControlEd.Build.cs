@@ -2,15 +2,15 @@
 
 using UnrealBuildTool;
 
-public class RosConnectionMode : ModuleRules
+public class UROSWorldControlEd : ModuleRules
 {
-	public RosConnectionMode(ReadOnlyTargetRules Target) : base(Target)
+	public UROSWorldControlEd(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		
 		PublicIncludePaths.AddRange(
 			new string[] {
-				"RosConnectionMode/Public"
+				"UROSWorldControlEd/Public"
 				// ... add public include paths required here ...
 			}
 			);
@@ -18,7 +18,7 @@ public class RosConnectionMode : ModuleRules
 		
 		PrivateIncludePaths.AddRange(
 			new string[] {
-                "RosConnectionMode/Private",
+				"UROSWorldControlEd/Private",
 				// ... add other private include paths required here ...
 			}
 			);
@@ -43,9 +43,7 @@ public class RosConnectionMode : ModuleRules
 				"SlateCore",
 				"InputCore",
 				"UnrealEd",
-                "PropertyEditor",
-                "LevelEditor",
-
+				"LevelEditor",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

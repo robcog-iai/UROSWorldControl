@@ -2,7 +2,7 @@
 
 #include "IDetailCustomization.h"
 
-class FRosConnectionToolCustomization : public IDetailCustomization
+class FUnrealWorldControlEdToolCustomization : public IDetailCustomization
 {
 public:
 	//IDetailCustomization interface

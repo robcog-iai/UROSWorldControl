@@ -1,50 +1,54 @@
-#include "RosConnectionTool.h"
+#include "UnrealWorldControlEdTool.h"
 #include "UObject/ConstructorHelpers.h"
 
-URosConnectionTool::URosConnectionTool(const FObjectInitializer& ObjectInitializer)
+UUnrealWorldControlEdTool::UUnrealWorldControlEdTool(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 
 }
 
-void URosConnectionTool::ConnectToRosBridge()
+void UUnrealWorldControlEdTool::ConnectToRosBridge()
 {
 	World = GEditor->GetEditorWorldContext().World();
 
-	if (Controller) {
+	if (Controller)
+	{
 		Controller->DisconnectFromROSBridge();
 	}
 	Controller = new ROSWorldControlManager(World, ServerAdress, ServerPort, Namespace);
 
 	// Setup Callbacks
 	FWebsocketInfoCallBack ErrorCallback;
-	ErrorCallback.AddUObject(this, &URosConnectionTool::ConnectionErrorCallback);
+	ErrorCallback.AddUObject(this, &UUnrealWorldControlEdTool::ConnectionErrorCallback);
 
 	FWebsocketInfoCallBack ConnectedCallback;
-	ConnectedCallback.AddUObject(this, &URosConnectionTool::ConnectedCallback);
+	ConnectedCallback.AddUObject(this, &UUnrealWorldControlEdTool::ConnectedCallback);
 
 	Controller->ConnectToROSBridge(ErrorCallback, ConnectedCallback);
 }
 
 
-void URosConnectionTool::ClearMap()
+void UUnrealWorldControlEdTool::ClearMap()
 {
-	for (auto Element : Controller->IdToActorMap)
-	{
-		Element.Value->Destroy();
+	if(Controller)
+	{	
+		for (auto Element : Controller->IdToActorMap)
+		{
+			Element.Value->Destroy();
+		}
+		Controller->IdToActorMap.Empty();
 	}
-	Controller->IdToActorMap.Empty();
 }
 
 
-void URosConnectionTool::ConnectionErrorCallback() {
+void UUnrealWorldControlEdTool::ConnectionErrorCallback() {
 	ConnectionStatus = TEXT("Not connected.");
 	if (GEngine)
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("Connection to RosBridge lost.")));
 
 }
 
-void URosConnectionTool::ConnectedCallback() {
+void UUnrealWorldControlEdTool::ConnectedCallback() {
 	ConnectionStatus = TEXT("Connected to Rosbridge.");
 	if (GEngine)
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("You are now connected to RosBridge.")));

@@ -1,16 +1,16 @@
-#include "RosConnectionToolCustomization.h"
+#include "UnrealWorldControlEdToolCustomization.h"
 #include "PropertyEditing.h"
 #include "Widgets/Input/SButton.h"
 #include "Widgets/Text/STextBlock.h"
 #include "Widgets/Input/SComboButton.h"
 
-TSharedRef<IDetailCustomization> FRosConnectionToolCustomization::MakeInstance()
+TSharedRef<IDetailCustomization> FUnrealWorldControlEdToolCustomization::MakeInstance()
 {
-	return MakeShareable(new FRosConnectionToolCustomization);
+	return MakeShareable(new FUnrealWorldControlEdToolCustomization);
 }
 
 
-void FRosConnectionToolCustomization::CustomizeDetails(IDetailLayoutBuilder& DetailBuilder)
+void FUnrealWorldControlEdToolCustomization::CustomizeDetails(IDetailLayoutBuilder& DetailBuilder)
 {
 	TSet<UClass*> Classes;
 
@@ -43,14 +43,14 @@ void FRosConnectionToolCustomization::CustomizeDetails(IDetailLayoutBuilder& Det
 				[
 					SNew(SButton)
 					.Text(ButtonCaption)
-					.OnClicked(FOnClicked::CreateStatic(&FRosConnectionToolCustomization::ExecuteCommand, &DetailBuilder, Function))
+					.OnClicked(FOnClicked::CreateStatic(&FUnrealWorldControlEdToolCustomization::ExecuteCommand, &DetailBuilder, Function))
 				];
 			}
 		}
 	}
 }
 
-FReply FRosConnectionToolCustomization::ExecuteCommand(IDetailLayoutBuilder * DetailBuilder, UFunction * MethodToExecute)
+FReply FUnrealWorldControlEdToolCustomization::ExecuteCommand(IDetailLayoutBuilder * DetailBuilder, UFunction * MethodToExecute)
 {
 	TArray<TWeakObjectPtr<UObject>> ObjectsBeingCustomized;
 	DetailBuilder->GetObjectsBeingCustomized(/*out*/ ObjectsBeingCustomized);

@@ -3,23 +3,23 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "RosConnectionTool.h"
+#include "UnrealWorldControlEdTool.h"
 #include "EdMode.h"
 
-class URosConnectionTool;
+class UUnrealWorldControlEdTool;
 
-class FRosConnectionMode : public FEdMode
+class FUnrealWorldControlEdMode : public FEdMode
 {
 public:
-	URosConnectionTool* UISettings;
+	UUnrealWorldControlEdTool* UISettings;
 
-	const static FEditorModeID EM_RosConnectionModeId;
+	const static FEditorModeID EM_UnrealWorldControlEdModeId;
 
 	/* Constructor */
-	FRosConnectionMode();
+	FUnrealWorldControlEdMode();
 
 	/* Destructor */
-	virtual ~FRosConnectionMode();
+	virtual ~FUnrealWorldControlEdMode();
 
 	/** FGCObject interface */
 	virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
