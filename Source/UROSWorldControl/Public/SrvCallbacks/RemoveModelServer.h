@@ -2,7 +2,7 @@
 #include "CoreMinimal.h"
 #include "ROSBridgeHandler.h"
 #include "ROSWorldControlManager.h"
-#include "ROSBridge/srv/RemoveModel.h"
+#include "RemoveModel.h"
 #include "HelperFunctions.h"
 
 class FROSRemoveModelServer final : public FROSBridgeSrvServer

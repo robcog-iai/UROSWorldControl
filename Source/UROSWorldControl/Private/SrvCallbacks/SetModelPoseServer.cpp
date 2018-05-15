@@ -4,7 +4,7 @@
 
 bool FROSSetModelPoseServer::Relocate(AActor* Actor, FVector Location, FRotator Rotator)
 {
-	if (Actor->TeleportTo(Location, Rotator) == false)
+	if (!Actor->TeleportTo(Location, Rotator))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Could not set %s to locaiton: %s, with Rotation: %s"),
 			*Actor->GetName(), *Location.ToString(), *Rotator.ToString());
