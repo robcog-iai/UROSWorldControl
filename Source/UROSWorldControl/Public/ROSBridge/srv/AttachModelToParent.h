@@ -5,7 +5,8 @@
 
 using namespace unreal_world_control_msgs;
 
-class UROSBRIDGE_API FROSBridgeAttachModelToParentSrv : public FROSBridgeSrv {
+class UROSBRIDGE_API FROSBridgeAttachModelToParentSrv : public FROSBridgeSrv
+{
 protected:
 	FString Type;
 
@@ -15,20 +16,24 @@ public:
 	{
 		Type = Type_;
 	}
-	class Request : public SrvRequest {
+
+	class Request : public SrvRequest
+	{
 	private:
 		InstanceId Parent;
 		InstanceId Child;
 
 
 	public:
-		Request() {}
+		Request()
+		{
+		}
 
 		InstanceId GetParent() { return Parent; }
 
 		InstanceId GetChild() { return Child; }
 
-		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
+		void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
 			Parent.FromJson(JsonObject->GetObjectField("parent_model"));
 			Child.FromJson(JsonObject->GetObjectField("child_model"));
@@ -41,33 +46,40 @@ public:
 			return req;
 		}
 
-		virtual FString ToString() const override
+		FString ToString() const override
 		{
-			return TEXT("FROSBridgeAttachModelToParentSrv::Request {parent_model = %s, child_model = %s}"), Parent.ToString(), Child.ToString();
+			return TEXT("FROSBridgeAttachModelToParentSrv::Request {parent_model = %s, child_model = %s}"), Parent.ToString(),
+				Child.ToString();
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const
+		TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 			Object->SetObjectField(TEXT("parent_model"), Parent.ToJsonObject());
 			Object->SetObjectField(TEXT("child_mode"), Child.ToJsonObject());
 			return Object;
 		}
-
 	};
 
 
-	class Response : public SrvResponse {
+	class Response : public SrvResponse
+	{
 	private:
 		bool bSuccess;
 
 	public:
-		Response() {}
-		Response(bool succeded_) : bSuccess(succeded_) {}
+		Response()
+		{
+		}
+
+		Response(bool succeded_) : bSuccess(succeded_)
+		{
+		}
+
 		bool GetSuccess() const { return bSuccess; }
 		void SetSuccess(bool Success) { bSuccess = Success; }
 
-		virtual void FromJson(TSharedPtr<FJsonObject> JSonObject) override
+		void FromJson(TSharedPtr<FJsonObject> JSonObject) override
 		{
 			bSuccess = JSonObject->GetBoolField("success");
 		}
@@ -79,17 +91,16 @@ public:
 			return resp;
 		}
 
-		virtual FString ToString() const override
+		FString ToString() const override
 		{
 			return TEXT("FROSBridgeAttachModelToParentSrv::Request { %s }"), bSuccess ? TEXT("True") : TEXT("False");
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const
+		TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 			Object->SetBoolField("success", bSuccess);
 			return Object;
 		}
 	};
-
 };

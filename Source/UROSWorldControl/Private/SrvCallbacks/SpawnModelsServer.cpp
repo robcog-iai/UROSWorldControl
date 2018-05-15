@@ -1,8 +1,12 @@
 #include "SpawnModelsServer.h"
+#include "Engine/StaticMeshActor.h"
+#include "FileManagerGeneric.h"
 
-bool FROSSpawnModelServer::SpawnAsset(const SpawnAssetParams Params) {
+bool FROSSpawnModelServer::SpawnAsset(const SpawnAssetParams Params)
+{
 	//Check if World is avialable
-	if (!World) {
+	if (!World)
+	{
 		UE_LOG(LogTemp, Warning, TEXT("Couldn't find the World."));
 		return false;
 	}
@@ -26,7 +30,6 @@ bool FROSSpawnModelServer::SpawnAsset(const SpawnAssetParams Params) {
 	UMaterialInterface* Material = LoadMaterial(Params.PathOfMaterial, Params.InstanceId);
 
 
-
 	AStaticMeshActor* SpawnedItem;
 
 	FString UniqueId = Params.InstanceId->GetId();
@@ -34,7 +37,7 @@ bool FROSSpawnModelServer::SpawnAsset(const SpawnAssetParams Params) {
 	if (Controller->IdToActorMap.Find(UniqueId) == nullptr)
 	{
 		//Actual Spawning MeshComponent
-		SpawnedItem = World->SpawnActor<AStaticMeshActor>(Params.Location*100.f, Params.Rotator, SpawnParams);
+		SpawnedItem = World->SpawnActor<AStaticMeshActor>(Params.Location * 100.f, Params.Rotator, SpawnParams);
 
 		// Needs to be movable if the game is running.
 		SpawnedItem->SetMobility(EComponentMobility::Movable);
@@ -46,7 +49,8 @@ bool FROSSpawnModelServer::SpawnAsset(const SpawnAssetParams Params) {
 		}
 		SpawnedItem->SetActorLabel(UROSWorldControlHelper::GetUniqueNameOfInstanceID(Params.InstanceId));
 
-		if (Params.bIsStatic) {
+		if (Params.bIsStatic)
+		{
 			SpawnedItem->GetStaticMeshComponent()->SetSimulatePhysics(false);
 			SpawnedItem->GetStaticMeshComponent()->bGenerateOverlapEvents = false;
 			SpawnedItem->SetMobility(EComponentMobility::Static);
@@ -64,7 +68,9 @@ bool FROSSpawnModelServer::SpawnAsset(const SpawnAssetParams Params) {
 	else
 	{
 		//ID is already taken
-		UE_LOG(LogTemp, Error, TEXT("Semlog id: \"%s\" is not unique, therefore nothing was spawned."), *Params.InstanceId->GetId());
+		UE_LOG(LogTemp, Error, TEXT("Semlog id: \"%s\" is not unique, therefore nothing was spawned."), *Params.InstanceId->
+			GetId())
+		;
 		return false;
 	}
 
@@ -100,7 +106,6 @@ TSharedPtr<FROSBridgeSrv::SrvRequest> FROSSpawnModelServer::FromJson(TSharedPtr<
 
 TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnModelServer::Callback(TSharedPtr<FROSBridgeSrv::SrvRequest> Request)
 {
-
 	TSharedPtr<FROSBridgeSpawnServiceSrv::Request> SpawnMeshRequest =
 		StaticCastSharedPtr<FROSBridgeSpawnServiceSrv::Request>(Request);
 
@@ -110,7 +115,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnModelServer::Callback(TSharedPtr
 	Params.Location = SpawnMeshRequest->GetModelDescription().GetPose().GetPosition().GetVector();
 	Params.Rotator = FRotator(SpawnMeshRequest->GetModelDescription().GetPose().GetOrientation().GetQuat());
 	Params.Tags = SpawnMeshRequest->GetModelDescription().GetTags();
-	unreal_world_control_msgs::InstanceId Id = SpawnMeshRequest->GetModelDescription().GetInstanceId();
+	InstanceId Id = SpawnMeshRequest->GetModelDescription().GetInstanceId();
 	Params.bIsStatic = SpawnMeshRequest->GetModelDescription().IsStatic();
 	Params.InstanceId = &Id;
 
@@ -119,8 +124,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnModelServer::Callback(TSharedPtr
 	FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
 	{
 		ServiceSuccess = SpawnAsset(Params);
-
-	}, TStatId(), NULL, ENamedThreads::GameThread);
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 
 	//wait code above to complete
 	FTaskGraphInterface::Get().WaitUntilTaskCompletes(Task);
@@ -130,9 +134,8 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnModelServer::Callback(TSharedPtr
 }
 
 
-UStaticMesh * FROSSpawnModelServer::LoadMesh(const FString Path, unreal_world_control_msgs::InstanceId* InstanceId)
+UStaticMesh* FROSSpawnModelServer::LoadMesh(const FString Path, InstanceId* InstanceId)
 {
-
 	UStaticMesh* Mesh = nullptr;
 	if (Path.IsEmpty())
 	{
@@ -144,17 +147,20 @@ UStaticMesh * FROSSpawnModelServer::LoadMesh(const FString Path, unreal_world_co
 		if (Ns.IsEmpty())
 		{
 			// without Namespace
-			DefaultPath = TEXT("StaticMesh'/Game/Models/") + ModelClassName + TEXT("/SM_") + ModelClassName + TEXT(".SM_") + ModelClassName + TEXT("'");
+			DefaultPath = TEXT("StaticMesh'/Game/Models/") + ModelClassName + TEXT("/SM_") + ModelClassName + TEXT(".SM_") +
+				ModelClassName + TEXT("'");
 		}
 		else
 		{
 			// with Namespace
-			DefaultPath = TEXT("StaticMesh'/Game/Models/") + FormatNamespace(Ns) + TEXT("/") + ModelClassName + TEXT("/SM_") + ModelClassName + TEXT(".SM_") + ModelClassName + TEXT("'");
+			DefaultPath = TEXT("StaticMesh'/Game/Models/") + FormatNamespace(Ns) + TEXT("/") + ModelClassName + TEXT("/SM_") +
+				ModelClassName + TEXT(".SM_") + ModelClassName + TEXT("'");
 		}
 
 		Mesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), nullptr, *DefaultPath));
 	}
-	else {
+	else
+	{
 		//Load Mesh From Path
 		Mesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), nullptr, *Path));
 	}
@@ -165,7 +171,8 @@ UStaticMesh * FROSSpawnModelServer::LoadMesh(const FString Path, unreal_world_co
 		const FString Filename = TEXT("SM_") + ModelClassName + TEXT(".uasset");
 		TArray<FString> FileLocations;
 		FFileManagerGeneric Fm;
-		Fm.FindFilesRecursive(FileLocations, *FPaths::ProjectContentDir().Append(TEXT("Models/")), *Filename, true, false, true);
+		Fm.FindFilesRecursive(FileLocations, *FPaths::ProjectContentDir().Append(TEXT("Models/")), *Filename, true, false,
+		                      true);
 		for (auto Loc : FileLocations)
 		{
 			//Try all found files until one works.
@@ -186,7 +193,7 @@ UStaticMesh * FROSSpawnModelServer::LoadMesh(const FString Path, unreal_world_co
 	return Mesh;
 }
 
-UMaterialInterface * FROSSpawnModelServer::LoadMaterial(const FString Path, unreal_world_control_msgs::InstanceId* InstanceId)
+UMaterialInterface* FROSSpawnModelServer::LoadMaterial(const FString Path, InstanceId* InstanceId)
 {
 	/*
 	UMaterialInterface* Material = nullptr;
@@ -245,10 +252,7 @@ UMaterialInterface * FROSSpawnModelServer::LoadMaterial(const FString Path, unre
 	{
 		return nullptr;
 	}
-	else
-	{
-		return Cast<UMaterialInterface>(StaticLoadObject(UMaterialInterface::StaticClass(), nullptr, *Path));
-	}
+	return Cast<UMaterialInterface>(StaticLoadObject(UMaterialInterface::StaticClass(), nullptr, *Path));
 }
 
 FString FROSSpawnModelServer::FormatNamespace(FString Ns)
@@ -269,16 +273,16 @@ TSharedPtr<FROSBridgeSrv::SrvRequest> FROSSpawnMultipleModelsServer::FromJson(TS
 	return TSharedPtr<FROSBridgeSrv::SrvRequest>(Request_);
 }
 
-TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnMultipleModelsServer::Callback(TSharedPtr<FROSBridgeSrv::SrvRequest> Request)
+TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnMultipleModelsServer::Callback(
+	TSharedPtr<FROSBridgeSrv::SrvRequest> Request)
 {
-
 	TSharedPtr<FROSBridgeSpawnMultipleModelsSrv::Request> SpawnSemanticMapRequest =
 		StaticCastSharedPtr<FROSBridgeSpawnMultipleModelsSrv::Request>(Request);
 
-	TArray<unreal_world_control_msgs::ModelDescription>* Descriptions = SpawnSemanticMapRequest->GetModelDescriptions();
+	TArray<ModelDescription>* Descriptions = SpawnSemanticMapRequest->GetModelDescriptions();
 
 	TArray<bool> SuccessList;
-	TArray<unreal_world_control_msgs::InstanceId> InstanceIds;
+	TArray<InstanceId> InstanceIds;
 
 	bool bAllSucceded = true;
 	for (auto Descript : *Descriptions)
@@ -290,14 +294,14 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnMultipleModelsServer::Callback(T
 		Params.Rotator = FRotator(Descript.GetPose().GetOrientation().GetQuat());
 		Params.Tags = Descript.GetTags();
 		Params.bIsStatic = Descript.IsStatic();
-		unreal_world_control_msgs::InstanceId Id = Descript.GetInstanceId();
+		InstanceId Id = Descript.GetInstanceId();
 		Params.InstanceId = &Id;
 
 		// Execute on game thread
 		FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
 		{
 			ServiceSuccess = SpawnAsset(Params);
-		}, TStatId(), NULL, ENamedThreads::GameThread);
+		}, TStatId(), nullptr, ENamedThreads::GameThread);
 
 		//wait code above to complete
 		FTaskGraphInterface::Get().WaitUntilTaskCompletes(Task);
@@ -307,5 +311,4 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnMultipleModelsServer::Callback(T
 
 	return MakeShareable<FROSBridgeSrv::SrvResponse>
 		(new FROSBridgeSpawnMultipleModelsSrv::Response(SuccessList, InstanceIds));
-
 }

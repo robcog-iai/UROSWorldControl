@@ -10,6 +10,7 @@
 class FUnrealWorldControlEdMode;
 
 UCLASS()
+
 class UUnrealWorldControlEdTool : public UObject
 {
 	GENERATED_UCLASS_BODY()
@@ -18,16 +19,16 @@ public:
 	FUnrealWorldControlEdMode* ParentMode;
 
 	UPROPERTY(VisibleInstanceOnly, Category = "RosBridge Websocket")
-		FString ConnectionStatus = TEXT("Not connected.");
+	FString ConnectionStatus = TEXT("Not connected.");
 	UPROPERTY(EditAnywhere, Category = "RosBridge Websocket")
-		FString ServerAdress = TEXT("127.0.0.1");
+	FString ServerAdress = TEXT("127.0.0.1");
 	UPROPERTY(EditAnywhere, Category = "RosBridge Websocket")
-		int ServerPort = 9090;
+	int ServerPort = 9090;
 
 
 	UPROPERTY(EditAnywhere, Category = "ROS")
-		FString Namespace = TEXT("unreal");
-	
+	FString Namespace = TEXT("unreal");
+
 	UFUNCTION(Exec)
 	void ConnectToRosBridge();
 
@@ -44,7 +45,6 @@ public:
 	void ConnectedCallback();
 
 private:
-	UWorld * World;
+	UWorld* World;
 	ROSWorldControlManager* Controller;
-
 };

@@ -4,15 +4,9 @@
 #include "ROSBridgeHandler.h"
 #include "ROSBridgeSrvServer.h"
 #include "ROSBridgeSrv.h"
-#include "Engine/StaticMeshActor.h"
 #include "ROSWorldControlManager.h"
 #include "SpawnPhysicsConstraint.h"
 #include "Runtime/Engine/Classes/PhysicsEngine/ConstraintInstance.h"
-#include "Runtime/Engine/Classes/PhysicsEngine/PhysicsConstraintActor.h"
-#include "Runtime/Engine/Classes/PhysicsEngine/PhysicsConstraintComponent.h"
-#include "Engine/StaticMeshActor.h"
-#include "Engine/StaticMesh.h"
-
 
 
 class FROSSpawnPhysicsConstraintServer final : public FROSBridgeSrvServer
@@ -27,7 +21,7 @@ class FROSSpawnPhysicsConstraintServer final : public FROSBridgeSrvServer
 private:
 	FROSSpawnPhysicsConstraintServer();
 
-	UWorld * World;
+	UWorld* World;
 	FThreadSafeBool ServiceSuccess;
 
 	ROSWorldControlManager* Controller;
@@ -36,11 +30,11 @@ private:
 	void SetupProfileInstance(FConstraintProfileProperties* ProfileInstance, PhysicsConstraintDetails Details);
 	void SetupAngularLimits(FConstraintInstance Instance, PhysicsConstraintDetails Details);
 	void SetupLinearLimits(FConstraintInstance Instance, PhysicsConstraintDetails Details);
-	
+
 
 public:
 	FROSSpawnPhysicsConstraintServer(FString Namespace, FString Name, UWorld* InWorld,
-		ROSWorldControlManager* InController) :
+	                                 ROSWorldControlManager* InController) :
 		FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("unreal_world_control_msgs/SpawnPhysicsConstraint"))
 	{
 		World = InWorld;
@@ -50,5 +44,4 @@ public:
 	TSharedPtr<FROSBridgeSrv::SrvRequest> FromJson(TSharedPtr<FJsonObject> JsonObject) const override;
 
 	TSharedPtr<FROSBridgeSrv::SrvResponse> Callback(TSharedPtr<FROSBridgeSrv::SrvRequest> Request) override;
-
 };

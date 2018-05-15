@@ -3,7 +3,8 @@
 #include "ROSBridgeSrv.h"
 #include "InstanceId.h"
 
-class UROSBRIDGE_API FROSBridgeRemoveModelSrv : public FROSBridgeSrv {
+class UROSBRIDGE_API FROSBridgeRemoveModelSrv : public FROSBridgeSrv
+{
 protected:
 	FString Type;
 
@@ -13,19 +14,22 @@ public:
 		Type = Type_;
 	}
 
-	class Request : public SrvRequest {
+	class Request : public SrvRequest
+	{
 	private:
 		unreal_world_control_msgs::InstanceId InstanceId;
 
 	public:
-		Request() {}
+		Request()
+		{
+		}
 
-		unreal_world_control_msgs::InstanceId GetInstanceId() 
-		{ 
+		unreal_world_control_msgs::InstanceId GetInstanceId()
+		{
 			return InstanceId;
 		};
 
-		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
+		void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
 			InstanceId.FromJson(JsonObject->GetObjectField("instance_id"));
 		}
@@ -37,33 +41,38 @@ public:
 			return req;
 		}
 
-		virtual FString ToString() const override
+		FString ToString() const override
 		{
 			return TEXT("RosWorldControlRemoveModelSrv::Request { InstanceId = ") + InstanceId.ToString() + TEXT("} ");
-
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const
+		TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 			Object->SetObjectField("instance_id", InstanceId.ToJsonObject());
 
 			return Object;
 		}
-
 	};
 
-	class Response :public SrvResponse {
+	class Response : public SrvResponse
+	{
 	private:
 		bool bSuccess;
 
 	public:
-		Response() {}
-		Response(bool Success) : bSuccess(Success) {}
+		Response()
+		{
+		}
+
+		Response(bool Success) : bSuccess(Success)
+		{
+		}
+
 		bool GetSuccess() const { return bSuccess; }
 		void SetSuccess(bool Success) { bSuccess = Success; }
 
-		virtual void FromJson(TSharedPtr<FJsonObject> JSonObject) override
+		void FromJson(TSharedPtr<FJsonObject> JSonObject) override
 		{
 			bSuccess = JSonObject->GetBoolField("success");
 		}
@@ -75,12 +84,12 @@ public:
 			return resp;
 		}
 
-		virtual FString ToString() const override
+		FString ToString() const override
 		{
 			return TEXT("RosWorldControlRemoveModelSrv::Response { %s }"), bSuccess ? TEXT("True") : TEXT("False");
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const
+		TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 			Object->SetBoolField("success", bSuccess);

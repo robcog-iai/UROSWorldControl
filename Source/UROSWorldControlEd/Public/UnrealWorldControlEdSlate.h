@@ -18,16 +18,16 @@ struct FPropertyAndParent;
 
 class FUnrealWorldControlEdModeToolkit : public FModeToolkit
 {
-public:	
+public:
 	/** FModeToolkit interface */
-	virtual void Init(const TSharedPtr<IToolkitHost>& InitToolkitHost) override;
+	void Init(const TSharedPtr<IToolkitHost>& InitToolkitHost) override;
 
 	/** IToolkit interface */
-	virtual FName GetToolkitFName() const override;
-	virtual FText GetBaseToolkitName() const override;
-	virtual FUnrealWorldControlEdMode* GetEditorMode() const override;
-	virtual TSharedPtr<class SWidget> GetInlineContent() const override;
-	
+	FName GetToolkitFName() const override;
+	FText GetBaseToolkitName() const override;
+	FUnrealWorldControlEdMode* GetEditorMode() const override;
+	TSharedPtr<class SWidget> GetInlineContent() const override;
+
 
 private:
 	/** Geometry tools widget */
@@ -40,13 +40,16 @@ private:
 class SUnrealWorldControlEd : public SCompoundWidget
 {
 public:
-	SLATE_BEGIN_ARGS(SUnrealWorldControlEd) {}
+SLATE_BEGIN_ARGS(SUnrealWorldControlEd)
+		{
+		}
+
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs, TSharedRef<FUnrealWorldControlEdModeToolkit> InParentToolkit);
 
 	void RefreshDetailPanel();
-	
+
 protected:
 
 	class FUnrealWorldControlEdMode* GetEditorMode() const;

@@ -8,7 +8,6 @@
 #include "AttachModelToParent.h"
 
 
-
 class FROSAttachModelToParentServer final : public FROSBridgeSrvServer
 {
 	struct MoveAssetParams
@@ -19,9 +18,9 @@ class FROSAttachModelToParentServer final : public FROSBridgeSrvServer
 	};
 
 private:
-	FROSAttachModelToParentServer();
+	FROSAttachModelToParentServer(){};
 
-	UWorld * World;
+	UWorld* World;
 	FThreadSafeBool ServiceSuccess;
 
 	ROSWorldControlManager* Controller;
@@ -29,7 +28,7 @@ private:
 
 public:
 	FROSAttachModelToParentServer(FString Namespace, FString Name, UWorld* InWorld,
-		ROSWorldControlManager* InController) :
+	                              ROSWorldControlManager* InController) :
 		FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("unreal_world_control_msgs/AttachModelToParent"))
 	{
 		World = InWorld;
@@ -39,5 +38,4 @@ public:
 	TSharedPtr<FROSBridgeSrv::SrvRequest> FromJson(TSharedPtr<FJsonObject> JsonObject) const override;
 
 	TSharedPtr<FROSBridgeSrv::SrvResponse> Callback(TSharedPtr<FROSBridgeSrv::SrvRequest> Request) override;
-
 };

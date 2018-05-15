@@ -10,27 +10,30 @@
 #include "HighlightModelsServer.h"
 
 
-ROSWorldControlManager::ROSWorldControlManager(UWorld * InWorld, FString InServerAdress, int InServerPort, FString InNamespace)
+ROSWorldControlManager::ROSWorldControlManager(UWorld* InWorld, FString InServerAdress, int InServerPort,
+                                               FString InNamespace)
 {
 	World = InWorld;
 	ServerAdress = InServerAdress;
 	ServerPort = InServerPort;
 	Namespace = InNamespace;
-
 }
 
-void ROSWorldControlManager::ConnectToROSBridge(FWebsocketInfoCallBack CustomErrorCallbacks, FWebsocketInfoCallBack CustomConnectedCallbacks)
+void ROSWorldControlManager::ConnectToROSBridge(FWebsocketInfoCallBack CustomErrorCallbacks,
+                                                FWebsocketInfoCallBack CustomConnectedCallbacks)
 {
-	if (!World) {
+	if (!World)
+	{
 		UE_LOG(LogTemp, Warning, TEXT("Couldn't find the World."));
 		return;
 	}
 
 	// Setup IDMap
 	IdToActorMap = FTags::GetKeyValuesToActor(World, "SemLog", "Id");
-	
+
 	// Set websocket server address to ws 
-	Handler = MakeShareable<FROSBridgeHandler>(new FROSBridgeHandler(ServerAdress, ServerPort, CustomErrorCallbacks, CustomConnectedCallbacks));
+	Handler = MakeShareable<FROSBridgeHandler>(
+		new FROSBridgeHandler(ServerAdress, ServerPort, CustomErrorCallbacks, CustomConnectedCallbacks));
 
 	// Add servers
 
@@ -41,7 +44,8 @@ void ROSWorldControlManager::ConnectToROSBridge(FWebsocketInfoCallBack CustomErr
 
 	//Add spawn_semantic_map service
 	TSharedPtr<FROSSpawnMultipleModelsServer> SpawnMultipleModelsServer =
-		MakeShareable<FROSSpawnMultipleModelsServer>(new FROSSpawnMultipleModelsServer(Namespace, TEXT("spawn_multiple_models"), World, this));
+		MakeShareable<FROSSpawnMultipleModelsServer>(
+			new FROSSpawnMultipleModelsServer(Namespace, TEXT("spawn_multiple_models"), World, this));
 	Handler->AddServiceServer(SpawnMultipleModelsServer);
 
 	// Add set_model_pose service 
@@ -57,24 +61,27 @@ void ROSWorldControlManager::ConnectToROSBridge(FWebsocketInfoCallBack CustomErr
 
 	// Add attach_model_to_parent service
 	TSharedPtr<FROSAttachModelToParentServer> AttachModelToParentServer =
-		MakeShareable<FROSAttachModelToParentServer>(new FROSAttachModelToParentServer(Namespace, TEXT("attach_model_to_parent"), World, this));
+		MakeShareable<FROSAttachModelToParentServer>(
+			new FROSAttachModelToParentServer(Namespace, TEXT("attach_model_to_parent"), World, this));
 	Handler->AddServiceServer(AttachModelToParentServer);
 
 	// Add change_visual_of_model service
 	TSharedPtr<FROSChangeVisualOfModelServer> ChangeVisualOfModelServer =
-		MakeShareable<FROSChangeVisualOfModelServer>(new FROSChangeVisualOfModelServer(Namespace, TEXT("change_visual_of_model"), World, this));
+		MakeShareable<FROSChangeVisualOfModelServer>(
+			new FROSChangeVisualOfModelServer(Namespace, TEXT("change_visual_of_model"), World, this));
 	Handler->AddServiceServer(ChangeVisualOfModelServer);
-	
+
 	// Add spawn_physics_constraint service
 	TSharedPtr<FROSSpawnPhysicsConstraintServer> SpawnPhysicsConstraintServer =
-		MakeShareable<FROSSpawnPhysicsConstraintServer>(new FROSSpawnPhysicsConstraintServer(Namespace, TEXT("spawn_physics_constraint"), World, this));
+		MakeShareable<FROSSpawnPhysicsConstraintServer>(
+			new FROSSpawnPhysicsConstraintServer(Namespace, TEXT("spawn_physics_constraint"), World, this));
 	Handler->AddServiceServer(SpawnPhysicsConstraintServer);
-	
+
 	// Add highlight_models service
 	TSharedPtr<FROSHighlightModelsServer> HighlightModelsServer =
-		MakeShareable<FROSHighlightModelsServer>(new FROSHighlightModelsServer(Namespace, TEXT("highlight_models"), World, this));
+		MakeShareable<FROSHighlightModelsServer>(
+			new FROSHighlightModelsServer(Namespace, TEXT("highlight_models"), World, this));
 	Handler->AddServiceServer(HighlightModelsServer);
-
 
 
 	// Connect to ROSBridge Websocket server.
@@ -84,7 +91,8 @@ void ROSWorldControlManager::ConnectToROSBridge(FWebsocketInfoCallBack CustomErr
 
 void ROSWorldControlManager::DisconnectFromROSBridge()
 {
-	if (Handler.IsValid()) {
+	if (Handler.IsValid())
+	{
 		Handler->Disconnect();
 	}
 }

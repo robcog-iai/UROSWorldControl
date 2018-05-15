@@ -8,9 +8,9 @@ TSharedPtr<FROSBridgeSrv::SrvRequest> FROSAttachModelToParentServer::FromJson(TS
 	return TSharedPtr<FROSBridgeSrv::SrvRequest>(Request_);
 }
 
-TSharedPtr<FROSBridgeSrv::SrvResponse> FROSAttachModelToParentServer::Callback(TSharedPtr<FROSBridgeSrv::SrvRequest> Request)
+TSharedPtr<FROSBridgeSrv::SrvResponse> FROSAttachModelToParentServer::Callback(
+	TSharedPtr<FROSBridgeSrv::SrvRequest> Request)
 {
-
 	TSharedPtr<FROSBridgeAttachModelToParentSrv::Request> AttachModelToParentRequest =
 		StaticCastSharedPtr<FROSBridgeAttachModelToParentSrv::Request>(Request);
 
@@ -22,8 +22,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSAttachModelToParentServer::Callback(T
 		FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
 		{
 			Child->AttachRootComponentToActor(Parent);
-
-		}, TStatId(), NULL, ENamedThreads::GameThread);
+		}, TStatId(), nullptr, ENamedThreads::GameThread);
 
 		//wait code above to complete
 		FTaskGraphInterface::Get().WaitUntilTaskCompletes(Task);
@@ -31,22 +30,20 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSAttachModelToParentServer::Callback(T
 		return MakeShareable<FROSBridgeSrv::SrvResponse>
 			(new FROSBridgeAttachModelToParentSrv::Response(true));
 	}
-	else
+	//at least one of them could not be found.
+	if (!Child)
 	{
-		//at least one of them could not be found.
-		if (!Child)
-		{
-			UE_LOG(LogTemp, Error, TEXT("Actor with id:\"%s\" does not exist."), *AttachModelToParentRequest->GetChild().GetId());
-		}
-
-		if (!Parent)
-		{
-			UE_LOG(LogTemp, Error, TEXT("Actor with id:\"%s\" does not exist."), *AttachModelToParentRequest->GetParent().GetId());
-		}
-
-		return MakeShareable<FROSBridgeSrv::SrvResponse>
-			(new FROSBridgeAttachModelToParentSrv::Response(false));
+		UE_LOG(LogTemp, Error, TEXT("Actor with id:\"%s\" does not exist."), *AttachModelToParentRequest->GetChild().GetId());
 	}
+
+	if (!Parent)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Actor with id:\"%s\" does not exist."), *AttachModelToParentRequest->GetParent().GetId()
+		);
+	}
+
+	return MakeShareable<FROSBridgeSrv::SrvResponse>
+		(new FROSBridgeAttachModelToParentSrv::Response(false));
 
 	Child->AttachRootComponentToActor(Parent);
 }

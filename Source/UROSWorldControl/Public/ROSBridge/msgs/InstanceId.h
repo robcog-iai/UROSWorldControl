@@ -1,6 +1,5 @@
 #pragma once
 #include "ROSBridgeMsg.h"
-#include "String.h"
 #include "Ids.h"
 
 
@@ -14,9 +13,11 @@ namespace unreal_world_control_msgs
 
 
 	public:
-		InstanceId() {}
+		InstanceId()
+		{
+		}
 
-		InstanceId(FString InClassName, FString  InId, FString  InNs)
+		InstanceId(FString InClassName, FString InId, FString InNs)
 		{
 			InstanceId();
 			ClassName = InClassName;
@@ -29,7 +30,7 @@ namespace unreal_world_control_msgs
 			return ClassName;
 		}
 
-		FString  GetId()
+		FString GetId()
 		{
 			return Id;
 		}
@@ -39,12 +40,12 @@ namespace unreal_world_control_msgs
 			Id = InId;
 		}
 
-		FString  GetNs()
+		FString GetNs()
 		{
 			return Ns;
 		}
 
-		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
+		void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
 			ClassName = JsonObject->GetStringField("class_name");
 			Id = JsonObject->GetStringField("id");
@@ -64,24 +65,24 @@ namespace unreal_world_control_msgs
 			return Result;
 		}
 
-		virtual FString ToString() const override
+		FString ToString() const override
 		{
 			return TEXT("InstanceId {class_name = %s, id = %s, ns = %s"), ClassName, Id, Ns;
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
+		TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 			Object->SetStringField(TEXT("class_name"), ClassName);
-			Object->SetStringField(TEXT("id"),Id);
+			Object->SetStringField(TEXT("id"), Id);
 			Object->SetStringField(TEXT("ns"), Ns);
 			return Object;
 		}
 
-		virtual FString ToYamlString() const override
+		FString ToYamlString() const override
 		{
 			FString OutputString;
-			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
+			TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}

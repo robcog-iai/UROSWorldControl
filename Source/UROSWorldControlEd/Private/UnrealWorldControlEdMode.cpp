@@ -15,10 +15,9 @@ FUnrealWorldControlEdMode::FUnrealWorldControlEdMode()
 
 FUnrealWorldControlEdMode::~FUnrealWorldControlEdMode()
 {
-
 }
 
-void FUnrealWorldControlEdMode::AddReferencedObjects(FReferenceCollector & Collector)
+void FUnrealWorldControlEdMode::AddReferencedObjects(FReferenceCollector& Collector)
 {
 	// Call parent implementation
 	FEdMode::AddReferencedObjects(Collector);
@@ -29,7 +28,7 @@ void FUnrealWorldControlEdMode::AddReferencedObjects(FReferenceCollector & Colle
 void FUnrealWorldControlEdMode::Enter()
 {
 	FEdMode::Enter();
-	
+
 	if (!Toolkit.IsValid() && UsesToolkits())
 	{
 		Toolkit = MakeShareable(new FUnrealWorldControlEdModeToolkit);
@@ -53,6 +52,3 @@ bool FUnrealWorldControlEdMode::UsesToolkits() const
 {
 	return true;
 }
-
-
-

@@ -1,7 +1,6 @@
 #include "UnrealWorldControlEdToolCustomization.h"
 #include "PropertyEditing.h"
 #include "Widgets/Input/SButton.h"
-#include "Widgets/Text/STextBlock.h"
 #include "Widgets/Input/SComboButton.h"
 
 TSharedRef<IDetailCustomization> FUnrealWorldControlEdToolCustomization::MakeInstance()
@@ -17,7 +16,7 @@ void FUnrealWorldControlEdToolCustomization::CustomizeDetails(IDetailLayoutBuild
 	TArray<TWeakObjectPtr<UObject>> ObjectsBeingCustomized;
 	DetailBuilder.GetObjectsBeingCustomized(/*out*/ ObjectsBeingCustomized);
 
-	for (auto WeakObject : ObjectsBeingCustomized) 
+	for (auto WeakObject : ObjectsBeingCustomized)
 	{
 		if (UObject* Instance = WeakObject.Get())
 		{
@@ -31,7 +30,7 @@ void FUnrealWorldControlEdToolCustomization::CustomizeDetails(IDetailLayoutBuild
 	//Create button for each element
 	for (UClass* Class : Classes)
 	{
-		for (TFieldIterator<UFunction> FuncIt(Class); FuncIt; ++FuncIt) 
+		for (TFieldIterator<UFunction> FuncIt(Class); FuncIt; ++FuncIt)
 		{
 			UFunction* Function = *FuncIt;
 			if (Function->HasAnyFunctionFlags(FUNC_Exec) && (Function->NumParms == 0))
@@ -39,18 +38,20 @@ void FUnrealWorldControlEdToolCustomization::CustomizeDetails(IDetailLayoutBuild
 				const FString FunctionName = Function->GetName();
 				const FText ButtonCaption = FText::FromString(FunctionName);
 				Category.AddCustomRow(ButtonCaption)
-				.ValueContent()
+				        .ValueContent()
 				[
 					SNew(SButton)
-					.Text(ButtonCaption)
-					.OnClicked(FOnClicked::CreateStatic(&FUnrealWorldControlEdToolCustomization::ExecuteCommand, &DetailBuilder, Function))
+					             .Text(ButtonCaption)
+					             .OnClicked(FOnClicked::CreateStatic(&FUnrealWorldControlEdToolCustomization::ExecuteCommand,
+					                                                 &DetailBuilder, Function))
 				];
 			}
 		}
 	}
 }
 
-FReply FUnrealWorldControlEdToolCustomization::ExecuteCommand(IDetailLayoutBuilder * DetailBuilder, UFunction * MethodToExecute)
+FReply FUnrealWorldControlEdToolCustomization::ExecuteCommand(IDetailLayoutBuilder* DetailBuilder,
+                                                              UFunction* MethodToExecute)
 {
 	TArray<TWeakObjectPtr<UObject>> ObjectsBeingCustomized;
 	DetailBuilder->GetObjectsBeingCustomized(/*out*/ ObjectsBeingCustomized);
@@ -62,6 +63,6 @@ FReply FUnrealWorldControlEdToolCustomization::ExecuteCommand(IDetailLayoutBuild
 			Instance->CallFunctionByNameWithArguments(*MethodToExecute->GetName(), *GLog, nullptr, true);
 		}
 	}
-	
+
 	return FReply::Handled();
 }

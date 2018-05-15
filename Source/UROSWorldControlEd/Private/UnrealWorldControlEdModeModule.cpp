@@ -2,28 +2,24 @@
 
 #include "UnrealWorldControlEdModeModule.h"
 #include "UnrealWorldControlEdMode.h"
-#include "UnrealWorldControlEdToolCustomization.h"
 #include "UnrealWorldControlEdTool.h"
 
 #include "PropertyEditorModule.h"
-#include "Interfaces/IPluginManager.h"
 
 #include "Styling/SlateStyleRegistry.h"
-#include "Styling/SlateTypes.h"
-#include "EditorStyleSet.h"
 #include "SlateOptMacros.h"
 
 #define LOCTEXT_NAMESPACE "FUnrealWorldControlEdModeModule"
-#define IMAGE_PLUGIN_BRUSH( RelativePath, ... ) FSlateImageBrush( FUnrealWorldControlEdModeModule::InContent( RelativePath, ".png" ), __VA_ARGS__ )
+#define IMAGE_PLUGIN_BRUSH( RelativePath, ...) FSlateImageBrush (FUnrealWorldControlEdModeModule::InContent( RelativePath, ".png"), __VA_ARGS__)
 
-FString FUnrealWorldControlEdModeModule::InContent(const FString & RelativePath, const ANSICHAR * Extension)
+FString FUnrealWorldControlEdModeModule::InContent(const FString& RelativePath, const ANSICHAR* Extension)
 {
 	static FString ContentDir = FPaths::ProjectPluginsDir() / TEXT("UROSWorldControl/Content/Slate");
 	return (ContentDir / RelativePath) + Extension;
 }
 
-TSharedPtr< FSlateStyleSet > FUnrealWorldControlEdModeModule::StyleSet = nullptr;
-TSharedPtr< class ISlateStyle > FUnrealWorldControlEdModeModule::Get() { return StyleSet; }
+TSharedPtr<FSlateStyleSet> FUnrealWorldControlEdModeModule::StyleSet = nullptr;
+TSharedPtr<class ISlateStyle> FUnrealWorldControlEdModeModule::Get() { return StyleSet; }
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 
@@ -48,7 +44,8 @@ void FUnrealWorldControlEdModeModule::Initialize()
 	StyleSet->Set("LevelEditor.UnrealWorldControlEdMode", new IMAGE_PLUGIN_BRUSH("Icons/Icon128", Icon40x40));
 	StyleSet->Set("LevelEditor.UnrealWorldControlEdMode.Small", new IMAGE_PLUGIN_BRUSH("Icons/Icon128", Icon20x20));
 	StyleSet->Set("LevelEditor.UnrealWorldControlEdMode.Selected", new IMAGE_PLUGIN_BRUSH("Icons/Icon128", Icon40x40));
-	StyleSet->Set("LevelEditor.UnrealWorldControlEdMode.Selected.Small", new IMAGE_PLUGIN_BRUSH("Icons/Icon128", Icon20x20));
+	StyleSet->Set("LevelEditor.UnrealWorldControlEdMode.Selected.Small",
+	              new IMAGE_PLUGIN_BRUSH("Icons/Icon128", Icon20x20));
 
 
 	FSlateStyleRegistry::RegisterSlateStyle(*StyleSet.Get());
@@ -75,7 +72,7 @@ void FUnrealWorldControlEdModeModule::StartupModule()
 		LOCTEXT("UnrealWorldControlEdModeEdModeName", "UnrealWorldControlEdModeEdMode"),
 		FSlateIcon(GetStyleSetName(), "LevelEditor.UnrealWorldControlEdMode", "LevelEditor.UnrealWorldControlEdMode.Small"),
 		true
-		);
+	);
 }
 
 void FUnrealWorldControlEdModeModule::ShutdownModule()
@@ -83,9 +80,8 @@ void FUnrealWorldControlEdModeModule::ShutdownModule()
 	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
 	// we call this function before unloading the module.
 	FEditorModeRegistry::Get().UnregisterMode(FUnrealWorldControlEdMode::EM_UnrealWorldControlEdModeId);
-
 }
 
 #undef LOCTEXT_NAMESPACE
-	
+
 IMPLEMENT_MODULE(FUnrealWorldControlEdModeModule, UnrealWorldControlEdMode)

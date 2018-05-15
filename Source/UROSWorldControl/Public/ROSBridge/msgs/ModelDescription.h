@@ -10,17 +10,21 @@ namespace unreal_world_control_msgs
 {
 	class ModelDescription : public FROSBridgeMsg
 	{
-		unreal_world_control_msgs::InstanceId InstanceId;
-		unreal_world_control_msgs::MeshDescription MeshDescription;
+		InstanceId InstanceId;
+		MeshDescription MeshDescription;
 		geometry_msgs::Pose Pose;
-		TArray<unreal_world_control_msgs::Tag> Tags;
+		TArray<Tag> Tags;
 		bool bIsStatic;
 
 
 	public:
-		ModelDescription() {}
+		ModelDescription()
+		{
+		}
 
-		ModelDescription(unreal_world_control_msgs::InstanceId InInstanceId, unreal_world_control_msgs::MeshDescription InMeshDescription, geometry_msgs::Pose InPose, TArray<unreal_world_control_msgs::Tag> InTags, bool InbIsStatic)
+		ModelDescription(unreal_world_control_msgs::InstanceId InInstanceId,
+		                 unreal_world_control_msgs::MeshDescription InMeshDescription, geometry_msgs::Pose InPose,
+		                 TArray<Tag> InTags, bool InbIsStatic)
 		{
 			ModelDescription();
 			InstanceId = InInstanceId;
@@ -45,16 +49,17 @@ namespace unreal_world_control_msgs
 			return Pose;
 		}
 
-		TArray<unreal_world_control_msgs::Tag> GetTags()
+		TArray<Tag> GetTags()
 		{
 			return Tags;
 		}
 
-		bool IsStatic() {
+		bool IsStatic()
+		{
 			return bIsStatic;
 		}
 
-		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
+		void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
 			InstanceId.FromJson(JsonObject->GetObjectField("instance_id"));
 			MeshDescription.FromJson(JsonObject->GetObjectField("mesh_description"));
@@ -62,13 +67,12 @@ namespace unreal_world_control_msgs
 			bIsStatic = JsonObject->GetBoolField("is_static");
 			Tags.Empty();
 			TArray<TSharedPtr<FJsonValue>> TagsPtrArray = JsonObject->GetArrayField(TEXT("tags"));
-			for (auto &ptr : TagsPtrArray)
+			for (auto& ptr : TagsPtrArray)
 			{
-				unreal_world_control_msgs::Tag Entry;
+				Tag Entry;
 				Entry.FromJson(ptr->AsObject());
 				Tags.Add(Entry);
 			}
-
 		}
 
 		static ModelDescription GetFromJson(TSharedPtr<FJsonObject> JsonObject)
@@ -78,12 +82,13 @@ namespace unreal_world_control_msgs
 			return Result;
 		}
 
-		virtual FString ToString() const override
+		FString ToString() const override
 		{
-			return TEXT("ModelDescription {instance_id = %s, mesh_description = %s, pose = %s,% tags size = %s"), InstanceId.ToString(), MeshDescription.ToString(), Pose.ToString(), FString::FromInt(Tags.Num());
+			return TEXT("ModelDescription {instance_id = %s, mesh_description = %s, pose = %s,% tags size = %s"), InstanceId.
+				ToString(), MeshDescription.ToString(), Pose.ToString(), FString::FromInt(Tags.Num());
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
+		TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 			Object->SetObjectField(TEXT("instance_id"), InstanceId.ToJsonObject());
@@ -91,7 +96,7 @@ namespace unreal_world_control_msgs
 			Object->SetObjectField(TEXT("pose"), Pose.ToJsonObject());
 			Object->SetBoolField(TEXT("is_static"), bIsStatic);
 			TArray<TSharedPtr<FJsonValue>> TagsPtrArray;
-			for (auto &Entry : Tags)
+			for (auto& Entry : Tags)
 			{
 				TSharedPtr<FJsonValue> Ptr = MakeShareable(new FJsonValueObject(Entry.ToJsonObject()));
 				TagsPtrArray.Add(Ptr);
@@ -101,10 +106,10 @@ namespace unreal_world_control_msgs
 			return Object;
 		}
 
-		virtual FString ToYamlString() const override
+		FString ToYamlString() const override
 		{
 			FString OutputString;
-			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
+			TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}

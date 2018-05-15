@@ -14,8 +14,6 @@
 
 #include "Widgets/Input/SButton.h"
 #include "Widgets/Text/STextBlock.h"
-#include "Widgets/Layout/SBox.h"
-#include "Widgets/Notifications/SErrorText.h"
 #include "EditorModeManager.h"
 
 #define LOCTEXT_NAMESPACE "FUnrealWorldControlEdTool"
@@ -42,7 +40,8 @@ FText FUnrealWorldControlEdModeToolkit::GetBaseToolkitName() const
 
 FUnrealWorldControlEdMode* FUnrealWorldControlEdModeToolkit::GetEditorMode() const
 {
-	return (FUnrealWorldControlEdMode*)GLevelEditorModeTools().GetActiveMode(FUnrealWorldControlEdMode::EM_UnrealWorldControlEdModeId);
+	return (FUnrealWorldControlEdMode*)GLevelEditorModeTools().GetActiveMode(
+		FUnrealWorldControlEdMode::EM_UnrealWorldControlEdModeId);
 }
 
 TSharedPtr<SWidget> FUnrealWorldControlEdModeToolkit::GetInlineContent() const
@@ -53,19 +52,25 @@ TSharedPtr<SWidget> FUnrealWorldControlEdModeToolkit::GetInlineContent() const
 //////////////////////////////////////////////////////////////////////////
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
-void SUnrealWorldControlEd::Construct(const FArguments& InArgs, TSharedRef<FUnrealWorldControlEdModeToolkit> InParentToolkit)
+
+void SUnrealWorldControlEd::Construct(const FArguments& InArgs,
+                                      TSharedRef<FUnrealWorldControlEdModeToolkit> InParentToolkit)
 {
-	FPropertyEditorModule& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
-	PropertyEditorModule.RegisterCustomClassLayout("UnrealWorldControlEdTool", FOnGetDetailCustomizationInstance::CreateStatic(&FUnrealWorldControlEdToolCustomization::MakeInstance));
+	FPropertyEditorModule& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>(
+		"PropertyEditor");
+	PropertyEditorModule.RegisterCustomClassLayout("UnrealWorldControlEdTool",
+	                                               FOnGetDetailCustomizationInstance::CreateStatic(
+		                                               &FUnrealWorldControlEdToolCustomization::MakeInstance));
 	PropertyEditorModule.NotifyCustomizationModuleChanged();
 
 	FDetailsViewArgs DetailsViewArgs(false, false, false, FDetailsViewArgs::HideNameArea);
-	
+
 	DetailsPanel = PropertyEditorModule.CreateDetailView(DetailsViewArgs);
-	DetailsPanel->SetIsPropertyVisibleDelegate(FIsPropertyVisible::CreateSP(this, &SUnrealWorldControlEd::GetIsPropertyVisible));
-	
+	DetailsPanel->SetIsPropertyVisibleDelegate(
+		FIsPropertyVisible::CreateSP(this, &SUnrealWorldControlEd::GetIsPropertyVisible));
+
 	FUnrealWorldControlEdMode* UnrealWorldControlEdMode = GetEditorMode();
-	
+
 	ChildSlot
 	[
 		SNew(SVerticalBox)
@@ -84,11 +89,13 @@ void SUnrealWorldControlEd::Construct(const FArguments& InArgs, TSharedRef<FUnre
 
 	RefreshDetailPanel();
 }
+
 END_SLATE_FUNCTION_BUILD_OPTIMIZATION
 
 FUnrealWorldControlEdMode* SUnrealWorldControlEd::GetEditorMode() const
 {
-	return (FUnrealWorldControlEdMode*)GLevelEditorModeTools().GetActiveMode(FUnrealWorldControlEdMode::EM_UnrealWorldControlEdModeId);
+	return (FUnrealWorldControlEdMode*)GLevelEditorModeTools().GetActiveMode(
+		FUnrealWorldControlEdMode::EM_UnrealWorldControlEdModeId);
 }
 
 FText SUnrealWorldControlEd::GetErrorText() const
@@ -108,7 +115,7 @@ bool SUnrealWorldControlEd::GetUnrealWorldControlEdIsEnabled() const
 	return false;
 }
 
-bool SUnrealWorldControlEd::GetIsPropertyVisible(const FPropertyAndParent & PropertyAndParent) const
+bool SUnrealWorldControlEd::GetIsPropertyVisible(const FPropertyAndParent& PropertyAndParent) const
 {
 	return true;
 }

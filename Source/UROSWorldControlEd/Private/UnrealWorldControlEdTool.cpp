@@ -4,7 +4,6 @@
 UUnrealWorldControlEdTool::UUnrealWorldControlEdTool(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-
 }
 
 void UUnrealWorldControlEdTool::ConnectToRosBridge()
@@ -30,8 +29,8 @@ void UUnrealWorldControlEdTool::ConnectToRosBridge()
 
 void UUnrealWorldControlEdTool::ClearMap()
 {
-	if(Controller)
-	{	
+	if (Controller)
+	{
 		for (auto Element : Controller->IdToActorMap)
 		{
 			Element.Value->Destroy();
@@ -41,16 +40,17 @@ void UUnrealWorldControlEdTool::ClearMap()
 }
 
 
-void UUnrealWorldControlEdTool::ConnectionErrorCallback() {
+void UUnrealWorldControlEdTool::ConnectionErrorCallback()
+{
 	ConnectionStatus = TEXT("Not connected.");
 	if (GEngine)
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("Connection to RosBridge lost.")));
-
 }
 
-void UUnrealWorldControlEdTool::ConnectedCallback() {
+void UUnrealWorldControlEdTool::ConnectedCallback()
+{
 	ConnectionStatus = TEXT("Connected to Rosbridge.");
 	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("You are now connected to RosBridge.")));
-
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
+		                                 FString::Printf(TEXT("You are now connected to RosBridge.")));
 }

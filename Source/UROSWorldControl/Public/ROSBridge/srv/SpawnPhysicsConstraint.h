@@ -6,7 +6,8 @@
 
 using namespace unreal_world_control_msgs;
 
-class UROSBRIDGE_API FROSBridgeSpawnPhysiscConstraintSrv : public FROSBridgeSrv {
+class UROSBRIDGE_API FROSBridgeSpawnPhysiscConstraintSrv : public FROSBridgeSrv
+{
 protected:
 	FString Type;
 
@@ -15,18 +16,22 @@ public:
 	{
 		Type = Type_;
 	}
-	class Request : public SrvRequest {
+
+	class Request : public SrvRequest
+	{
 	private:
 		PhysicsConstraintDetails ConstraintDetails;
 		geometry_msgs::Pose Pose;
 	public:
-		Request() {}
-
-		PhysicsConstraintDetails GetConstraintDetails() 
-		{ 
-			return ConstraintDetails; 
+		Request()
+		{
 		}
-		
+
+		PhysicsConstraintDetails GetConstraintDetails()
+		{
+			return ConstraintDetails;
+		}
+
 		FVector GetLocation()
 		{
 			return Pose.GetPosition().GetVector();
@@ -34,7 +39,7 @@ public:
 
 		FRotator GetRotator()
 		{
-			return FRotator::FRotator(Pose.GetOrientation().GetQuat());
+			return FRotator(Pose.GetOrientation().GetQuat());
 		}
 
 		FQuat GetQuat()
@@ -42,8 +47,8 @@ public:
 			return Pose.GetOrientation().GetQuat();
 		}
 
-		
-		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
+
+		void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
 			ConstraintDetails.FromJson(JsonObject->GetObjectField("constraint_details"));
 			Pose.FromJson(JsonObject->GetObjectField("pose"));
@@ -56,32 +61,39 @@ public:
 			return req;
 		}
 
-		virtual FString ToString() const override
+		FString ToString() const override
 		{
-			return TEXT("FROSBridgeSpawnPhysiscConstraintSrv::Request {Constraint Details = %s, Pose: %s}"), ConstraintDetails.ToString(), Pose.ToString();
+			return TEXT("FROSBridgeSpawnPhysiscConstraintSrv::Request {Constraint Details = %s, Pose: %s}"), ConstraintDetails.
+				ToString(), Pose.ToString();
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const
+		TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-			Object->SetObjectField(TEXT("constraint_details"),ConstraintDetails.ToJsonObject());
+			Object->SetObjectField(TEXT("constraint_details"), ConstraintDetails.ToJsonObject());
 			return Object;
 		}
-
 	};
 
 
-	class Response : public SrvResponse {
+	class Response : public SrvResponse
+	{
 	private:
 		bool bSuccess;
 
 	public:
-		Response() {}
-		Response(bool succeded_) : bSuccess(succeded_) {}
+		Response()
+		{
+		}
+
+		Response(bool succeded_) : bSuccess(succeded_)
+		{
+		}
+
 		bool GetSuccess() const { return bSuccess; }
 		void SetSuccess(bool Success) { bSuccess = Success; }
 
-		virtual void FromJson(TSharedPtr<FJsonObject> JSonObject) override
+		void FromJson(TSharedPtr<FJsonObject> JSonObject) override
 		{
 			bSuccess = JSonObject->GetBoolField("success");
 		}
@@ -93,17 +105,16 @@ public:
 			return resp;
 		}
 
-		virtual FString ToString() const override
+		FString ToString() const override
 		{
 			return TEXT("FROSBridgeSpawnPhysiscConstraintSrv::Request { %s }"), bSuccess ? TEXT("True") : TEXT("False");
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const
+		TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 			Object->SetBoolField("success", bSuccess);
 			return Object;
 		}
 	};
-
 };

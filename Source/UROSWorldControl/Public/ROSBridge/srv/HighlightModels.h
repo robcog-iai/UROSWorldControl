@@ -5,7 +5,8 @@
 
 using namespace unreal_world_control_msgs;
 
-class UROSBRIDGE_API FROSBridgeHighlightModelsSrv : public FROSBridgeSrv {
+class UROSBRIDGE_API FROSBridgeHighlightModelsSrv : public FROSBridgeSrv
+{
 protected:
 	FString Type;
 
@@ -14,14 +15,18 @@ public:
 	{
 		Type = Type_;
 	}
-	class Request : public SrvRequest {
+
+	class Request : public SrvRequest
+	{
 	private:
 		TArray<InstanceId> InstanceIds;
 		bool bToBeHighlighted;
 		int32 ColorIndex;
 
 	public:
-		Request() {}
+		Request()
+		{
+		}
 
 		TArray<InstanceId>* GetInstanceIds()
 		{
@@ -38,10 +43,10 @@ public:
 			return bToBeHighlighted;
 		}
 
-		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
+		void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
 			TArray<TSharedPtr<FJsonValue>> PtrArray = JsonObject->GetArrayField(TEXT("instance_ids"));
-			for (auto &ptr : PtrArray)
+			for (auto& ptr : PtrArray)
 			{
 				InstanceId Id;
 				Id.FromJson(ptr->AsObject());
@@ -58,19 +63,18 @@ public:
 			return req;
 		}
 
-		virtual FString ToString() const override
+		FString ToString() const override
 		{
 			return TEXT("FROSBridgeHighlightModelsSrv::Request { Highligt %s Models}"),
 				FString::FromInt(InstanceIds.Num());
-
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const
+		TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 
 			TArray<TSharedPtr<FJsonValue>> PtrArray;
-			for (auto &Tag : InstanceIds)
+			for (auto& Tag : InstanceIds)
 			{
 				TSharedPtr<FJsonValue> Ptr = MakeShareable(new FJsonValueObject(Tag.ToJsonObject()));
 				PtrArray.Add(Ptr);
@@ -80,21 +84,27 @@ public:
 
 			return Object;
 		}
-
 	};
 
 
-	class Response :public SrvResponse {
+	class Response : public SrvResponse
+	{
 	private:
 		bool bSuccess;
 
 	public:
-		Response() {}
-		Response(bool Success) : bSuccess(Success) {}
+		Response()
+		{
+		}
+
+		Response(bool Success) : bSuccess(Success)
+		{
+		}
+
 		bool GetSuccess() const { return bSuccess; }
 		void SetSuccess(bool Success) { bSuccess = Success; }
 
-		virtual void FromJson(TSharedPtr<FJsonObject> JSonObject) override
+		void FromJson(TSharedPtr<FJsonObject> JSonObject) override
 		{
 			bSuccess = JSonObject->GetBoolField("success");
 		}
@@ -106,17 +116,16 @@ public:
 			return resp;
 		}
 
-		virtual FString ToString() const override
+		FString ToString() const override
 		{
 			return TEXT("FROSBridgeHighlightModelsSrv::Response { %s }"), bSuccess ? TEXT("True") : TEXT("False");
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const
+		TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 			Object->SetBoolField("success", bSuccess);
 			return Object;
 		}
 	};
-
 };

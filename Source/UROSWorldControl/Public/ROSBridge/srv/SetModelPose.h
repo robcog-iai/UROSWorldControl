@@ -4,7 +4,8 @@
 #include "InstanceId.h"
 #include "Pose.h"
 
-class UROSBRIDGE_API FROSBridgeSetModelPoseSrv : public FROSBridgeSrv {
+class UROSBRIDGE_API FROSBridgeSetModelPoseSrv : public FROSBridgeSrv
+{
 protected:
 	FString Type;
 
@@ -14,13 +15,17 @@ public:
 		Type = Type_;
 	}
 
-	class Request : public SrvRequest {
+	class Request : public SrvRequest
+	{
 	private:
 		unreal_world_control_msgs::InstanceId InstanceId;
 		geometry_msgs::Pose Pose;
 
 	public:
-		Request() {}
+		Request()
+		{
+		}
+
 		unreal_world_control_msgs::InstanceId GetInstanceId() { return InstanceId; };
 
 		FVector GetLocation()
@@ -30,10 +35,10 @@ public:
 
 		FRotator GetRotator()
 		{
-			return FRotator::FRotator(Pose.GetOrientation().GetQuat());
+			return FRotator(Pose.GetOrientation().GetQuat());
 		}
 
-		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
+		void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
 			InstanceId.FromJson(JsonObject->GetObjectField("instance_id"));
 			Pose.FromJson(JsonObject->GetObjectField("pose"));
@@ -46,16 +51,15 @@ public:
 			return req;
 		}
 
-		virtual FString ToString() const override
+		FString ToString() const override
 		{
 			return TEXT("RosWorldControlSetModelPoseSrv::Request { InstanceID = ") + InstanceId.ToString() +
-				TEXT(", Location = ") + Pose.GetPosition().GetVector().ToString() + 
-				TEXT(" and Rotator  = ") + FRotator::FRotator(Pose.GetOrientation().GetQuat()).ToString() + 
+				TEXT(", Location = ") + Pose.GetPosition().GetVector().ToString() +
+				TEXT(" and Rotator  = ") + FRotator(Pose.GetOrientation().GetQuat()).ToString() +
 				TEXT("} ");
-
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const
+		TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 			Object->SetObjectField("instance_id", InstanceId.ToJsonObject());
@@ -63,21 +67,27 @@ public:
 
 			return Object;
 		}
-
 	};
 
 
-	class Response : public SrvResponse {
+	class Response : public SrvResponse
+	{
 	private:
 		bool bSuccess;
 
 	public:
-		Response() {}
-		Response(bool succeded_) : bSuccess(succeded_) {}
+		Response()
+		{
+		}
+
+		Response(bool succeded_) : bSuccess(succeded_)
+		{
+		}
+
 		bool GetSuccess() const { return bSuccess; }
 		void SetSuccess(bool Success) { bSuccess = Success; }
 
-		virtual void FromJson(TSharedPtr<FJsonObject> JSonObject) override
+		void FromJson(TSharedPtr<FJsonObject> JSonObject) override
 		{
 			bSuccess = JSonObject->GetBoolField("success");
 		}
@@ -89,12 +99,12 @@ public:
 			return resp;
 		}
 
-		virtual FString ToString() const override
+		FString ToString() const override
 		{
 			return TEXT("RosWorldControlSetModelPoseSrv::Request { %s }"), bSuccess ? TEXT("True") : TEXT("False");
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const
+		TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 			Object->SetBoolField("success", bSuccess);

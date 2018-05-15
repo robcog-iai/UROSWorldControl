@@ -1,11 +1,9 @@
-
 #include "SetModelPoseServer.h"
-
+#include "SetModelPose.h"
 
 
 bool FROSSetModelPoseServer::Relocate(AActor* Actor, FVector Location, FRotator Rotator)
 {
-
 	if (Actor->TeleportTo(Location, Rotator) == false)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Could not set %s to locaiton: %s, with Rotation: %s"),
@@ -15,7 +13,6 @@ bool FROSSetModelPoseServer::Relocate(AActor* Actor, FVector Location, FRotator 
 
 	return true;
 }
-
 
 
 TSharedPtr<FROSBridgeSrv::SrvRequest> FROSSetModelPoseServer::FromJson(TSharedPtr<FJsonObject> JsonObject) const
@@ -28,7 +25,6 @@ TSharedPtr<FROSBridgeSrv::SrvRequest> FROSSetModelPoseServer::FromJson(TSharedPt
 
 TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSetModelPoseServer::Callback(TSharedPtr<FROSBridgeSrv::SrvRequest> Request)
 {
-
 	TSharedPtr<FROSBridgeSetModelPoseSrv::Request> SetModelPoseRequest =
 		StaticCastSharedPtr<FROSBridgeSetModelPoseSrv::Request>(Request);
 
@@ -38,7 +34,8 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSetModelPoseServer::Callback(TSharedP
 	AActor** Actor = Controller->IdToActorMap.Find(UniqueId);
 
 
-	if (!Actor) {
+	if (!Actor)
+	{
 		// Couldn't find Actor for ID 
 		UE_LOG(LogTemp, Warning, TEXT("Actor with id:\"%s\" does not exist and can therefore not be moved."), *UniqueId);
 		return MakeShareable<FROSBridgeSrv::SrvResponse>
@@ -56,14 +53,13 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSetModelPoseServer::Callback(TSharedP
 	FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
 	{
 		ServiceSuccess = Relocate(Params.Actor,
-			Params.Location*100.f,
-			Params.Rotator);
-
-	}, TStatId(), NULL, ENamedThreads::GameThread);
+		                          Params.Location * 100.f,
+		                          Params.Rotator);
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 
 	//wait code above to complete
-	FTaskGraphInterface::Get().WaitUntilTaskCompletes(Task); 
-	
+	FTaskGraphInterface::Get().WaitUntilTaskCompletes(Task);
+
 	return MakeShareable<FROSBridgeSrv::SrvResponse>
 		(new FROSBridgeSetModelPoseSrv::Response(ServiceSuccess));
 }

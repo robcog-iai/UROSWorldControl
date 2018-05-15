@@ -1,4 +1,5 @@
 #include "SpawnPhysicsConstraintServer.h"
+#include "PhysicsEngine/PhysicsConstraintComponent.h"
 
 // SetAngularLimits for Physics Constraints
 static FORCEINLINE void SetAngularLimits(
@@ -14,21 +15,30 @@ static FORCEINLINE void SetAngularLimits(
 {
 	switch (Swing1Limit)
 	{
-	case 0: Constraint.SetAngularSwing1Motion(EAngularConstraintMotion::ACM_Free); break;
-	case 1: Constraint.SetAngularSwing1Motion(EAngularConstraintMotion::ACM_Limited); break;
-	case 2: Constraint.SetAngularSwing1Motion(EAngularConstraintMotion::ACM_Locked); break;
+	case 0: Constraint.SetAngularSwing1Motion(ACM_Free);
+		break;
+	case 1: Constraint.SetAngularSwing1Motion(ACM_Limited);
+		break;
+	case 2: Constraint.SetAngularSwing1Motion(ACM_Locked);
+		break;
 	}
 	switch (Swing2Limit)
 	{
-	case 0: Constraint.SetAngularSwing2Motion(EAngularConstraintMotion::ACM_Free); break;
-	case 1: Constraint.SetAngularSwing2Motion(EAngularConstraintMotion::ACM_Limited); break;
-	case 2: Constraint.SetAngularSwing2Motion(EAngularConstraintMotion::ACM_Locked); break;
+	case 0: Constraint.SetAngularSwing2Motion(ACM_Free);
+		break;
+	case 1: Constraint.SetAngularSwing2Motion(ACM_Limited);
+		break;
+	case 2: Constraint.SetAngularSwing2Motion(ACM_Locked);
+		break;
 	}
 	switch (TwistLimit)
 	{
-	case 0: Constraint.SetAngularTwistMotion(EAngularConstraintMotion::ACM_Free); break;
-	case 1: Constraint.SetAngularTwistMotion(EAngularConstraintMotion::ACM_Limited); break;
-	case 2: Constraint.SetAngularTwistMotion(EAngularConstraintMotion::ACM_Locked); break;
+	case 0: Constraint.SetAngularTwistMotion(ACM_Free);
+		break;
+	case 1: Constraint.SetAngularTwistMotion(ACM_Limited);
+		break;
+	case 2: Constraint.SetAngularTwistMotion(ACM_Locked);
+		break;
 	}
 
 	// Soft Limit?
@@ -39,9 +49,9 @@ static FORCEINLINE void SetAngularLimits(
 	else Constraint.ProfileInstance.TwistLimit.bSoftConstraint = 0;
 
 	// Limit Angles
-	Constraint.SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Free, Swing1LimitAngle);
-	Constraint.SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Free, Swing2LimitAngle);
-	Constraint.SetAngularTwistLimit(EAngularConstraintMotion::ACM_Free, TwistLimitAngle);
+	Constraint.SetAngularSwing1Limit(ACM_Free, Swing1LimitAngle);
+	Constraint.SetAngularSwing2Limit(ACM_Free, Swing2LimitAngle);
+	Constraint.SetAngularTwistLimit(ACM_Free, TwistLimitAngle);
 
 	Constraint.ProfileInstance.LinearLimit.Stiffness = SwingStiff;
 	Constraint.ProfileInstance.LinearLimit.Damping = SwingDamp;
@@ -62,21 +72,30 @@ static FORCEINLINE void SetLinearLimits(
 {
 	switch (XLimit)
 	{
-	case 0: Constraint.SetLinearXMotion(ELinearConstraintMotion::LCM_Free); break;
-	case 1: Constraint.SetLinearXMotion(ELinearConstraintMotion::LCM_Limited); break;
-	case 2: Constraint.SetLinearXMotion(ELinearConstraintMotion::LCM_Locked); break;
+	case 0: Constraint.SetLinearXMotion(LCM_Free);
+		break;
+	case 1: Constraint.SetLinearXMotion(LCM_Limited);
+		break;
+	case 2: Constraint.SetLinearXMotion(LCM_Locked);
+		break;
 	}
 	switch (YLimit)
 	{
-	case 0: Constraint.SetLinearYMotion(ELinearConstraintMotion::LCM_Free); break;
-	case 1: Constraint.SetLinearYMotion(ELinearConstraintMotion::LCM_Limited); break;
-	case 2: Constraint.SetLinearYMotion(ELinearConstraintMotion::LCM_Locked); break;
+	case 0: Constraint.SetLinearYMotion(LCM_Free);
+		break;
+	case 1: Constraint.SetLinearYMotion(LCM_Limited);
+		break;
+	case 2: Constraint.SetLinearYMotion(LCM_Locked);
+		break;
 	}
 	switch (ZLimit)
 	{
-	case 0: Constraint.SetLinearZMotion(ELinearConstraintMotion::LCM_Free); break;
-	case 1: Constraint.SetLinearZMotion(ELinearConstraintMotion::LCM_Limited); break;
-	case 2: Constraint.SetLinearZMotion(ELinearConstraintMotion::LCM_Locked); break;
+	case 0: Constraint.SetLinearZMotion(LCM_Free);
+		break;
+	case 1: Constraint.SetLinearZMotion(LCM_Limited);
+		break;
+	case 2: Constraint.SetLinearZMotion(LCM_Locked);
+		break;
 	}
 
 	Constraint.SetLinearLimitSize(Size);
@@ -90,7 +109,8 @@ static FORCEINLINE void SetLinearLimits(
 }
 
 
-bool FROSSpawnPhysicsConstraintServer::SpawnPhysicsConstraintActor(TSharedPtr<FROSBridgeSpawnPhysiscConstraintSrv::Request> Request)
+bool FROSSpawnPhysicsConstraintServer::SpawnPhysicsConstraintActor(
+	TSharedPtr<FROSBridgeSpawnPhysiscConstraintSrv::Request> Request)
 {
 	PhysicsConstraintDetails Details = Request->GetConstraintDetails();
 	AActor* First = *Controller->IdToActorMap.Find(Details.GetFirstModel().GetId());
@@ -123,12 +143,13 @@ bool FROSSpawnPhysicsConstraintServer::SpawnPhysicsConstraintActor(TSharedPtr<FR
 	SetupProfileInstance(&ConstraintComponent->ConstraintInstance.ProfileInstance, Details);
 	SetupLinearLimits(ConstraintComponent->ConstraintInstance, Details);
 	SetupAngularLimits(ConstraintComponent->ConstraintInstance, Details);
-	
+
 	//ConstraintComponent->SetConstrainedComponents(First->GetRootComponent(), NAME_None, Second->GetStaticMeshComponent(), NAME_None);
 	return true;
 }
 
-void FROSSpawnPhysicsConstraintServer::SetupProfileInstance(FConstraintProfileProperties * ProfileInstance, PhysicsConstraintDetails Details)
+void FROSSpawnPhysicsConstraintServer::SetupProfileInstance(FConstraintProfileProperties* ProfileInstance,
+                                                            PhysicsConstraintDetails Details)
 {
 	ProfileInstance->bDisableCollision = Details.GetDisabelCollision();
 	ProfileInstance->bEnableProjection = Details.GetEnableProjection();
@@ -137,53 +158,56 @@ void FROSSpawnPhysicsConstraintServer::SetupProfileInstance(FConstraintProfilePr
 	ProfileInstance->bParentDominates = Details.GetParentDominates();
 }
 
-void FROSSpawnPhysicsConstraintServer::SetupAngularLimits(FConstraintInstance Instance, PhysicsConstraintDetails Details)
+void FROSSpawnPhysicsConstraintServer::SetupAngularLimits(FConstraintInstance Instance,
+                                                          PhysicsConstraintDetails Details)
 {
-	unreal_world_control_msgs::AngularLimits AngLimit = Details.GetAngularLimits();
+	AngularLimits AngLimit = Details.GetAngularLimits();
 
-	if (AngLimit.GetUseAdvanced()) {
+	if (AngLimit.GetUseAdvanced())
+	{
 		//Advanced features will be set as well.
 		SetAngularLimits(Instance,
-			AngLimit.GetSwing1Motion(), AngLimit.GetSwing2Motion(), AngLimit.GetTwistMotion(),
-			AngLimit.GetSwing1LimitAngle(), AngLimit.GetSwing2LimitAngle(), AngLimit.GetTwistLimitAngle(),
-			AngLimit.GetSwingSoftConstrained(), AngLimit.GetTwistSoftConstrained(),
-			AngLimit.GetSwingStiffness(), AngLimit.GetSwingDamping(),
-			AngLimit.GetTwistStiffness(), AngLimit.GetTwistDamping()
+		                 AngLimit.GetSwing1Motion(), AngLimit.GetSwing2Motion(), AngLimit.GetTwistMotion(),
+		                 AngLimit.GetSwing1LimitAngle(), AngLimit.GetSwing2LimitAngle(), AngLimit.GetTwistLimitAngle(),
+		                 AngLimit.GetSwingSoftConstrained(), AngLimit.GetTwistSoftConstrained(),
+		                 AngLimit.GetSwingStiffness(), AngLimit.GetSwingDamping(),
+		                 AngLimit.GetTwistStiffness(), AngLimit.GetTwistDamping()
 		);
 	}
 	else
 	{
 		//Advanced features will be left default.
 		SetAngularLimits(Instance,
-			AngLimit.GetSwing1Motion(), AngLimit.GetSwing2Motion(), AngLimit.GetTwistMotion(),
-			AngLimit.GetSwing1LimitAngle(), AngLimit.GetSwing2LimitAngle(), AngLimit.GetTwistLimitAngle());
+		                 AngLimit.GetSwing1Motion(), AngLimit.GetSwing2Motion(), AngLimit.GetTwistMotion(),
+		                 AngLimit.GetSwing1LimitAngle(), AngLimit.GetSwing2LimitAngle(), AngLimit.GetTwistLimitAngle());
 	}
-
 }
 
 void FROSSpawnPhysicsConstraintServer::SetupLinearLimits(FConstraintInstance Instance, PhysicsConstraintDetails Details)
 {
-	unreal_world_control_msgs::LinearLimits LinLimit = Details.GetLinearLimits();
+	LinearLimits LinLimit = Details.GetLinearLimits();
 
-	if (LinLimit.GetUseAdvanced()) {
+	if (LinLimit.GetUseAdvanced())
+	{
 		//Advanced features will be set as well.
 		SetLinearLimits(Instance,
-			LinLimit.GetXMotion(), LinLimit.GetYMotion(), LinLimit.GetZMotion(),
-			LinLimit.GetLimit(),
-			LinLimit.GetSoftConstrained(), LinLimit.GetStiffness(), LinLimit.GetDamping()
+		                LinLimit.GetXMotion(), LinLimit.GetYMotion(), LinLimit.GetZMotion(),
+		                LinLimit.GetLimit(),
+		                LinLimit.GetSoftConstrained(), LinLimit.GetStiffness(), LinLimit.GetDamping()
 		);
 	}
 	else
 	{
 		//Advanced features will be left default.
 		SetLinearLimits(Instance,
-			LinLimit.GetXMotion(), LinLimit.GetYMotion(), LinLimit.GetZMotion(),
-			LinLimit.GetLimit()
+		                LinLimit.GetXMotion(), LinLimit.GetYMotion(), LinLimit.GetZMotion(),
+		                LinLimit.GetLimit()
 		);
 	}
 }
 
-TSharedPtr<FROSBridgeSrv::SrvRequest> FROSSpawnPhysicsConstraintServer::FromJson(TSharedPtr<FJsonObject> JsonObject) const
+TSharedPtr<FROSBridgeSrv::SrvRequest> FROSSpawnPhysicsConstraintServer::FromJson(
+	TSharedPtr<FJsonObject> JsonObject) const
 {
 	TSharedPtr<FROSBridgeSpawnPhysiscConstraintSrv::Request> Request_ =
 		MakeShareable(new FROSBridgeSpawnPhysiscConstraintSrv::Request());
@@ -191,17 +215,16 @@ TSharedPtr<FROSBridgeSrv::SrvRequest> FROSSpawnPhysicsConstraintServer::FromJson
 	return TSharedPtr<FROSBridgeSrv::SrvRequest>(Request_);
 }
 
-TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnPhysicsConstraintServer::Callback(TSharedPtr<FROSBridgeSrv::SrvRequest> Request)
+TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnPhysicsConstraintServer::Callback(
+	TSharedPtr<FROSBridgeSrv::SrvRequest> Request)
 {
-
 	TSharedPtr<FROSBridgeSpawnPhysiscConstraintSrv::Request> SpawnPhysicsConstraintRequest =
 		StaticCastSharedPtr<FROSBridgeSpawnPhysiscConstraintSrv::Request>(Request);
 
 	FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
 	{
 		ServiceSuccess = SpawnPhysicsConstraintActor(SpawnPhysicsConstraintRequest);
-
-	}, TStatId(), NULL, ENamedThreads::GameThread);
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 
 	//wait code above to complete
 	FTaskGraphInterface::Get().WaitUntilTaskCompletes(Task);
@@ -209,6 +232,4 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnPhysicsConstraintServer::Callbac
 	return TSharedPtr<FROSBridgeSrv::SrvResponse>
 		(new FROSBridgeSpawnPhysiscConstraintSrv::Response(ServiceSuccess));
 
-
-	return TSharedPtr<FROSBridgeSrv::SrvResponse>();
 }

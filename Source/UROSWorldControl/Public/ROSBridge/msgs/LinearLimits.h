@@ -2,7 +2,6 @@
 #include "ROSBridgeMsg.h"
 
 
-
 namespace unreal_world_control_msgs
 {
 	class LinearLimits : public FROSBridgeMsg
@@ -20,11 +19,13 @@ namespace unreal_world_control_msgs
 
 
 	public:
-		LinearLimits() {}
+		LinearLimits()
+		{
+		}
 
-		LinearLimits(uint8 InXMotion, uint8 InYMotion, uint8 InZMotion, float InLimit, 
-			bool InbUseAdvanced, 
-			bool InSoftConstrained, float InStiffness, float InDamping)
+		LinearLimits(uint8 InXMotion, uint8 InYMotion, uint8 InZMotion, float InLimit,
+		             bool InbUseAdvanced,
+		             bool InSoftConstrained, float InStiffness, float InDamping)
 		{
 			LinearLimits();
 			XMotion = InXMotion;
@@ -71,13 +72,14 @@ namespace unreal_world_control_msgs
 		{
 			return Damping;
 		}
-		
-		bool GetUseAdvanced() {
+
+		bool GetUseAdvanced()
+		{
 			return bUseAdvanced;
 		}
 
 
-		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
+		void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
 			XMotion = (uint8)(JsonObject->GetNumberField("x_motion"));
 			YMotion = (uint8)(JsonObject->GetNumberField("y_motion"));
@@ -96,14 +98,16 @@ namespace unreal_world_control_msgs
 			return Result;
 		}
 
-		virtual FString ToString() const override
+		FString ToString() const override
 		{
-			return TEXT("LinearLimits {x_motion = %d, y_motion = %d z_motion = %d, limit = %s, soft_constrained = %s, stiffness = %s, damping = %s"),
+			return TEXT(
+					"LinearLimits {x_motion = %d, y_motion = %d z_motion = %d, limit = %s, soft_constrained = %s, stiffness = %s, damping = %s"
+				),
 				XMotion, YMotion, ZMotion, FString::SanitizeFloat(Limit), bSoftConstrained ? TEXT("True") : TEXT("False"),
 				FString::SanitizeFloat(Stiffness), FString::SanitizeFloat(Damping);
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
+		TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 			Object->SetNumberField(TEXT("x_motion"), XMotion);
@@ -117,10 +121,10 @@ namespace unreal_world_control_msgs
 			return Object;
 		}
 
-		virtual FString ToYamlString() const override
+		FString ToYamlString() const override
 		{
 			FString OutputString;
-			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
+			TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}

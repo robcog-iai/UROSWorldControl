@@ -23,13 +23,15 @@ namespace unreal_world_control_msgs
 
 
 	public:
-		AngularLimits() {}
+		AngularLimits()
+		{
+		}
 
 		AngularLimits(uint8 InSwing1Motion, uint8 InSwing2Motion, uint8 InTwistMotion,
-			float InSwing1LimitAngle, float InSwing2LimitAngle, float InTwistLimitAngle,
-			bool InbUseAdvanced,
-			bool InSwingSoftConstrained, float InSwingStiffness, float InSwingDamping,
-			bool InTwistSoftConstrained, float InTwistStiffness, float InTwistDamping)
+		              float InSwing1LimitAngle, float InSwing2LimitAngle, float InTwistLimitAngle,
+		              bool InbUseAdvanced,
+		              bool InSwingSoftConstrained, float InSwingStiffness, float InSwingDamping,
+		              bool InTwistSoftConstrained, float InTwistStiffness, float InTwistDamping)
 		{
 			AngularLimits();
 			Swing1Motion = InSwing1Motion;
@@ -106,12 +108,13 @@ namespace unreal_world_control_msgs
 		{
 			return TwistDamping;
 		}
-		
-		bool GetUseAdvanced() {
+
+		bool GetUseAdvanced()
+		{
 			return bUseAdvanced;
 		}
 
-		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
+		void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
 			Swing1Motion = (uint8)(JsonObject->GetNumberField("swing_1_motion"));
 			Swing2Motion = (uint8)(JsonObject->GetNumberField("swing_2_motion"));
@@ -135,16 +138,21 @@ namespace unreal_world_control_msgs
 			return Result;
 		}
 
-		virtual FString ToString() const override
+		FString ToString() const override
 		{
-			return TEXT("AngularLimits {swing_1_motion = %d, swing_2_motion = %d, twist_motion = %d, swing_1_limit_angle = %s, swing_2_limit_angle = %s, twist_limit_angle = %s, swing_soft_constrained = %s, swing_stiffness = %s, swing_damping = %s, twist_soft_constrained = %s, twist_stiffness = %s, twist_damping = %s"),
+			return TEXT(
+					"AngularLimits {swing_1_motion = %d, swing_2_motion = %d, twist_motion = %d, swing_1_limit_angle = %s, swing_2_limit_angle = %s, twist_limit_angle = %s, swing_soft_constrained = %s, swing_stiffness = %s, swing_damping = %s, twist_soft_constrained = %s, twist_stiffness = %s, twist_damping = %s"
+				),
 				Swing1Motion, Swing2Motion, TwistMotion,
-				FString::SanitizeFloat(Swing1LimitAngle), FString::SanitizeFloat(Swing2LimitAngle), FString::SanitizeFloat(TwistLimitAngle),
-				bSwingSoftConstrained ? TEXT("True") : TEXT("False"), FString::SanitizeFloat(SwingStiffness), FString::SanitizeFloat(SwingDamping),
-				bTwistSoftConstrained ? TEXT("True") : TEXT("False"), FString::SanitizeFloat(TwistStiffness), FString::SanitizeFloat(TwistDamping);
+				FString::SanitizeFloat(Swing1LimitAngle), FString::SanitizeFloat(Swing2LimitAngle), FString::SanitizeFloat(
+					TwistLimitAngle),
+				bSwingSoftConstrained ? TEXT("True") : TEXT("False"), FString::SanitizeFloat(SwingStiffness), FString::
+				SanitizeFloat(SwingDamping),
+				bTwistSoftConstrained ? TEXT("True") : TEXT("False"), FString::SanitizeFloat(TwistStiffness), FString::
+				SanitizeFloat(TwistDamping);
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
+		TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 			Object->SetNumberField(TEXT("swing_1_motion"), Swing1Motion);
@@ -163,10 +171,10 @@ namespace unreal_world_control_msgs
 			return Object;
 		}
 
-		virtual FString ToYamlString() const override
+		FString ToYamlString() const override
 		{
 			FString OutputString;
-			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
+			TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}

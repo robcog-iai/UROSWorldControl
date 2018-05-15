@@ -1,4 +1,3 @@
-
 #include "RemoveModelServer.h"
 
 TSharedPtr<FROSBridgeSrv::SrvRequest> FROSRemoveModelServer::FromJson(TSharedPtr<FJsonObject> JsonObject) const
@@ -20,14 +19,13 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSRemoveModelServer::Callback(TSharedPt
 
 	FString UniqueId = RemoveModelRequest->GetInstanceId().GetId();
 
-	if (Controller->IdToActorMap.RemoveAndCopyValue(UniqueId, ActorToBeRemoved)) {
-		
+	if (Controller->IdToActorMap.RemoveAndCopyValue(UniqueId, ActorToBeRemoved))
+	{
 		// Actor was found and will be destroyed on GameThread
 		FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
 		{
 			ServiceSuccess = ActorToBeRemoved->Destroy();
-
-		}, TStatId(), NULL, ENamedThreads::GameThread);
+		}, TStatId(), nullptr, ENamedThreads::GameThread);
 
 		//wait code above to complete
 		FTaskGraphInterface::Get().WaitUntilTaskCompletes(Task);
@@ -35,13 +33,10 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSRemoveModelServer::Callback(TSharedPt
 		return TSharedPtr<FROSBridgeSrv::SrvResponse>
 			(new FROSBridgeRemoveModelSrv::Response(ServiceSuccess));
 	}
-	else
-	{
-		// the given UtagID was not found.
-		UE_LOG(LogTemp, Warning, TEXT("Actor with id:\"%s\" does not exist and can therefore not be removed."), *RemoveModelRequest->GetInstanceId().GetId());
-		return TSharedPtr<FROSBridgeSrv::SrvResponse>
-			(new FROSBridgeRemoveModelSrv::Response(false));
-	}
-
-
+	// the given UtagID was not found.
+	UE_LOG(LogTemp, Warning, TEXT("Actor with id:\"%s\" does not exist and can therefore not be removed."), *
+		RemoveModelRequest->GetInstanceId().GetId())
+	;
+	return TSharedPtr<FROSBridgeSrv::SrvResponse>
+		(new FROSBridgeRemoveModelSrv::Response(false));
 }

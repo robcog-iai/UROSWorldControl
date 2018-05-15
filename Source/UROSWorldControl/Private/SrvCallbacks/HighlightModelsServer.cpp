@@ -8,19 +8,20 @@ TSharedPtr<FROSBridgeSrv::SrvRequest> FROSHighlightModelsServer::FromJson(TShare
 	return TSharedPtr<FROSBridgeSrv::SrvRequest>(Request_);
 }
 
-TSharedPtr<FROSBridgeSrv::SrvResponse> FROSHighlightModelsServer::Callback(TSharedPtr<FROSBridgeSrv::SrvRequest> Request)
+TSharedPtr<FROSBridgeSrv::SrvResponse> FROSHighlightModelsServer::Callback(
+	TSharedPtr<FROSBridgeSrv::SrvRequest> Request)
 {
 	TSharedPtr<FROSBridgeHighlightModelsSrv::Request> HighlightModelsRequest =
 		StaticCastSharedPtr<FROSBridgeHighlightModelsSrv::Request>(Request);
 
-	TArray<unreal_world_control_msgs::InstanceId>* InstanceIds = HighlightModelsRequest->GetInstanceIds();
+	TArray<InstanceId>* InstanceIds = HighlightModelsRequest->GetInstanceIds();
 
 	TArray<bool> SuccessList;
 
 	bool bAllSucceded = true;
 	for (auto Instance : *InstanceIds)
 	{
-		AActor ** ActorToBeHighlighted = Controller->IdToActorMap.Find(Instance.GetId());
+		AActor** ActorToBeHighlighted = Controller->IdToActorMap.Find(Instance.GetId());
 		// Execute on game thread
 		if (ActorToBeHighlighted)
 		{
@@ -33,8 +34,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSHighlightModelsServer::Callback(TShar
 					Component->SetRenderCustomDepth(HighlightModelsRequest->GetToBeHighlighted());
 					Component->CustomDepthStencilValue = HighlightModelsRequest->GetColorIndex();
 				}
-
-			}, TStatId(), NULL, ENamedThreads::GameThread);
+			}, TStatId(), nullptr, ENamedThreads::GameThread);
 
 			//wait code above to complete
 			FTaskGraphInterface::Get().WaitUntilTaskCompletes(Task);
@@ -47,5 +47,4 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSHighlightModelsServer::Callback(TShar
 
 	return MakeShareable<FROSBridgeSrv::SrvResponse>
 		(new FROSBridgeHighlightModelsSrv::Response(bAllSucceded));
-
 }

@@ -4,12 +4,8 @@
 #include "ROSBridgeHandler.h"
 #include "ROSBridgeSrvServer.h"
 #include "ROSBridgeSrv.h"
-#include "Engine/StaticMeshActor.h"
-#include "Tags.h"
 #include "ROSWorldControlManager.h"
-#include "SetModelPose.h"
 #include "HelperFunctions.h"
-
 
 
 class FROSSetModelPoseServer final : public FROSBridgeSrvServer
@@ -24,7 +20,7 @@ class FROSSetModelPoseServer final : public FROSBridgeSrvServer
 private:
 	FROSSetModelPoseServer();
 
-	UWorld * World;
+	UWorld* World;
 	FThreadSafeBool ServiceSuccess;
 
 	ROSWorldControlManager* Controller;
@@ -33,7 +29,7 @@ private:
 
 public:
 	FROSSetModelPoseServer(FString Namespace, FString Name, UWorld* InWorld,
-		ROSWorldControlManager* InController) :
+	                       ROSWorldControlManager* InController) :
 		FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("unreal_world_control_msgs/SetModelPose"))
 	{
 		World = InWorld;
@@ -43,5 +39,4 @@ public:
 	TSharedPtr<FROSBridgeSrv::SrvRequest> FromJson(TSharedPtr<FJsonObject> JsonObject) const override;
 
 	TSharedPtr<FROSBridgeSrv::SrvResponse> Callback(TSharedPtr<FROSBridgeSrv::SrvRequest> Request) override;
-
 };

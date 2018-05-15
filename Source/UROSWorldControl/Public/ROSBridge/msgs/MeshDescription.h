@@ -1,7 +1,5 @@
 #pragma once
 #include "ROSBridgeMsg.h"
-#include "string.h"
-
 
 
 namespace unreal_world_control_msgs
@@ -13,7 +11,9 @@ namespace unreal_world_control_msgs
 
 
 	public:
-		MeshDescription() {}
+		MeshDescription()
+		{
+		}
 
 		MeshDescription(FString InPathToMesh, FString InPathToMaterial)
 		{
@@ -32,7 +32,7 @@ namespace unreal_world_control_msgs
 			return PathToMaterial;
 		}
 
-		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
+		void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
 			PathToMesh = JsonObject->GetStringField("path_to_mesh");
 			PathToMaterial = JsonObject->GetStringField("path_to_material");
@@ -45,12 +45,12 @@ namespace unreal_world_control_msgs
 			return Result;
 		}
 
-		virtual FString ToString() const override
+		FString ToString() const override
 		{
 			return TEXT("MeshDescription {path_to_mesh = %s, path_to_material = %s"), PathToMesh, PathToMaterial;
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
+		TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 			Object->SetStringField(TEXT("path_to_mesh"), PathToMesh);
@@ -58,10 +58,10 @@ namespace unreal_world_control_msgs
 			return Object;
 		}
 
-		virtual FString ToYamlString() const override
+		FString ToYamlString() const override
 		{
 			FString OutputString;
-			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
+			TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}

@@ -5,29 +5,32 @@
 #include "AngularLimits.h"
 
 
-
 namespace unreal_world_control_msgs
 {
 	class PhysicsConstraintDetails : public FROSBridgeMsg
 	{
-		unreal_world_control_msgs::InstanceId FirstModel;
-		unreal_world_control_msgs::InstanceId SecondModel;
+		InstanceId FirstModel;
+		InstanceId SecondModel;
 		bool bDisableCollision;
 		bool bEnableProjection;
 		float ProjectionLinearTolerance;
 		float ProjectionAngularTolerance;
 		bool bParentDominates;
-		unreal_world_control_msgs::LinearLimits LinearLimits;
-		unreal_world_control_msgs::AngularLimits AngularLimits;
+		LinearLimits LinearLimits;
+		AngularLimits AngularLimits;
 
 
 	public:
-		PhysicsConstraintDetails() {}
+		PhysicsConstraintDetails()
+		{
+		}
 
-		PhysicsConstraintDetails(unreal_world_control_msgs::InstanceId InFirstModel, unreal_world_control_msgs::InstanceId InSecondModel,
-			bool InDisableCollision, bool InEnableProjection,
-			float InProjectionLinearTolerance, float InProjectionAngularTolerance, bool InParentDominates,
-			unreal_world_control_msgs::LinearLimits InLinearLimits, unreal_world_control_msgs::AngularLimits InAngularLimits)
+		PhysicsConstraintDetails(InstanceId InFirstModel, InstanceId InSecondModel,
+		                         bool InDisableCollision, bool InEnableProjection,
+		                         float InProjectionLinearTolerance, float InProjectionAngularTolerance,
+		                         bool InParentDominates,
+		                         unreal_world_control_msgs::LinearLimits InLinearLimits,
+		                         unreal_world_control_msgs::AngularLimits InAngularLimits)
 		{
 			PhysicsConstraintDetails();
 			FirstModel = InFirstModel;
@@ -41,12 +44,12 @@ namespace unreal_world_control_msgs
 			AngularLimits = InAngularLimits;
 		}
 
-		unreal_world_control_msgs::InstanceId GetFirstModel()
+		InstanceId GetFirstModel()
 		{
 			return FirstModel;
 		}
 
-		unreal_world_control_msgs::InstanceId GetSecondModel()
+		InstanceId GetSecondModel()
 		{
 			return SecondModel;
 		}
@@ -86,7 +89,7 @@ namespace unreal_world_control_msgs
 			return AngularLimits;
 		}
 
-		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
+		void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
 			FirstModel.FromJson(JsonObject->GetObjectField("first_model"));
 			SecondModel.FromJson(JsonObject->GetObjectField("second_model"));
@@ -106,16 +109,18 @@ namespace unreal_world_control_msgs
 			return Result;
 		}
 
-		virtual FString ToString() const override
+		FString ToString() const override
 		{
-			return TEXT("PhysicsConstraint {first_model = %s, second_model = %s, disable_collision = %s, enable_projection = %s, projection_linear_tolerance = %s, projection_angular_tolerance = %s, parent_dominates = %s, linear_limits = %s, angular_limits = %s"), 
-				FirstModel.ToString(), SecondModel.ToString(), bDisableCollision ? TEXT("True") : TEXT("False"), 
+			return TEXT(
+					"PhysicsConstraint {first_model = %s, second_model = %s, disable_collision = %s, enable_projection = %s, projection_linear_tolerance = %s, projection_angular_tolerance = %s, parent_dominates = %s, linear_limits = %s, angular_limits = %s"
+				),
+				FirstModel.ToString(), SecondModel.ToString(), bDisableCollision ? TEXT("True") : TEXT("False"),
 				bEnableProjection ? TEXT("True") : TEXT("False"), FString::SanitizeFloat(ProjectionLinearTolerance),
 				FString::SanitizeFloat(ProjectionAngularTolerance), bParentDominates ? TEXT("True") : TEXT("False"),
 				LinearLimits.ToString(), AngularLimits.ToString();
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
+		TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 			Object->SetObjectField(TEXT("first_model"), FirstModel.ToJsonObject());
@@ -130,10 +135,10 @@ namespace unreal_world_control_msgs
 			return Object;
 		}
 
-		virtual FString ToYamlString() const override
+		FString ToYamlString() const override
 		{
 			FString OutputString;
-			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
+			TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}

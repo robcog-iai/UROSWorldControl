@@ -5,7 +5,8 @@
 
 using namespace unreal_world_control_msgs;
 
-class UROSBRIDGE_API FROSBridgeSpawnMultipleModelsSrv : public FROSBridgeSrv {
+class UROSBRIDGE_API FROSBridgeSpawnMultipleModelsSrv : public FROSBridgeSrv
+{
 protected:
 	FString Type;
 
@@ -14,19 +15,23 @@ public:
 	{
 		Type = Type_;
 	}
-	class Request : public SrvRequest {
+
+	class Request : public SrvRequest
+	{
 	private:
 		TArray<ModelDescription> ModelDescriptions;
 
 	public:
-		Request() {}
+		Request()
+		{
+		}
 
 		TArray<ModelDescription>* GetModelDescriptions() { return &ModelDescriptions; }
 
-		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
+		void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
 			TArray<TSharedPtr<FJsonValue>> MeshesPtrArray = JsonObject->GetArrayField(TEXT("model_descriptions"));
-			for (auto &ptr : MeshesPtrArray)
+			for (auto& ptr : MeshesPtrArray)
 			{
 				ModelDescription Description;
 				Description.FromJson(ptr->AsObject());
@@ -41,19 +46,18 @@ public:
 			return req;
 		}
 
-		virtual FString ToString() const override
+		FString ToString() const override
 		{
 			return TEXT("RosWorldControlSpawnMultipleModelsSrv::Request { Number of Models to Spawn: %s }"),
 				FString::FromInt(ModelDescriptions.Num());
-
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const
+		TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 
 			TArray<TSharedPtr<FJsonValue>> MeshesPtrArray;
-			for (auto &Tag : ModelDescriptions)
+			for (auto& Tag : ModelDescriptions)
 			{
 				TSharedPtr<FJsonValue> Ptr = MakeShareable(new FJsonValueObject(Tag.ToJsonObject()));
 				MeshesPtrArray.Add(Ptr);
@@ -63,43 +67,45 @@ public:
 
 			return Object;
 		}
-
 	};
 
 
-	class Response : public SrvResponse {
+	class Response : public SrvResponse
+	{
 	private:
 		TArray<bool> SuccessList;
 		TArray<InstanceId> InstanceIds;
 	public:
-		Response() {}
+		Response()
+		{
+		}
+
 		Response(TArray<bool> InSuccessList, TArray<InstanceId> InInstanceIds)
 		{
 			SuccessList = InSuccessList;
 			InstanceIds = InInstanceIds;
 		}
-		TArray<bool>GetSuccessList() const { return SuccessList; }
+
+		TArray<bool> GetSuccessList() const { return SuccessList; }
 		void SetSuccessList(TArray<bool> InSuccessList) { SuccessList = InSuccessList; }
 
-		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
+		void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
 			SuccessList.Empty();
 			TArray<TSharedPtr<FJsonValue>> SuccessPtrArray = JsonObject->GetArrayField(TEXT("success"));
-			for (auto &ptr : SuccessPtrArray)
+			for (auto& ptr : SuccessPtrArray)
 			{
 				SuccessList.Add(ptr->AsBool());
 			}
 
 			InstanceIds.Empty();
 			TArray<TSharedPtr<FJsonValue>> IdsPtrArray = JsonObject->GetArrayField(TEXT("Instance_ids"));
-			for (auto &ptr : IdsPtrArray)
+			for (auto& ptr : IdsPtrArray)
 			{
 				InstanceId Entry;
 				Entry.FromJson(ptr->AsObject());
 				InstanceIds.Add(Entry);
 			}
-
-
 		}
 
 		static Response GetFromJson(TSharedPtr<FJsonObject> JSonObject)
@@ -109,17 +115,17 @@ public:
 			return resp;
 		}
 
-		virtual FString ToString() const override
+		FString ToString() const override
 		{
 			return TEXT("RosWorldControlSpawnMultipleModelsSrv::Response");
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const
+		TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 
 			TArray<TSharedPtr<FJsonValue>> SuccessPtrArray;
-			for (auto &Entry : SuccessList)
+			for (auto& Entry : SuccessList)
 			{
 				TSharedPtr<FJsonValue> Ptr = MakeShareable(new FJsonValueBoolean(Entry));
 				SuccessPtrArray.Add(Ptr);
@@ -127,7 +133,7 @@ public:
 			Object->SetArrayField("success", SuccessPtrArray);
 
 			TArray<TSharedPtr<FJsonValue>> IdsPtrArray;
-			for (auto &Entry : InstanceIds)
+			for (auto& Entry : InstanceIds)
 			{
 				TSharedPtr<FJsonValue> Ptr = MakeShareable(new FJsonValueObject(Entry.ToJsonObject()));
 				IdsPtrArray.Add(Ptr);
@@ -137,5 +143,4 @@ public:
 			return Object;
 		}
 	};
-
 };
