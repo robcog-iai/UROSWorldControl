@@ -1,36 +1,27 @@
 #pragma once
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
 #include "ROSBridgeHandler.h"
 #include "ROSBridgeSrvServer.h"
 #include "ROSBridgeSrv.h"
 #include "ROSWorldControlManager.h"
-#include "HighlightModels.h"
+#include "HighlightModel.h"
 
 
 class FROSHighlightModelsServer final : public FROSBridgeSrvServer
 {
-	struct MoveAssetParams
-	{
-		AActor* Actor;
-		FVector Location;
-		FRotator Rotator;
-	};
-
+		
 private:
 	FROSHighlightModelsServer();
 
 	UWorld* World;
-	FThreadSafeBool ServiceSuccess;
 
 	ROSWorldControlManager* Controller;
 public:
 	FROSHighlightModelsServer(FString Namespace, FString Name, UWorld* InWorld,
-	                          ROSWorldControlManager* InController) :
-		FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("unreal_world_control_msgs/HighlightModels"))
+		ROSWorldControlManager* InController) :
+		FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("world_control_msgs/HighlightModel")),
+		World(InWorld), Controller(InController)
 	{
-		World = InWorld;
-		Controller = InController;
 	}
 
 	TSharedPtr<FROSBridgeSrv::SrvRequest> FromJson(TSharedPtr<FJsonObject> JsonObject) const override;

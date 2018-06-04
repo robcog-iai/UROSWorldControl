@@ -2,7 +2,8 @@
 #include "ROSBridgeMsg.h"
 
 
-namespace unreal_world_control_msgs
+
+namespace world_control_msgs
 {
 	class LinearLimits : public FROSBridgeMsg
 	{
@@ -10,30 +11,24 @@ namespace unreal_world_control_msgs
 		uint8 YMotion;
 		uint8 ZMotion;
 		float Limit;
-
-		bool bUseAdvanced;
-		//Advanced
-		bool bSoftConstrained;
+		bool UseAdvanced;
+		bool SoftConstraint;
 		float Stiffness;
 		float Damping;
 
 
 	public:
-		LinearLimits()
-		{
-		}
+		LinearLimits() {}
 
-		LinearLimits(uint8 InXMotion, uint8 InYMotion, uint8 InZMotion, float InLimit,
-		             bool InbUseAdvanced,
-		             bool InSoftConstrained, float InStiffness, float InDamping)
+		LinearLimits(uint8 InXMotion, uint8 InYMotion, uint8 InZMotion, float InLimit, bool InUseAdvanced, bool InSoftConstraint, float InStiffness, float InDamping)
 		{
 			LinearLimits();
 			XMotion = InXMotion;
 			YMotion = InYMotion;
 			ZMotion = InZMotion;
 			Limit = InLimit;
-			bUseAdvanced = InbUseAdvanced;
-			bSoftConstrained = InSoftConstrained;
+			UseAdvanced = InUseAdvanced;
+			SoftConstraint = InSoftConstraint;
 			Stiffness = InStiffness;
 			Damping = InDamping;
 		}
@@ -58,9 +53,14 @@ namespace unreal_world_control_msgs
 			return Limit;
 		}
 
-		bool GetSoftConstrained()
+		bool GetUseAdvanced()
 		{
-			return bSoftConstrained;
+			return UseAdvanced;
+		}
+
+		bool GetSoftConstraint()
+		{
+			return SoftConstraint;
 		}
 
 		float GetStiffness()
@@ -73,20 +73,14 @@ namespace unreal_world_control_msgs
 			return Damping;
 		}
 
-		bool GetUseAdvanced()
+		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
-			return bUseAdvanced;
-		}
-
-
-		void FromJson(TSharedPtr<FJsonObject> JsonObject) override
-		{
-			XMotion = (uint8)(JsonObject->GetNumberField("x_motion"));
-			YMotion = (uint8)(JsonObject->GetNumberField("y_motion"));
-			ZMotion = (uint8)(JsonObject->GetNumberField("z_motion"));
+			XMotion = JsonObject->GetNumberField("x_motion");
+			YMotion = JsonObject->GetNumberField("y_motion");
+			ZMotion = JsonObject->GetNumberField("z_motion");
 			Limit = JsonObject->GetNumberField("limit");
-			bUseAdvanced = JsonObject->GetBoolField("use_advanced");
-			bSoftConstrained = JsonObject->GetBoolField("soft_constrained");
+			UseAdvanced = JsonObject->GetBoolField("use_advanced");
+			SoftConstraint = JsonObject->GetBoolField("soft_constraint");
 			Stiffness = JsonObject->GetNumberField("stiffness");
 			Damping = JsonObject->GetNumberField("damping");
 		}
@@ -98,33 +92,37 @@ namespace unreal_world_control_msgs
 			return Result;
 		}
 
-		FString ToString() const override
+		virtual FString ToString() const override
 		{
-			return TEXT(
-					"LinearLimits {x_motion = %d, y_motion = %d z_motion = %d, limit = %s, soft_constrained = %s, stiffness = %s, damping = %s"
-				),
-				XMotion, YMotion, ZMotion, FString::SanitizeFloat(Limit), bSoftConstrained ? TEXT("True") : TEXT("False"),
-				FString::SanitizeFloat(Stiffness), FString::SanitizeFloat(Damping);
+			return TEXT("LinearLimits {x_motion = %s, y_motion = %s, z_motion = %s, limit = %s, use_advanced = %s, soft_constraint = %s, stiffness = %s, damping = %s"),
+				FString::FromInt(XMotion),
+				FString::FromInt(YMotion),
+				FString::FromInt(ZMotion),
+				FString::SanitizeFloat(Limit),
+				UseAdvanced ? TEXT("True") : TEXT("False"),
+				SoftConstraint ? TEXT("True") : TEXT("False"),
+				FString::SanitizeFloat(Stiffness),
+				FString::SanitizeFloat(Damping);
 		}
 
-		TSharedPtr<FJsonObject> ToJsonObject() const override
+		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 			Object->SetNumberField(TEXT("x_motion"), XMotion);
 			Object->SetNumberField(TEXT("y_motion"), YMotion);
 			Object->SetNumberField(TEXT("z_motion"), ZMotion);
 			Object->SetNumberField(TEXT("limit"), Limit);
-			Object->SetBoolField(TEXT("use_advanced"), bUseAdvanced);
-			Object->SetBoolField(TEXT("soft_constrained"), bSoftConstrained);
+			Object->SetBoolField(TEXT("use_advanced"), UseAdvanced);
+			Object->SetBoolField(TEXT("soft_constraint"), SoftConstraint);
 			Object->SetNumberField(TEXT("stiffness"), Stiffness);
 			Object->SetNumberField(TEXT("damping"), Damping);
 			return Object;
 		}
 
-		FString ToYamlString() const override
+		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
-			TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}

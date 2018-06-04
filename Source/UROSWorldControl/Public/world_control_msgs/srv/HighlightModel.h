@@ -1,16 +1,13 @@
 #pragma once
 #include "ROSBridgeSrv.h"
 
-
-
-
-class UROSBRIDGE_API FROSAttachModelToParentSrv : public FROSBridgeSrv
+class UROSBRIDGE_API FROSHighlightModelSrv : public FROSBridgeSrv
 {
 protected:
 	FString Type;
 
 public:
-	FROSAttachModelToParentSrv(FString InType)
+	FROSHighlightModelSrv(FString InType)
 	{
 		Type = InType;
 	}
@@ -18,33 +15,33 @@ public:
 	class Request : public SrvRequest
 	{
 	private:
-		FString ParentId;
-		FString ChildId;
+		FString Id;
+		uint8 Color;
 
 
 	public:
 		Request() {}
 
-		Request(FString InParentId, FString InChildId)
+		Request(FString InId, uint8 InColor)
 		{
-			ParentId = InParentId;
-			ChildId = InChildId;
+			Id = InId;
+			Color = InColor;
 		}
 
-		FString GetParentId()
+		FString GetId()
 		{
-			return ParentId;
+			return Id;
 		}
 
-		FString GetChildId()
+		uint8 GetColor()
 		{
-			return ChildId;
+			return Color;
 		}
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
-			ParentId = JsonObject->GetStringField("parent_id");
-			ChildId = JsonObject->GetStringField("child_id");
+			Id = JsonObject->GetStringField("id");
+			Color = JsonObject->GetNumberField("color");
 		}
 
 		static Request GetFromJson(TSharedPtr<FJsonObject> JsonObject)
@@ -56,16 +53,16 @@ public:
 
 		FString ToString() const override
 		{
-			return TEXT("FROSAttachModelToParentSrv:Request {parent_id = %s, child_id = %s"),
-				ParentId,
-				ChildId;
+			return TEXT("FROSHighlightModelSrv:Request {id = %s, color = %s"),
+				Id,
+				FString::FromInt(Color);
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-			Object->SetStringField(TEXT("parent_id"), ParentId);
-			Object->SetStringField(TEXT("child_id"), ChildId);
+			Object->SetStringField(TEXT("id"), Id);
+			Object->SetNumberField(TEXT("color"), Color);
 			return Object;
 		}
 
@@ -104,7 +101,7 @@ public:
 
 		FString ToString() const override
 		{
-			return TEXT("FROSAttachModelToParentSrv:Response {success = %s"),
+			return TEXT("FROSHighlightModelSrv:Response {success = %s"),
 				Success ? TEXT("True") : TEXT("False");
 		}
 

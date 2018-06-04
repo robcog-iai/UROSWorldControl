@@ -1,7 +1,10 @@
 #pragma once
 #include "ROSBridgeMsg.h"
+#include "Vector3.h"
 
-namespace unreal_world_control_msgs
+
+
+namespace world_control_msgs
 {
 	class AngularLimits : public FROSBridgeMsg
 	{
@@ -11,27 +14,20 @@ namespace unreal_world_control_msgs
 		float Swing1LimitAngle;
 		float Swing2LimitAngle;
 		float TwistLimitAngle;
-
-		bool bUseAdvanced;
-		//Advanced
-		bool bSwingSoftConstrained;
+		geometry_msgs::Vector3 AngularRoationOffset;
+		bool UseAdvanced;
+		bool SwingSoftConstrained;
 		float SwingStiffness;
 		float SwingDamping;
-		bool bTwistSoftConstrained;
+		bool TwistSoftConstrained;
 		float TwistStiffness;
 		float TwistDamping;
 
 
 	public:
-		AngularLimits()
-		{
-		}
+		AngularLimits() {}
 
-		AngularLimits(uint8 InSwing1Motion, uint8 InSwing2Motion, uint8 InTwistMotion,
-		              float InSwing1LimitAngle, float InSwing2LimitAngle, float InTwistLimitAngle,
-		              bool InbUseAdvanced,
-		              bool InSwingSoftConstrained, float InSwingStiffness, float InSwingDamping,
-		              bool InTwistSoftConstrained, float InTwistStiffness, float InTwistDamping)
+		AngularLimits(uint8 InSwing1Motion, uint8 InSwing2Motion, uint8 InTwistMotion, float InSwing1LimitAngle, float InSwing2LimitAngle, float InTwistLimitAngle, geometry_msgs::Vector3 InAngularRoationOffset, bool InUseAdvanced, bool InSwingSoftConstrained, float InSwingStiffness, float InSwingDamping, bool InTwistSoftConstrained, float InTwistStiffness, float InTwistDamping)
 		{
 			AngularLimits();
 			Swing1Motion = InSwing1Motion;
@@ -40,11 +36,12 @@ namespace unreal_world_control_msgs
 			Swing1LimitAngle = InSwing1LimitAngle;
 			Swing2LimitAngle = InSwing2LimitAngle;
 			TwistLimitAngle = InTwistLimitAngle;
-			bUseAdvanced = InbUseAdvanced;
-			bSwingSoftConstrained = InSwingSoftConstrained;
+			AngularRoationOffset = InAngularRoationOffset;
+			UseAdvanced = InUseAdvanced;
+			SwingSoftConstrained = InSwingSoftConstrained;
 			SwingStiffness = InSwingStiffness;
 			SwingDamping = InSwingDamping;
-			bTwistSoftConstrained = InTwistSoftConstrained;
+			TwistSoftConstrained = InTwistSoftConstrained;
 			TwistStiffness = InTwistStiffness;
 			TwistDamping = InTwistDamping;
 		}
@@ -79,9 +76,19 @@ namespace unreal_world_control_msgs
 			return TwistLimitAngle;
 		}
 
+		geometry_msgs::Vector3 GetAngularRoationOffset()
+		{
+			return AngularRoationOffset;
+		}
+
+		bool GetUseAdvanced()
+		{
+			return UseAdvanced;
+		}
+
 		bool GetSwingSoftConstrained()
 		{
-			return bSwingSoftConstrained;
+			return SwingSoftConstrained;
 		}
 
 		float GetSwingStiffness()
@@ -96,7 +103,7 @@ namespace unreal_world_control_msgs
 
 		bool GetTwistSoftConstrained()
 		{
-			return bTwistSoftConstrained;
+			return TwistSoftConstrained;
 		}
 
 		float GetTwistStiffness()
@@ -109,24 +116,20 @@ namespace unreal_world_control_msgs
 			return TwistDamping;
 		}
 
-		bool GetUseAdvanced()
+		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
-			return bUseAdvanced;
-		}
-
-		void FromJson(TSharedPtr<FJsonObject> JsonObject) override
-		{
-			Swing1Motion = (uint8)(JsonObject->GetNumberField("swing_1_motion"));
-			Swing2Motion = (uint8)(JsonObject->GetNumberField("swing_2_motion"));
-			TwistMotion = (uint8)(JsonObject->GetNumberField("twist_motion"));
+			Swing1Motion = JsonObject->GetNumberField("swing_1_motion");
+			Swing2Motion = JsonObject->GetNumberField("swing_2_motion");
+			TwistMotion = JsonObject->GetNumberField("twist_motion");
 			Swing1LimitAngle = JsonObject->GetNumberField("swing_1_limit_angle");
 			Swing2LimitAngle = JsonObject->GetNumberField("swing_2_limit_angle");
 			TwistLimitAngle = JsonObject->GetNumberField("twist_limit_angle");
-			bUseAdvanced = JsonObject->GetBoolField("use_advanced");
-			bSwingSoftConstrained = JsonObject->GetBoolField("swing_soft_constrained");
+			AngularRoationOffset.FromJson(JsonObject->GetObjectField("angular_roation_offset"));
+			UseAdvanced = JsonObject->GetBoolField("use_advanced");
+			SwingSoftConstrained = JsonObject->GetBoolField("swing_soft_constrained");
 			SwingStiffness = JsonObject->GetNumberField("swing_stiffness");
 			SwingDamping = JsonObject->GetNumberField("swing_damping");
-			bTwistSoftConstrained = JsonObject->GetBoolField("twist_soft_constrained");
+			TwistSoftConstrained = JsonObject->GetBoolField("twist_soft_constrained");
 			TwistStiffness = JsonObject->GetNumberField("twist_stiffness");
 			TwistDamping = JsonObject->GetNumberField("twist_damping");
 		}
@@ -138,21 +141,26 @@ namespace unreal_world_control_msgs
 			return Result;
 		}
 
-		FString ToString() const override
+		virtual FString ToString() const override
 		{
-			return TEXT(
-					"AngularLimits {swing_1_motion = %d, swing_2_motion = %d, twist_motion = %d, swing_1_limit_angle = %s, swing_2_limit_angle = %s, twist_limit_angle = %s, swing_soft_constrained = %s, swing_stiffness = %s, swing_damping = %s, twist_soft_constrained = %s, twist_stiffness = %s, twist_damping = %s"
-				),
-				Swing1Motion, Swing2Motion, TwistMotion,
-				FString::SanitizeFloat(Swing1LimitAngle), FString::SanitizeFloat(Swing2LimitAngle), FString::SanitizeFloat(
-					TwistLimitAngle),
-				bSwingSoftConstrained ? TEXT("True") : TEXT("False"), FString::SanitizeFloat(SwingStiffness), FString::
-				SanitizeFloat(SwingDamping),
-				bTwistSoftConstrained ? TEXT("True") : TEXT("False"), FString::SanitizeFloat(TwistStiffness), FString::
-				SanitizeFloat(TwistDamping);
+			return TEXT("AngularLimits {swing_1_motion = %s, swing_2_motion = %s, twist_motion = %s, swing_1_limit_angle = %s, swing_2_limit_angle = %s, twist_limit_angle = %s, angular_roation_offset = %s, use_advanced = %s, swing_soft_constrained = %s, swing_stiffness = %s, swing_damping = %s, twist_soft_constrained = %s, twist_stiffness = %s, twist_damping = %s"),
+				FString::FromInt(Swing1Motion),
+				FString::FromInt(Swing2Motion),
+				FString::FromInt(TwistMotion),
+				FString::SanitizeFloat(Swing1LimitAngle),
+				FString::SanitizeFloat(Swing2LimitAngle),
+				FString::SanitizeFloat(TwistLimitAngle),
+				AngularRoationOffset.ToString(),
+				UseAdvanced ? TEXT("True") : TEXT("False"),
+				SwingSoftConstrained ? TEXT("True") : TEXT("False"),
+				FString::SanitizeFloat(SwingStiffness),
+				FString::SanitizeFloat(SwingDamping),
+				TwistSoftConstrained ? TEXT("True") : TEXT("False"),
+				FString::SanitizeFloat(TwistStiffness),
+				FString::SanitizeFloat(TwistDamping);
 		}
 
-		TSharedPtr<FJsonObject> ToJsonObject() const override
+		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 			Object->SetNumberField(TEXT("swing_1_motion"), Swing1Motion);
@@ -161,20 +169,21 @@ namespace unreal_world_control_msgs
 			Object->SetNumberField(TEXT("swing_1_limit_angle"), Swing1LimitAngle);
 			Object->SetNumberField(TEXT("swing_2_limit_angle"), Swing2LimitAngle);
 			Object->SetNumberField(TEXT("twist_limit_angle"), TwistLimitAngle);
-			Object->SetBoolField(TEXT("use_advanced"), bUseAdvanced);
-			Object->SetBoolField(TEXT("swing_soft_constrained"), bSwingSoftConstrained);
+			Object->SetObjectField(TEXT("angular_roation_offset"), AngularRoationOffset.ToJsonObject());
+			Object->SetBoolField(TEXT("use_advanced"), UseAdvanced);
+			Object->SetBoolField(TEXT("swing_soft_constrained"), SwingSoftConstrained);
 			Object->SetNumberField(TEXT("swing_stiffness"), SwingStiffness);
 			Object->SetNumberField(TEXT("swing_damping"), SwingDamping);
-			Object->SetBoolField(TEXT("twist_soft_constrained"), bTwistSoftConstrained);
+			Object->SetBoolField(TEXT("twist_soft_constrained"), TwistSoftConstrained);
 			Object->SetNumberField(TEXT("twist_stiffness"), TwistStiffness);
 			Object->SetNumberField(TEXT("twist_damping"), TwistDamping);
 			return Object;
 		}
 
-		FString ToYamlString() const override
+		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
-			TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}

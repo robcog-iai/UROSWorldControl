@@ -18,23 +18,16 @@ bool FROSSpawnModelServer::SpawnAsset(const SpawnAssetParams Params)
 
 
 	//Load Mesh and check if it succeded.
-	UStaticMesh* Mesh = LoadMesh(Params.PathOfMesh, Params.InstanceId);
+	UStaticMesh* Mesh = LoadMesh(Params.Name, Params.StartDir);
 	if (!Mesh)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Could not find a Mesh."));
 		return false;
 	}
 
-
-	//Load Material and check if it succeded
-	UMaterialInterface* Material = LoadMaterial(Params.PathOfMaterial, Params.InstanceId);
-
-
 	AStaticMeshActor* SpawnedItem;
 
-	FString UniqueId = Params.InstanceId->GetId();
-
-	if (Controller->IdToActorMap.Find(UniqueId) == nullptr)
+	if (Controller->IdToActorMap.Find(Params.Id) == nullptr)
 	{
 		//Actual Spawning MeshComponent
 		SpawnedItem = World->SpawnActor<AStaticMeshActor>(Params.Location * 100.f, Params.Rotator, SpawnParams);
@@ -43,34 +36,38 @@ bool FROSSpawnModelServer::SpawnAsset(const SpawnAssetParams Params)
 		SpawnedItem->SetMobility(EComponentMobility::Movable);
 		//Assigning the Mesh and Material to the Component
 		SpawnedItem->GetStaticMeshComponent()->SetStaticMesh(Mesh);
-		if (Material)
+		
+		
+		
+		if (Params.MaterialPaths.Num())
 		{
-			SpawnedItem->GetStaticMeshComponent()->SetMaterial(0, Material);
+			for(int i = 0; i < Params.MaterialPaths.Num(); i++)
+			{
+				UMaterialInterface* Material = LoadMaterial(Params.MaterialNames[i], Params.MaterialPaths[i]);
+				if(Material)
+				{
+					SpawnedItem->GetStaticMeshComponent()->SetMaterial(i, Material);
+				}
+			}
 		}
-		SpawnedItem->SetActorLabel(UROSWorldControlHelper::GetUniqueNameOfInstanceID(Params.InstanceId));
+		SpawnedItem->SetActorLabel(Params.ActorLabel);
 
-		if (Params.bIsStatic)
-		{
-			SpawnedItem->GetStaticMeshComponent()->SetSimulatePhysics(false);
-			SpawnedItem->GetStaticMeshComponent()->bGenerateOverlapEvents = false;
-			SpawnedItem->SetMobility(EComponentMobility::Static);
-		}
-		else
-		{
-			SpawnedItem->GetStaticMeshComponent()->SetSimulatePhysics(true);
-			SpawnedItem->GetStaticMeshComponent()->bGenerateOverlapEvents = true;
-			SpawnedItem->SetMobility(EComponentMobility::Movable);
-		}
 
+		world_control_msgs::PhysicsProperties Properties = Params.PhysicsProperties;
+		SpawnedItem->GetStaticMeshComponent()->SetSimulatePhysics(Properties.GetSimulatePhysics());
+		SpawnedItem->GetStaticMeshComponent()->bGenerateOverlapEvents = Properties.GetGenerateOverlapEvents();
+		SpawnedItem->GetStaticMeshComponent()->SetEnableGravity(Properties.GetGravity());
+		SpawnedItem->GetStaticMeshComponent()->SetMassOverrideInKg(NAME_None, Properties.GetMass());
+		
+		Properties.GetSimulatePhysics() ? SpawnedItem->SetMobility(EComponentMobility::Movable) : SpawnedItem->SetMobility(EComponentMobility::Static);
+		
 		//Add this object to id refrence map
-		Controller->IdToActorMap.Add(UniqueId, SpawnedItem);
+		Controller->IdToActorMap.Add(Params.Id, SpawnedItem);
 	}
 	else
 	{
 		//ID is already taken
-		UE_LOG(LogTemp, Error, TEXT("Semlog id: \"%s\" is not unique, therefore nothing was spawned."), *Params.InstanceId->
-			GetId())
-		;
+		UE_LOG(LogTemp, Error, TEXT("Semlog id: \"%s\" is not unique, therefore nothing was spawned."), *Params.Id);
 		return false;
 	}
 
@@ -79,7 +76,7 @@ bool FROSSpawnModelServer::SpawnAsset(const SpawnAssetParams Params)
 		SpawnedItem,
 		TEXT("SemLog"),
 		TEXT("id"),
-		UniqueId);
+		Params.Id);
 
 
 	//Add other Tags to Actor
@@ -98,26 +95,29 @@ bool FROSSpawnModelServer::SpawnAsset(const SpawnAssetParams Params)
 
 TSharedPtr<FROSBridgeSrv::SrvRequest> FROSSpawnModelServer::FromJson(TSharedPtr<FJsonObject> JsonObject) const
 {
-	TSharedPtr<FROSBridgeSpawnServiceSrv::Request> Request_ =
-		MakeShareable(new FROSBridgeSpawnServiceSrv::Request());
-	Request_->FromJson(JsonObject);
-	return TSharedPtr<FROSBridgeSrv::SrvRequest>(Request_);
+	TSharedPtr<FROSSpawnModelSrv::Request> Request =
+		MakeShareable(new FROSSpawnModelSrv::Request());
+	Request->FromJson(JsonObject);
+	return TSharedPtr<FROSBridgeSrv::SrvRequest>(Request);
 }
 
 TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnModelServer::Callback(TSharedPtr<FROSBridgeSrv::SrvRequest> Request)
 {
-	TSharedPtr<FROSBridgeSpawnServiceSrv::Request> SpawnMeshRequest =
-		StaticCastSharedPtr<FROSBridgeSpawnServiceSrv::Request>(Request);
+	TSharedPtr<FROSSpawnModelSrv::Request> SpawnMeshRequest =
+		StaticCastSharedPtr<FROSSpawnModelSrv::Request>(Request);
 
 	SpawnAssetParams Params;
-	Params.PathOfMesh = SpawnMeshRequest->GetModelDescription().GetMeshDescription().GetPathToMesh();
-	Params.PathOfMaterial = SpawnMeshRequest->GetModelDescription().GetMeshDescription().GetPathToMaterial();
-	Params.Location = SpawnMeshRequest->GetModelDescription().GetPose().GetPosition().GetVector();
-	Params.Rotator = FRotator(SpawnMeshRequest->GetModelDescription().GetPose().GetOrientation().GetQuat());
-	Params.Tags = SpawnMeshRequest->GetModelDescription().GetTags();
-	InstanceId Id = SpawnMeshRequest->GetModelDescription().GetInstanceId();
-	Params.bIsStatic = SpawnMeshRequest->GetModelDescription().IsStatic();
-	Params.InstanceId = &Id;
+	Params.Id = SpawnMeshRequest->GetId();
+	Params.Name = SpawnMeshRequest->GetName();
+	Params.Location = SpawnMeshRequest->GetPose().GetPosition().GetVector();
+	Params.Rotator = FRotator(SpawnMeshRequest->GetPose().GetOrientation().GetQuat());
+	Params.Tags = SpawnMeshRequest->GetTags();
+	Params.PhysicsProperties = SpawnMeshRequest->GetPhysicsProperties();
+	Params.StartDir = SpawnMeshRequest->GetPath();
+	Params.ActorLabel = SpawnMeshRequest->GetActorLabel();
+	Params.MaterialNames = SpawnMeshRequest->GetMaterialNames();
+	Params.MaterialPaths = SpawnMeshRequest->GetMaterialPaths();
+	Params.ParentId = SpawnMeshRequest->GetParentId();
 
 
 	// Execute on game thread
@@ -130,185 +130,81 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnModelServer::Callback(TSharedPtr
 	FTaskGraphInterface::Get().WaitUntilTaskCompletes(Task);
 
 	return MakeShareable<FROSBridgeSrv::SrvResponse>
-		(new FROSBridgeSpawnServiceSrv::Response(ServiceSuccess, Id));
+		(new FROSSpawnModelSrv::Response(SpawnMeshRequest->GetId(), ServiceSuccess));
 }
 
 
-UStaticMesh* FROSSpawnModelServer::LoadMesh(const FString Path, InstanceId* InstanceId)
+UStaticMesh* FROSSpawnModelServer::LoadMesh(FString Name, FString StartDir)
 {
 	UStaticMesh* Mesh = nullptr;
-	if (Path.IsEmpty())
-	{
-		//Check default path for Class, since no Path was given
-		//StaticMesh'/Game/Models/Sphere/SM_Sphere.SM_Sphere'
-		FString ModelClassName = InstanceId->GetModelClassName();
-		FString Ns = InstanceId->GetNs();
-		FString DefaultPath;
-		if (Ns.IsEmpty())
-		{
-			// without Namespace
-			DefaultPath = TEXT("StaticMesh'/Game/Models/") + ModelClassName + TEXT("/SM_") + ModelClassName + TEXT(".SM_") +
-				ModelClassName + TEXT("'");
-		}
-		else
-		{
-			// with Namespace
-			DefaultPath = TEXT("StaticMesh'/Game/Models/") + FormatNamespace(Ns) + TEXT("/") + ModelClassName + TEXT("/SM_") +
-				ModelClassName + TEXT(".SM_") + ModelClassName + TEXT("'");
-		}
+	//Look for file Recursively
 
-		Mesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), nullptr, *DefaultPath));
-	}
-	else
+	FString Filename = Name.StartsWith(TEXT("SM_")) ? TEXT("") : TEXT("SM_");
+	Filename += Name;
+	Filename += Name.EndsWith(TEXT(".uasset")) ? TEXT("") : TEXT(".uasset");
+	
+	TArray<FString> FileLocations;
+	FFileManagerGeneric Fm;
+	Fm.FindFilesRecursive(FileLocations, *FPaths::ProjectContentDir().Append(StartDir), *Filename, true, false, true);
+	
+	if(FileLocations.Num() == 0)
 	{
-		//Load Mesh From Path
-		Mesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), nullptr, *Path));
+		//Try again with whole ContentDir
+		Fm.FindFilesRecursive(FileLocations, *FPaths::ProjectContentDir(), *Filename, true, false, true);
 	}
-	if (Mesh == nullptr)
-	{
-		//Look for file Recursively
-		const FString ModelClassName = InstanceId->GetModelClassName();
-		const FString Filename = TEXT("SM_") + ModelClassName + TEXT(".uasset");
-		TArray<FString> FileLocations;
-		FFileManagerGeneric Fm;
-		Fm.FindFilesRecursive(FileLocations, *FPaths::ProjectContentDir().Append(TEXT("Models/")), *Filename, true, false,
-		                      true);
-		for (auto Loc : FileLocations)
-		{
-			//Try all found files until one works.
-			if (Mesh == nullptr)
-			{
-				int First = Loc.Find("/Models");
-				Loc.RemoveAt(0, First);
-				int Last;
-				Loc.FindLastChar('.', Last);
-				Loc.RemoveAt(Last, Loc.Len() - Last);
 
-				FString FoundPath = "StaticMesh'/Game" + Loc + ".SM_" + ModelClassName + "'";
-				Mesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), nullptr, *FoundPath));
-			}
+	for (auto Loc : FileLocations)
+	{
+		//Try all found files until one works.
+		if (Mesh == nullptr)
+		{
+			Loc.RemoveFromStart(FPaths::ProjectContentDir());
+			int Last;
+			Loc.FindLastChar('.', Last);
+			Loc.RemoveAt(Last, Loc.Len() - Last);
+			
+			FString FoundPath = "StaticMesh'/Game/" + Loc + ".SM_" + Name + "'";
+			Mesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), nullptr, *FoundPath));
 		}
 	}
 
 	return Mesh;
 }
 
-UMaterialInterface* FROSSpawnModelServer::LoadMaterial(const FString Path, InstanceId* InstanceId)
+UMaterialInterface* FROSSpawnModelServer::LoadMaterial(FString Name, FString StartDir)
 {
-	/*
 	UMaterialInterface* Material = nullptr;
-	if (Path.IsEmpty())
+	FString Filename;
+	if (Name.StartsWith(TEXT("M_")))
+		Filename = Name + TEXT(".uasset");
+	else
+		Filename = TEXT("M_") + Name + TEXT(".uasset");
+
+	TArray<FString> FileLocations;
+	FFileManagerGeneric Fm;
+	Fm.FindFilesRecursive(FileLocations, *FPaths::ProjectContentDir().Append(StartDir), *Filename, true, false, true);
+
+	if (FileLocations.Num() == 0)
 	{
-		//Check default path for Class, since no Path was given
-		FString ModelClassName = InstanceId->GetModelClassName();
-		FString Ns = InstanceId->GetNs();
-		FString DefaultPath;
-		if (Ns.IsEmpty())
-		{
-			// without Namespace
-			DefaultPath = TEXT("Material'/Game/Models/") + ModelClassName + TEXT("/M_") + ModelClassName + TEXT(".M_") + ModelClassName + TEXT("'");
-		}
-		else
-		{
-
-			// with Namespace
-			DefaultPath = TEXT("Material'/Game/Models/") + FormatNamespace(Ns) + TEXT("/") + ModelClassName + TEXT("/M_") + ModelClassName + TEXT(".M_") + ModelClassName + TEXT("'");
-		}
-
-		Material = Cast<UMaterialInterface>(StaticLoadObject(UMaterialInterface::StaticClass(), nullptr, *DefaultPath));
+		//Try again with whole ContentDir
+		Fm.FindFilesRecursive(FileLocations, *FPaths::ProjectContentDir(), *Filename, true, false, true);
 	}
-	else {
-		Material = Cast<UMaterialInterface>(StaticLoadObject(UMaterialInterface::StaticClass(), nullptr, *Path));
-	}
-	if (Material == nullptr)
+
+	for (auto Loc : FileLocations)
 	{
-		//Look for file Recursively
-		const FString ModelClassName = InstanceId->GetModelClassName();
-		const FString Filename = TEXT("M_") + ModelClassName + TEXT(".uasset");
-		TArray<FString> FileLocations;
-		FFileManagerGeneric Fm;
-		Fm.FindFilesRecursive(FileLocations, *FPaths::ProjectContentDir().Append(TEXT("Models/")), *Filename, true, false, true);
-		for (auto Loc : FileLocations)
+		//Try all found files until one works.
+		if (Material == nullptr)
 		{
-			//Try all found files until one works.
-			if (Material == nullptr)
-			{
-				int First = Loc.Find("/Models");
-				Loc.RemoveAt(0, First);
-				int Last;
-				Loc.FindLastChar('.', Last);
-				Loc.RemoveAt(Last, Loc.Len() - Last);
+			Loc.RemoveFromStart(FPaths::ProjectContentDir());
+			int Last;
+			Loc.FindLastChar('.', Last);
+			Loc.RemoveAt(Last, Loc.Len() - Last);
 
-				FString FoundPath = "Material'/Game" + Loc + ".M_" + ModelClassName + "'";
-				Material = Cast<UMaterialInterface>(StaticLoadObject(UMaterialInterface::StaticClass(), nullptr, *FoundPath));
-			}
+			FString FoundPath = "StaticMesh'/Game" + Loc + ".M_" + Name + "'";
+			Material = Cast<UMaterialInterface>(StaticLoadObject(UMaterialInterface::StaticClass(), nullptr, *FoundPath));
 		}
 	}
+	
 	return Material;
-	*/
-
-	UMaterialInterface* Material = nullptr;
-	if (Path.IsEmpty())
-	{
-		return nullptr;
-	}
-	return Cast<UMaterialInterface>(StaticLoadObject(UMaterialInterface::StaticClass(), nullptr, *Path));
-}
-
-FString FROSSpawnModelServer::FormatNamespace(FString Ns)
-{
-	FString NewNs;
-	NewNs = Ns.TrimStartAndEnd();
-	NewNs.RemoveFromStart(TEXT("/"));
-	NewNs.RemoveFromEnd(TEXT("/"));
-	return NewNs;
-}
-
-
-TSharedPtr<FROSBridgeSrv::SrvRequest> FROSSpawnMultipleModelsServer::FromJson(TSharedPtr<FJsonObject> JsonObject) const
-{
-	TSharedPtr<FROSBridgeSpawnMultipleModelsSrv::Request> Request_ =
-		MakeShareable(new FROSBridgeSpawnMultipleModelsSrv::Request());
-	Request_->FromJson(JsonObject);
-	return TSharedPtr<FROSBridgeSrv::SrvRequest>(Request_);
-}
-
-TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnMultipleModelsServer::Callback(
-	TSharedPtr<FROSBridgeSrv::SrvRequest> Request)
-{
-	TSharedPtr<FROSBridgeSpawnMultipleModelsSrv::Request> SpawnSemanticMapRequest =
-		StaticCastSharedPtr<FROSBridgeSpawnMultipleModelsSrv::Request>(Request);
-
-	TArray<ModelDescription>* Descriptions = SpawnSemanticMapRequest->GetModelDescriptions();
-
-	TArray<bool> SuccessList;
-	TArray<InstanceId> InstanceIds;
-
-	bool bAllSucceded = true;
-	for (auto Descript : *Descriptions)
-	{
-		SpawnAssetParams Params;
-		Params.PathOfMesh = Descript.GetMeshDescription().GetPathToMesh();
-		Params.PathOfMaterial = Descript.GetMeshDescription().GetPathToMaterial();
-		Params.Location = Descript.GetPose().GetPosition().GetVector();
-		Params.Rotator = FRotator(Descript.GetPose().GetOrientation().GetQuat());
-		Params.Tags = Descript.GetTags();
-		Params.bIsStatic = Descript.IsStatic();
-		InstanceId Id = Descript.GetInstanceId();
-		Params.InstanceId = &Id;
-
-		// Execute on game thread
-		FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
-		{
-			ServiceSuccess = SpawnAsset(Params);
-		}, TStatId(), nullptr, ENamedThreads::GameThread);
-
-		//wait code above to complete
-		FTaskGraphInterface::Get().WaitUntilTaskCompletes(Task);
-		InstanceIds.Add(Id);
-		SuccessList.Add(ServiceSuccess);
-	}
-
-	return MakeShareable<FROSBridgeSrv::SrvResponse>
-		(new FROSBridgeSpawnMultipleModelsSrv::Response(SuccessList, InstanceIds));
+	
 }

@@ -1,16 +1,17 @@
 #pragma once
 #include "ROSBridgeSrv.h"
+#include "PhysicsProperties.h"
 
 
 
 
-class UROSBRIDGE_API FROSAttachModelToParentSrv : public FROSBridgeSrv
+class UROSBRIDGE_API FROSSetPhysicsPropertiesSrv : public FROSBridgeSrv
 {
 protected:
 	FString Type;
 
 public:
-	FROSAttachModelToParentSrv(FString InType)
+	FROSSetPhysicsPropertiesSrv(FString InType)
 	{
 		Type = InType;
 	}
@@ -18,33 +19,33 @@ public:
 	class Request : public SrvRequest
 	{
 	private:
-		FString ParentId;
-		FString ChildId;
+		FString Id;
+		world_control_msgs::PhysicsProperties PhysicsProperties;
 
 
 	public:
 		Request() {}
 
-		Request(FString InParentId, FString InChildId)
+		Request(FString InId, world_control_msgs::PhysicsProperties InPhysicsProperties)
 		{
-			ParentId = InParentId;
-			ChildId = InChildId;
+			Id = InId;
+			PhysicsProperties = InPhysicsProperties;
 		}
 
-		FString GetParentId()
+		FString GetId()
 		{
-			return ParentId;
+			return Id;
 		}
 
-		FString GetChildId()
+		world_control_msgs::PhysicsProperties GetPhysicsProperties()
 		{
-			return ChildId;
+			return PhysicsProperties;
 		}
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
-			ParentId = JsonObject->GetStringField("parent_id");
-			ChildId = JsonObject->GetStringField("child_id");
+			Id = JsonObject->GetStringField("id");
+			PhysicsProperties.FromJson(JsonObject->GetObjectField("physics_properties"));
 		}
 
 		static Request GetFromJson(TSharedPtr<FJsonObject> JsonObject)
@@ -56,16 +57,16 @@ public:
 
 		FString ToString() const override
 		{
-			return TEXT("FROSAttachModelToParentSrv:Request {parent_id = %s, child_id = %s"),
-				ParentId,
-				ChildId;
+			return TEXT("FROSSetPhysicsPropertiesSrv:Request {id = %s, physics_properties = %s"),
+				Id,
+				PhysicsProperties.ToString();
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-			Object->SetStringField(TEXT("parent_id"), ParentId);
-			Object->SetStringField(TEXT("child_id"), ChildId);
+			Object->SetStringField(TEXT("id"), Id);
+			Object->SetObjectField(TEXT("physics_properties"), PhysicsProperties.ToJsonObject());
 			return Object;
 		}
 
@@ -104,7 +105,7 @@ public:
 
 		FString ToString() const override
 		{
-			return TEXT("FROSAttachModelToParentSrv:Response {success = %s"),
+			return TEXT("FROSSetPhysicsPropertiesSrv:Response {success = %s"),
 				Success ? TEXT("True") : TEXT("False");
 		}
 

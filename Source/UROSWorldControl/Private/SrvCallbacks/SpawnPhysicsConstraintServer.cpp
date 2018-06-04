@@ -110,23 +110,23 @@ static FORCEINLINE void SetLinearLimits(
 
 
 bool FROSSpawnPhysicsConstraintServer::SpawnPhysicsConstraintActor(
-	TSharedPtr<FROSBridgeSpawnPhysiscConstraintSrv::Request> Request)
+	TSharedPtr<FROSSpawnPhysicsConstraintSrv::Request> Request)
 {
-	PhysicsConstraintDetails Details = Request->GetConstraintDetails();
-	AActor* First = *Controller->IdToActorMap.Find(Details.GetFirstModel().GetId());
-	AActor* Second = *Controller->IdToActorMap.Find(Details.GetSecondModel().GetId());
+	world_control_msgs::PhysicsConstraintDetails Details = Request->GetConstraintDetails();
+	AActor* First = *Controller->IdToActorMap.Find(Details.GetIdFirstModel());
+	AActor* Second = *Controller->IdToActorMap.Find(Details.GetIdSecondModel());
 
 	if (!First || !Second)
 	{
 		//at least one of them could not be found.
 		if (!First)
 		{
-			UE_LOG(LogTemp, Error, TEXT("Actor with id:\"%s\" does not exist."), *Details.GetFirstModel().GetId());
+			UE_LOG(LogTemp, Error, TEXT("Actor with id:\"%s\" does not exist."), *Details.GetIdFirstModel());
 		}
 
 		if (!Second)
 		{
-			UE_LOG(LogTemp, Error, TEXT("Actor with id:\"%s\" does not exist."), *Details.GetSecondModel().GetId());
+			UE_LOG(LogTemp, Error, TEXT("Actor with id:\"%s\" does not exist."), *Details.GetIdFirstModel());
 		}
 
 		return false;
@@ -138,7 +138,9 @@ bool FROSSpawnPhysicsConstraintServer::SpawnPhysicsConstraintActor(
 	ConstraintComponent->ConstraintActor2 = Second;
 
 	//Set pose of Component
-	ConstraintComponent->SetWorldLocationAndRotation(Request->GetLocation(), Request->GetQuat());
+	ConstraintComponent->SetWorldLocationAndRotation(
+		Request->GetPose().GetPosition().GetVector(),
+		FRotator(Request->GetPose().GetOrientation().GetQuat()));
 
 	SetupProfileInstance(&ConstraintComponent->ConstraintInstance.ProfileInstance, Details);
 	SetupLinearLimits(ConstraintComponent->ConstraintInstance, Details);
@@ -149,9 +151,9 @@ bool FROSSpawnPhysicsConstraintServer::SpawnPhysicsConstraintActor(
 }
 
 void FROSSpawnPhysicsConstraintServer::SetupProfileInstance(FConstraintProfileProperties* ProfileInstance,
-                                                            PhysicsConstraintDetails Details)
+                                                            world_control_msgs::PhysicsConstraintDetails Details)
 {
-	ProfileInstance->bDisableCollision = Details.GetDisabelCollision();
+	ProfileInstance->bDisableCollision = Details.GetDisableCollision();
 	ProfileInstance->bEnableProjection = Details.GetEnableProjection();
 	ProfileInstance->ProjectionLinearTolerance = Details.GetProjectionLinearTolerance();
 	ProfileInstance->ProjectionAngularTolerance = Details.GetProjectionAngularTolerance();
@@ -159,9 +161,9 @@ void FROSSpawnPhysicsConstraintServer::SetupProfileInstance(FConstraintProfilePr
 }
 
 void FROSSpawnPhysicsConstraintServer::SetupAngularLimits(FConstraintInstance Instance,
-                                                          PhysicsConstraintDetails Details)
+                                                          world_control_msgs::PhysicsConstraintDetails Details)
 {
-	AngularLimits AngLimit = Details.GetAngularLimits();
+	world_control_msgs::AngularLimits AngLimit = Details.GetAngularLimits();
 
 	if (AngLimit.GetUseAdvanced())
 	{
@@ -173,6 +175,8 @@ void FROSSpawnPhysicsConstraintServer::SetupAngularLimits(FConstraintInstance In
 		                 AngLimit.GetSwingStiffness(), AngLimit.GetSwingDamping(),
 		                 AngLimit.GetTwistStiffness(), AngLimit.GetTwistDamping()
 		);
+
+		Instance.AngularRotationOffset = AngLimit.GetAngularRoationOffset().GetVector().Rotation();
 	}
 	else
 	{
@@ -183,9 +187,9 @@ void FROSSpawnPhysicsConstraintServer::SetupAngularLimits(FConstraintInstance In
 	}
 }
 
-void FROSSpawnPhysicsConstraintServer::SetupLinearLimits(FConstraintInstance Instance, PhysicsConstraintDetails Details)
+void FROSSpawnPhysicsConstraintServer::SetupLinearLimits(FConstraintInstance Instance, world_control_msgs::PhysicsConstraintDetails Details)
 {
-	LinearLimits LinLimit = Details.GetLinearLimits();
+	world_control_msgs::LinearLimits LinLimit = Details.GetLinearLimits();
 
 	if (LinLimit.GetUseAdvanced())
 	{
@@ -193,7 +197,7 @@ void FROSSpawnPhysicsConstraintServer::SetupLinearLimits(FConstraintInstance Ins
 		SetLinearLimits(Instance,
 		                LinLimit.GetXMotion(), LinLimit.GetYMotion(), LinLimit.GetZMotion(),
 		                LinLimit.GetLimit(),
-		                LinLimit.GetSoftConstrained(), LinLimit.GetStiffness(), LinLimit.GetDamping()
+		                LinLimit.GetSoftConstraint(), LinLimit.GetStiffness(), LinLimit.GetDamping()
 		);
 	}
 	else
@@ -209,17 +213,17 @@ void FROSSpawnPhysicsConstraintServer::SetupLinearLimits(FConstraintInstance Ins
 TSharedPtr<FROSBridgeSrv::SrvRequest> FROSSpawnPhysicsConstraintServer::FromJson(
 	TSharedPtr<FJsonObject> JsonObject) const
 {
-	TSharedPtr<FROSBridgeSpawnPhysiscConstraintSrv::Request> Request_ =
-		MakeShareable(new FROSBridgeSpawnPhysiscConstraintSrv::Request());
-	Request_->FromJson(JsonObject);
-	return TSharedPtr<FROSBridgeSrv::SrvRequest>(Request_);
+	TSharedPtr<FROSSpawnPhysicsConstraintSrv::Request> Request =
+		MakeShareable(new FROSSpawnPhysicsConstraintSrv::Request());
+	Request->FromJson(JsonObject);
+	return TSharedPtr<FROSBridgeSrv::SrvRequest>(Request);
 }
 
 TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnPhysicsConstraintServer::Callback(
 	TSharedPtr<FROSBridgeSrv::SrvRequest> Request)
 {
-	TSharedPtr<FROSBridgeSpawnPhysiscConstraintSrv::Request> SpawnPhysicsConstraintRequest =
-		StaticCastSharedPtr<FROSBridgeSpawnPhysiscConstraintSrv::Request>(Request);
+	TSharedPtr<FROSSpawnPhysicsConstraintSrv::Request> SpawnPhysicsConstraintRequest =
+		StaticCastSharedPtr<FROSSpawnPhysicsConstraintSrv::Request>(Request);
 
 	FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
 	{
@@ -230,6 +234,6 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnPhysicsConstraintServer::Callbac
 	FTaskGraphInterface::Get().WaitUntilTaskCompletes(Task);
 
 	return TSharedPtr<FROSBridgeSrv::SrvResponse>
-		(new FROSBridgeSpawnPhysiscConstraintSrv::Response(ServiceSuccess));
+		(new FROSSpawnPhysicsConstraintSrv::Response(ServiceSuccess));
 
 }

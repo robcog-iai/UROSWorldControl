@@ -5,9 +5,10 @@
 #include "SetModelPoseServer.h"
 #include "RemoveModelServer.h"
 #include "AttachModelToParentServer.h"
-#include "ChangeVisualOfModelServer.h"
 #include "SpawnPhysicsConstraintServer.h"
 #include "HighlightModelsServer.h"
+#include "SetPhysicsPropertiesServer.h"
+#include "SetMaterialServer.h"
 
 
 ROSWorldControlManager::ROSWorldControlManager(UWorld* InWorld, FString InServerAdress, int InServerPort,
@@ -42,17 +43,10 @@ void ROSWorldControlManager::ConnectToROSBridge(FWebsocketInfoCallBack CustomErr
 		MakeShareable<FROSSpawnModelServer>(new FROSSpawnModelServer(Namespace, TEXT("spawn_model"), World, this));
 	Handler->AddServiceServer(SpawnModelServer);
 
-	//Add spawn_semantic_map service
-	TSharedPtr<FROSSpawnMultipleModelsServer> SpawnMultipleModelsServer =
-		MakeShareable<FROSSpawnMultipleModelsServer>(
-			new FROSSpawnMultipleModelsServer(Namespace, TEXT("spawn_multiple_models"), World, this));
-	Handler->AddServiceServer(SpawnMultipleModelsServer);
-
 	// Add set_model_pose service 
 	TSharedPtr<FROSSetModelPoseServer> SetModelPoseServer =
 		MakeShareable<FROSSetModelPoseServer>(new FROSSetModelPoseServer(Namespace, TEXT("set_model_pose"), World, this));
 	Handler->AddServiceServer(SetModelPoseServer);
-
 
 	// Add delete_model service
 	TSharedPtr<FROSRemoveModelServer> DeleteModelServer =
@@ -65,11 +59,6 @@ void ROSWorldControlManager::ConnectToROSBridge(FWebsocketInfoCallBack CustomErr
 			new FROSAttachModelToParentServer(Namespace, TEXT("attach_model_to_parent"), World, this));
 	Handler->AddServiceServer(AttachModelToParentServer);
 
-	// Add change_visual_of_model service
-	TSharedPtr<FROSChangeVisualOfModelServer> ChangeVisualOfModelServer =
-		MakeShareable<FROSChangeVisualOfModelServer>(
-			new FROSChangeVisualOfModelServer(Namespace, TEXT("change_visual_of_model"), World, this));
-	Handler->AddServiceServer(ChangeVisualOfModelServer);
 
 	// Add spawn_physics_constraint service
 	TSharedPtr<FROSSpawnPhysicsConstraintServer> SpawnPhysicsConstraintServer =
@@ -82,6 +71,19 @@ void ROSWorldControlManager::ConnectToROSBridge(FWebsocketInfoCallBack CustomErr
 		MakeShareable<FROSHighlightModelsServer>(
 			new FROSHighlightModelsServer(Namespace, TEXT("highlight_models"), World, this));
 	Handler->AddServiceServer(HighlightModelsServer);
+
+
+	// Add set_physics_properties service
+	TSharedPtr<FROSSetPhysicsPropertiesServer> SetPhysicsPropertiesServer =
+		MakeShareable<FROSSetPhysicsPropertiesServer>(
+			new FROSSetPhysicsPropertiesServer(Namespace, TEXT("set_physics_properties"), World, this));
+	Handler->AddServiceServer(SetPhysicsPropertiesServer);
+
+	// Add set_material service
+	TSharedPtr<FROSSetMaterialServer> SetMaterialServer =
+		MakeShareable<FROSSetMaterialServer>(
+			new FROSSetMaterialServer(Namespace, TEXT("change_material"), World, this));
+	Handler->AddServiceServer(SetMaterialServer);
 
 
 	// Connect to ROSBridge Websocket server.

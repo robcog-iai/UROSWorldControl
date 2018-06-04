@@ -2,22 +2,22 @@
 
 TSharedPtr<FROSBridgeSrv::SrvRequest> FROSRemoveModelServer::FromJson(TSharedPtr<FJsonObject> JsonObject) const
 {
-	TSharedPtr<FROSBridgeRemoveModelSrv::Request> Request_ =
-		MakeShareable(new FROSBridgeRemoveModelSrv::Request());
+	TSharedPtr<FROSDeleteModelSrv::Request> Request_ =
+		MakeShareable(new FROSDeleteModelSrv::Request());
 	Request_->FromJson(JsonObject);
 	return TSharedPtr<FROSBridgeSrv::SrvRequest>(Request_);
 }
 
 TSharedPtr<FROSBridgeSrv::SrvResponse> FROSRemoveModelServer::Callback(TSharedPtr<FROSBridgeSrv::SrvRequest> Request)
 {
-	TSharedPtr<FROSBridgeRemoveModelSrv::Request> RemoveModelRequest =
-		StaticCastSharedPtr<FROSBridgeRemoveModelSrv::Request>(Request);
+	TSharedPtr<FROSDeleteModelSrv::Request> RemoveModelRequest =
+		StaticCastSharedPtr<FROSDeleteModelSrv::Request>(Request);
 
 	AActor* ActorToBeRemoved;
 
 	// get and remove Actor with given UtagID of Controller IDMap
 
-	FString UniqueId = RemoveModelRequest->GetInstanceId().GetId();
+	FString UniqueId = RemoveModelRequest->GetId();
 
 	if (Controller->IdToActorMap.RemoveAndCopyValue(UniqueId, ActorToBeRemoved))
 	{
@@ -31,12 +31,12 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSRemoveModelServer::Callback(TSharedPt
 		FTaskGraphInterface::Get().WaitUntilTaskCompletes(Task);
 
 		return TSharedPtr<FROSBridgeSrv::SrvResponse>
-			(new FROSBridgeRemoveModelSrv::Response(ServiceSuccess));
+			(new FROSDeleteModelSrv::Response(ServiceSuccess));
 	}
 	// the given UtagID was not found.
 	UE_LOG(LogTemp, Warning, TEXT("Actor with id:\"%s\" does not exist and can therefore not be removed."), *
-		RemoveModelRequest->GetInstanceId().GetId())
+		RemoveModelRequest->GetId())
 	;
 	return TSharedPtr<FROSBridgeSrv::SrvResponse>
-		(new FROSBridgeRemoveModelSrv::Response(false));
+		(new FROSDeleteModelSrv::Response(false));
 }

@@ -2,7 +2,8 @@
 #include "ROSBridgeMsg.h"
 
 
-namespace unreal_world_control_msgs
+
+namespace world_control_msgs
 {
 	class Tag : public FROSBridgeMsg
 	{
@@ -12,9 +13,7 @@ namespace unreal_world_control_msgs
 
 
 	public:
-		Tag()
-		{
-		}
+		Tag() {}
 
 		Tag(FString InTagType, FString InKey, FString InValue)
 		{
@@ -39,7 +38,7 @@ namespace unreal_world_control_msgs
 			return Value;
 		}
 
-		void FromJson(TSharedPtr<FJsonObject> JsonObject) override
+		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
 			TagType = JsonObject->GetStringField("tag_type");
 			Key = JsonObject->GetStringField("key");
@@ -53,12 +52,15 @@ namespace unreal_world_control_msgs
 			return Result;
 		}
 
-		FString ToString() const override
+		virtual FString ToString() const override
 		{
-			return TEXT("Tag {tag_type = %s, key = %s, value = %s"), TagType, Key, Value;
+			return TEXT("Tag {tag_type = %s, key = %s, value = %s"),
+				TagType,
+				Key,
+				Value;
 		}
 
-		TSharedPtr<FJsonObject> ToJsonObject() const override
+		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 			Object->SetStringField(TEXT("tag_type"), TagType);
@@ -67,10 +69,10 @@ namespace unreal_world_control_msgs
 			return Object;
 		}
 
-		FString ToYamlString() const override
+		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
-			TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}

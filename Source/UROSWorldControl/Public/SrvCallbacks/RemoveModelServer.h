@@ -2,8 +2,7 @@
 #include "CoreMinimal.h"
 #include "ROSBridgeHandler.h"
 #include "ROSWorldControlManager.h"
-#include "RemoveModel.h"
-#include "HelperFunctions.h"
+#include "DeleteModel.h"
 
 class FROSRemoveModelServer final : public FROSBridgeSrvServer
 {
@@ -17,7 +16,7 @@ private:
 public:
 	FROSRemoveModelServer(FString Namespace, FString Name, UWorld* InWorld,
 	                      ROSWorldControlManager* InController) :
-		FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("unreal_world_control_msgs/DeleteModel"))
+		FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("world_control_msgs/DeleteModel"))
 	{
 		World = InWorld;
 		Controller = InController;

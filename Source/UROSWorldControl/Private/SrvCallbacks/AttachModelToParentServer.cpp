@@ -2,8 +2,8 @@
 
 TSharedPtr<FROSBridgeSrv::SrvRequest> FROSAttachModelToParentServer::FromJson(TSharedPtr<FJsonObject> JsonObject) const
 {
-	TSharedPtr<FROSBridgeAttachModelToParentSrv::Request> Request_ =
-		MakeShareable(new FROSBridgeAttachModelToParentSrv::Request());
+	TSharedPtr<FROSAttachModelToParentSrv::Request> Request_ =
+		MakeShareable(new FROSAttachModelToParentSrv::Request());
 	Request_->FromJson(JsonObject);
 	return TSharedPtr<FROSBridgeSrv::SrvRequest>(Request_);
 }
@@ -11,11 +11,11 @@ TSharedPtr<FROSBridgeSrv::SrvRequest> FROSAttachModelToParentServer::FromJson(TS
 TSharedPtr<FROSBridgeSrv::SrvResponse> FROSAttachModelToParentServer::Callback(
 	TSharedPtr<FROSBridgeSrv::SrvRequest> Request)
 {
-	TSharedPtr<FROSBridgeAttachModelToParentSrv::Request> AttachModelToParentRequest =
-		StaticCastSharedPtr<FROSBridgeAttachModelToParentSrv::Request>(Request);
+	TSharedPtr<FROSAttachModelToParentSrv::Request> AttachModelToParentRequest =
+		StaticCastSharedPtr<FROSAttachModelToParentSrv::Request>(Request);
 
-	AActor* Child = *Controller->IdToActorMap.Find(AttachModelToParentRequest->GetChild().GetId());
-	AActor* Parent = *Controller->IdToActorMap.Find(AttachModelToParentRequest->GetParent().GetId());
+	AActor* Child = *Controller->IdToActorMap.Find(AttachModelToParentRequest->GetChildId());
+	AActor* Parent = *Controller->IdToActorMap.Find(AttachModelToParentRequest->GetParentId());
 	if (Child && Parent)
 	{
 		//Actors were found and will be attached, in GameThread
@@ -28,22 +28,19 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSAttachModelToParentServer::Callback(
 		FTaskGraphInterface::Get().WaitUntilTaskCompletes(Task);
 
 		return MakeShareable<FROSBridgeSrv::SrvResponse>
-			(new FROSBridgeAttachModelToParentSrv::Response(true));
+			(new FROSAttachModelToParentSrv::Response(true));
 	}
 	//at least one of them could not be found.
 	if (!Child)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Actor with id:\"%s\" does not exist."), *AttachModelToParentRequest->GetChild().GetId());
+		UE_LOG(LogTemp, Error, TEXT("Actor with id:\"%s\" does not exist."), *AttachModelToParentRequest->GetChildId());
 	}
 
 	if (!Parent)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Actor with id:\"%s\" does not exist."), *AttachModelToParentRequest->GetParent().GetId()
-		);
+		UE_LOG(LogTemp, Error, TEXT("Actor with id:\"%s\" does not exist."), *AttachModelToParentRequest->GetParentId());
 	}
 
 	return MakeShareable<FROSBridgeSrv::SrvResponse>
-		(new FROSBridgeAttachModelToParentSrv::Response(false));
-
-	Child->AttachRootComponentToActor(Parent);
+		(new FROSAttachModelToParentSrv::Response(false));
 }

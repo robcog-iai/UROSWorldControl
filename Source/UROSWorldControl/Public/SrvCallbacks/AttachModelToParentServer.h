@@ -10,13 +10,7 @@
 
 class FROSAttachModelToParentServer final : public FROSBridgeSrvServer
 {
-	struct MoveAssetParams
-	{
-		AActor* Actor;
-		FVector Location;
-		FRotator Rotator;
-	};
-
+	
 private:
 	FROSAttachModelToParentServer(){};
 
@@ -29,7 +23,7 @@ private:
 public:
 	FROSAttachModelToParentServer(FString Namespace, FString Name, UWorld* InWorld,
 	                              ROSWorldControlManager* InController) :
-		FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("unreal_world_control_msgs/AttachModelToParent"))
+		FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("world_control_msgs/AttachModelToParent"))
 	{
 		World = InWorld;
 		Controller = InController;

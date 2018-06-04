@@ -1,54 +1,49 @@
 #pragma once
-
 #include "ROSBridgeSrv.h"
-#include "PhysicsConstraint.h"
+#include "PhysicsConstraintDetails.h"
 #include "Pose.h"
 
-using namespace unreal_world_control_msgs;
 
-class UROSBRIDGE_API FROSBridgeSpawnPhysiscConstraintSrv : public FROSBridgeSrv
+
+
+class UROSBRIDGE_API FROSSpawnPhysicsConstraintSrv : public FROSBridgeSrv
 {
 protected:
 	FString Type;
 
 public:
-	FROSBridgeSpawnPhysiscConstraintSrv(FString Type_)
+	FROSSpawnPhysicsConstraintSrv(FString InType)
 	{
-		Type = Type_;
+		Type = InType;
 	}
 
 	class Request : public SrvRequest
 	{
 	private:
-		PhysicsConstraintDetails ConstraintDetails;
+		world_control_msgs::PhysicsConstraintDetails ConstraintDetails;
 		geometry_msgs::Pose Pose;
+
+
 	public:
-		Request()
+		Request() {}
+
+		Request(world_control_msgs::PhysicsConstraintDetails InConstraintDetails, geometry_msgs::Pose InPose)
 		{
+			ConstraintDetails = InConstraintDetails;
+			Pose = InPose;
 		}
 
-		PhysicsConstraintDetails GetConstraintDetails()
+		world_control_msgs::PhysicsConstraintDetails GetConstraintDetails()
 		{
 			return ConstraintDetails;
 		}
 
-		FVector GetLocation()
+		geometry_msgs::Pose GetPose()
 		{
-			return Pose.GetPosition().GetVector();
+			return Pose;
 		}
 
-		FRotator GetRotator()
-		{
-			return FRotator(Pose.GetOrientation().GetQuat());
-		}
-
-		FQuat GetQuat()
-		{
-			return Pose.GetOrientation().GetQuat();
-		}
-
-
-		void FromJson(TSharedPtr<FJsonObject> JsonObject) override
+		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
 			ConstraintDetails.FromJson(JsonObject->GetObjectField("constraint_details"));
 			Pose.FromJson(JsonObject->GetObjectField("pose"));
@@ -56,65 +51,72 @@ public:
 
 		static Request GetFromJson(TSharedPtr<FJsonObject> JsonObject)
 		{
-			Request req;
-			req.FromJson(JsonObject);
-			return req;
+			Request Req;
+			Req.FromJson(JsonObject);
+			return Req;
 		}
 
 		FString ToString() const override
 		{
-			return TEXT("FROSBridgeSpawnPhysiscConstraintSrv::Request {Constraint Details = %s, Pose: %s}"), ConstraintDetails.
-				ToString(), Pose.ToString();
+			return TEXT("FROSSpawnPhysicsConstraintSrv:Request {constraint_details = %s, pose = %s"),
+				ConstraintDetails.ToString(),
+				Pose.ToString();
 		}
 
-		TSharedPtr<FJsonObject> ToJsonObject() const override
+		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 			Object->SetObjectField(TEXT("constraint_details"), ConstraintDetails.ToJsonObject());
+			Object->SetObjectField(TEXT("pose"), Pose.ToJsonObject());
 			return Object;
 		}
-	};
 
+	};
 
 	class Response : public SrvResponse
 	{
 	private:
-		bool bSuccess;
+		bool Success;
+
 
 	public:
-		Response()
+		Response() {}
+
+		Response(bool InSuccess)
 		{
+			Success = InSuccess;
 		}
 
-		Response(bool succeded_) : bSuccess(succeded_)
+		bool GetSuccess()
 		{
+			return Success;
 		}
 
-		bool GetSuccess() const { return bSuccess; }
-		void SetSuccess(bool Success) { bSuccess = Success; }
-
-		void FromJson(TSharedPtr<FJsonObject> JSonObject) override
+		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
-			bSuccess = JSonObject->GetBoolField("success");
+			Success = JsonObject->GetBoolField("success");
 		}
 
-		static Response GetFromJson(TSharedPtr<FJsonObject> JSonObject)
+		static Response GetFromJson(TSharedPtr<FJsonObject> JsonObject)
 		{
-			Response resp;
-			resp.FromJson(JSonObject);
-			return resp;
+			Response Res;
+			Res.FromJson(JsonObject);
+			return Res;
 		}
 
 		FString ToString() const override
 		{
-			return TEXT("FROSBridgeSpawnPhysiscConstraintSrv::Request { %s }"), bSuccess ? TEXT("True") : TEXT("False");
+			return TEXT("FROSSpawnPhysicsConstraintSrv:Response {success = %s"),
+				Success ? TEXT("True") : TEXT("False");
 		}
 
-		TSharedPtr<FJsonObject> ToJsonObject() const override
+		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-			Object->SetBoolField("success", bSuccess);
+			Object->SetBoolField(TEXT("success"), Success);
 			return Object;
 		}
+
 	};
+
 };

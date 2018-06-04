@@ -4,13 +4,13 @@
 
 
 
-class UROSBRIDGE_API FROSAttachModelToParentSrv : public FROSBridgeSrv
+class UROSBRIDGE_API FROSDeleteModelSrv : public FROSBridgeSrv
 {
 protected:
 	FString Type;
 
 public:
-	FROSAttachModelToParentSrv(FString InType)
+	FROSDeleteModelSrv(FString InType)
 	{
 		Type = InType;
 	}
@@ -18,33 +18,25 @@ public:
 	class Request : public SrvRequest
 	{
 	private:
-		FString ParentId;
-		FString ChildId;
+		FString Id;
 
 
 	public:
 		Request() {}
 
-		Request(FString InParentId, FString InChildId)
+		Request(FString InId)
 		{
-			ParentId = InParentId;
-			ChildId = InChildId;
+			Id = InId;
 		}
 
-		FString GetParentId()
+		FString GetId()
 		{
-			return ParentId;
-		}
-
-		FString GetChildId()
-		{
-			return ChildId;
+			return Id;
 		}
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
-			ParentId = JsonObject->GetStringField("parent_id");
-			ChildId = JsonObject->GetStringField("child_id");
+			Id = JsonObject->GetStringField("id");
 		}
 
 		static Request GetFromJson(TSharedPtr<FJsonObject> JsonObject)
@@ -56,16 +48,14 @@ public:
 
 		FString ToString() const override
 		{
-			return TEXT("FROSAttachModelToParentSrv:Request {parent_id = %s, child_id = %s"),
-				ParentId,
-				ChildId;
+			return TEXT("FROSDeleteModelSrv:Request {id = %s"),
+				Id;
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-			Object->SetStringField(TEXT("parent_id"), ParentId);
-			Object->SetStringField(TEXT("child_id"), ChildId);
+			Object->SetStringField(TEXT("id"), Id);
 			return Object;
 		}
 
@@ -104,7 +94,7 @@ public:
 
 		FString ToString() const override
 		{
-			return TEXT("FROSAttachModelToParentSrv:Response {success = %s"),
+			return TEXT("FROSDeleteModelSrv:Response {success = %s"),
 				Success ? TEXT("True") : TEXT("False");
 		}
 

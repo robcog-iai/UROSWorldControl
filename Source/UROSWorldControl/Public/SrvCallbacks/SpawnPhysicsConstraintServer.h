@@ -11,13 +11,7 @@
 
 class FROSSpawnPhysicsConstraintServer final : public FROSBridgeSrvServer
 {
-	struct MoveAssetParams
-	{
-		AActor* Actor;
-		FVector Location;
-		FRotator Rotator;
-	};
-
+	
 private:
 	FROSSpawnPhysicsConstraintServer();
 
@@ -26,16 +20,16 @@ private:
 
 	ROSWorldControlManager* Controller;
 
-	bool SpawnPhysicsConstraintActor(TSharedPtr<FROSBridgeSpawnPhysiscConstraintSrv::Request> Request);
-	void SetupProfileInstance(FConstraintProfileProperties* ProfileInstance, PhysicsConstraintDetails Details);
-	void SetupAngularLimits(FConstraintInstance Instance, PhysicsConstraintDetails Details);
-	void SetupLinearLimits(FConstraintInstance Instance, PhysicsConstraintDetails Details);
+	bool SpawnPhysicsConstraintActor(TSharedPtr<FROSSpawnPhysicsConstraintSrv::Request> Request);
+	void SetupProfileInstance(FConstraintProfileProperties* ProfileInstance, world_control_msgs::PhysicsConstraintDetails Details);
+	void SetupAngularLimits(FConstraintInstance Instance, world_control_msgs::PhysicsConstraintDetails Details);
+	void SetupLinearLimits(FConstraintInstance Instance, world_control_msgs::PhysicsConstraintDetails Details);
 
 
 public:
 	FROSSpawnPhysicsConstraintServer(FString Namespace, FString Name, UWorld* InWorld,
 	                                 ROSWorldControlManager* InController) :
-		FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("unreal_world_control_msgs/SpawnPhysicsConstraint"))
+		FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("world_control_msgs/SpawnPhysicsConstraint"))
 	{
 		World = InWorld;
 		Controller = InController;

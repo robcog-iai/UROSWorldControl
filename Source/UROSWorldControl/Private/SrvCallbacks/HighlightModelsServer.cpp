@@ -1,9 +1,11 @@
 #include "HighlightModelsServer.h"
+#include "GameFramework/Actor.h"
+#include "Components/StaticMeshComponent.h"
 
 TSharedPtr<FROSBridgeSrv::SrvRequest> FROSHighlightModelsServer::FromJson(TSharedPtr<FJsonObject> JsonObject) const
 {
-	TSharedPtr<FROSBridgeHighlightModelsSrv::Request> Request_ =
-		MakeShareable(new FROSBridgeHighlightModelsSrv::Request());
+	TSharedPtr<FROSHighlightModelSrv::Request> Request_ =
+		MakeShareable(new FROSHighlightModelSrv::Request());
 	Request_->FromJson(JsonObject);
 	return TSharedPtr<FROSBridgeSrv::SrvRequest>(Request_);
 }
@@ -11,40 +13,43 @@ TSharedPtr<FROSBridgeSrv::SrvRequest> FROSHighlightModelsServer::FromJson(TShare
 TSharedPtr<FROSBridgeSrv::SrvResponse> FROSHighlightModelsServer::Callback(
 	TSharedPtr<FROSBridgeSrv::SrvRequest> Request)
 {
-	TSharedPtr<FROSBridgeHighlightModelsSrv::Request> HighlightModelsRequest =
-		StaticCastSharedPtr<FROSBridgeHighlightModelsSrv::Request>(Request);
+	TSharedPtr<FROSHighlightModelSrv::Request> HighlightModelRequest =
+		StaticCastSharedPtr<FROSHighlightModelSrv::Request>(Request);
 
-	TArray<InstanceId>* InstanceIds = HighlightModelsRequest->GetInstanceIds();
 
-	TArray<bool> SuccessList;
-
-	bool bAllSucceded = true;
-	for (auto Instance : *InstanceIds)
+	AActor** ActorToBeHighlighted = Controller->IdToActorMap.Find(HighlightModelRequest->GetId());
+	// Execute on game thread
+	if (ActorToBeHighlighted)
 	{
-		AActor** ActorToBeHighlighted = Controller->IdToActorMap.Find(Instance.GetId());
-		// Execute on game thread
-		if (ActorToBeHighlighted)
+		FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
 		{
-			FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
+			TArray<UStaticMeshComponent*> Components;
+			(*ActorToBeHighlighted)->GetComponents<UStaticMeshComponent>(Components);
+			for (auto Component : Components)
 			{
-				TArray<UStaticMeshComponent*> Components;
-				(*ActorToBeHighlighted)->GetComponents<UStaticMeshComponent>(Components);
-				for (auto Component : Components)
+				uint8 Color = HighlightModelRequest->GetColor();
+				if (Color == 0)
 				{
-					Component->SetRenderCustomDepth(HighlightModelsRequest->GetToBeHighlighted());
-					Component->CustomDepthStencilValue = HighlightModelsRequest->GetColorIndex();
+					Component->SetRenderCustomDepth(false);
+				} 
+				else
+				{					
+						Component->SetRenderCustomDepth(true);
+						Component->CustomDepthStencilValue = Color;
 				}
-			}, TStatId(), nullptr, ENamedThreads::GameThread);
+			}
+		}, TStatId(), nullptr, ENamedThreads::GameThread);
 
-			//wait code above to complete
-			FTaskGraphInterface::Get().WaitUntilTaskCompletes(Task);
-		}
-		else
-		{
-			bAllSucceded = false;
-		}
+		//wait code above to complete
+		FTaskGraphInterface::Get().WaitUntilTaskCompletes(Task);
+		return MakeShareable<FROSBridgeSrv::SrvResponse>
+			(new FROSHighlightModelSrv::Response(true));
+	}
+	else
+	{
+		return MakeShareable<FROSBridgeSrv::SrvResponse>
+			(new FROSHighlightModelSrv::Response(false));
 	}
 
-	return MakeShareable<FROSBridgeSrv::SrvResponse>
-		(new FROSBridgeHighlightModelsSrv::Response(bAllSucceded));
+
 }
