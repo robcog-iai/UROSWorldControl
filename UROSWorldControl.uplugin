@@ -20,7 +20,7 @@
             "LoadingPhase": "Default"
         },
         {
-            "Name": "RosConnectionMode",
+            "Name": "UROSWorldControlEd",
             "Type": "Editor",
             "LoadingPhase": "Default"
         }
@@ -30,7 +30,7 @@
        "Name": "UROSBridge",
        "Enabled": true
      },{
-       "Name": "UTags",
+       "Name": "UUTils",
        "Enabled": true
      }]
 }

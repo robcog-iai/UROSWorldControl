@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "TagStatics.h"
+#include "Tags.h"
 #include "ROSBridgeHandler.h"
 
 //Forward declariation to avoid recursion
@@ -13,26 +13,28 @@ class SetModelPoseServer;
 class RemoveModelServer;
 
 class UROSWORLDCONTROL_API ROSWorldControlManager
-{	
-public:	
+{
+public:
 	// Sets default values for this actor's properties
 	ROSWorldControlManager(UWorld* InWorld, FString InServerAdress, int InServerPort, FString InNamespace);
 	~ROSWorldControlManager();
-	
+
 	FString ServerAdress;
 	int ServerPort;
 	FString Namespace;
 	UWorld* World;
 
-public:	
-	void ConnectToROSBridge();
+public:
+	void ConnectToROSBridge(FWebsocketInfoCallBack CustomErrorCallbacks, FWebsocketInfoCallBack CustomConnectedCallbacks);
 	void DisconnectFromROSBridge();
-	bool isConnected();
+	bool IsConnected();
 
 	TMap<FString, AActor*> IdToActorMap;
 
 private:
-	ROSWorldControlManager() {};
+	ROSWorldControlManager()
+	{
+	};
 	TSharedPtr<FROSBridgeHandler> Handler;
 
 	bool bServicesPulished;

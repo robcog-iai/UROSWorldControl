@@ -2,15 +2,15 @@
 
 using UnrealBuildTool;
 
-public class UROSWorldControl : ModuleRules
+public class UROSWorldControlEd : ModuleRules
 {
-	public UROSWorldControl(ReadOnlyTargetRules Target) : base(Target)
+	public UROSWorldControlEd(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		
 		PublicIncludePaths.AddRange(
 			new string[] {
-				"UROSWorldControl/Public"
+				"UROSWorldControlEd/Public"
 				// ... add public include paths required here ...
 			}
 			);
@@ -18,7 +18,7 @@ public class UROSWorldControl : ModuleRules
 		
 		PrivateIncludePaths.AddRange(
 			new string[] {
-				"UROSWorldControl/Private"
+				"UROSWorldControlEd/Private",
 				// ... add other private include paths required here ...
 			}
 			);
@@ -28,11 +28,8 @@ public class UROSWorldControl : ModuleRules
 			new string[]
 			{
 				"Core",
-                "UROSBridge",
-                "UTags",
-                "UIds",
-                "UConversions",
-                // ... add other public dependencies that you statically link with here ...
+                "UROSWorldControl",
+				// ... add other public dependencies that you statically link with here ...
 			}
 			);
 			
@@ -44,14 +41,9 @@ public class UROSWorldControl : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
-                "Networking",
-                "Sockets",
-                "PacketHandler",
-                "libWebSockets",
-                "OpenSSL",
-                "zlib",
-                "Json",
-                "JsonUtilities",
+				"InputCore",
+				"UnrealEd",
+				"LevelEditor",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
