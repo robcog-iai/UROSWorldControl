@@ -113,8 +113,8 @@ bool FROSSpawnPhysicsConstraintServer::SpawnPhysicsConstraintActor(
 	TSharedPtr<FROSSpawnPhysicsConstraintSrv::Request> Request)
 {
 	world_control_msgs::PhysicsConstraintDetails Details = Request->GetConstraintDetails();
-	AActor* First = *Controller->IdToActorMap.Find(Details.GetIdFirstModel());
-	AActor* Second = *Controller->IdToActorMap.Find(Details.GetIdSecondModel());
+	AActor** First = Controller->IdToActorMap.Find(Details.GetIdFirstModel());
+	AActor** Second = Controller->IdToActorMap.Find(Details.GetIdSecondModel());
 
 	if (!First || !Second)
 	{
@@ -133,9 +133,9 @@ bool FROSSpawnPhysicsConstraintServer::SpawnPhysicsConstraintActor(
 	}
 
 	//Actors do Exist. Set as ConstraintActors of component.
-	UPhysicsConstraintComponent* ConstraintComponent = NewObject<UPhysicsConstraintComponent>(First);
-	ConstraintComponent->ConstraintActor1 = First;
-	ConstraintComponent->ConstraintActor2 = Second;
+	UPhysicsConstraintComponent* ConstraintComponent = NewObject<UPhysicsConstraintComponent>(*First);
+	ConstraintComponent->ConstraintActor1 = *First;
+	ConstraintComponent->ConstraintActor2 = *Second;
 
 	//Set pose of Component
 	ConstraintComponent->SetWorldLocationAndRotation(
