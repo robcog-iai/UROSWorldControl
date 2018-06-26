@@ -62,11 +62,10 @@ namespace world_control_msgs
 
 		virtual FString ToString() const override
 		{
-			return TEXT("PhysicsProperties {simulate_physics = %s, gravity = %s, generate_overlap_events = %s, mass = %s"),
-				SimulatePhysics ? TEXT("True") : TEXT("False"),
-				Gravity ? TEXT("True") : TEXT("False"),
-				GenerateOverlapEvents ? TEXT("True") : TEXT("False"),
-				FString::SanitizeFloat(Mass);
+			return "PhysicsProperties {simulate_physics = " + (SimulatePhysics ? FString("True") : FString("False")) +
+				", gravity = " + (Gravity ? FString("True") : FString("False")) +
+				", generate_overlap_events = " + (GenerateOverlapEvents ? FString("True") : FString("False")) +
+				", mass = " + FString::SanitizeFloat(Mass) + "}";
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const override

@@ -42,8 +42,8 @@ static FORCEINLINE void SetAngularLimits(
 	}
 
 	// Soft Limit?
-	if (SoftSwingLimit) Constraint.ProfileInstance.LinearLimit.bSoftConstraint = 1;
-	else Constraint.ProfileInstance.LinearLimit.bSoftConstraint = 0;
+	if (SoftSwingLimit) Constraint.ProfileInstance.ConeLimit.bSoftConstraint = 1;
+	else Constraint.ProfileInstance.ConeLimit.bSoftConstraint = 0;
 
 	if (SoftTwistLimit) Constraint.ProfileInstance.TwistLimit.bSoftConstraint = 1;
 	else Constraint.ProfileInstance.TwistLimit.bSoftConstraint = 0;
@@ -53,8 +53,8 @@ static FORCEINLINE void SetAngularLimits(
 	Constraint.SetAngularSwing2Limit(ACM_Free, Swing2LimitAngle);
 	Constraint.SetAngularTwistLimit(ACM_Free, TwistLimitAngle);
 
-	Constraint.ProfileInstance.LinearLimit.Stiffness = SwingStiff;
-	Constraint.ProfileInstance.LinearLimit.Damping = SwingDamp;
+	Constraint.ProfileInstance.ConeLimit.Stiffness = SwingStiff;
+	Constraint.ProfileInstance.ConeLimit.Damping = SwingDamp;
 	Constraint.ProfileInstance.TwistLimit.Stiffness = TwistStiff;
 	Constraint.ProfileInstance.TwistLimit.Damping = TwistDamp;
 }
@@ -113,8 +113,8 @@ bool FROSSpawnPhysicsConstraintServer::SpawnPhysicsConstraintActor(
 	TSharedPtr<FROSSpawnPhysicsConstraintSrv::Request> Request)
 {
 	world_control_msgs::PhysicsConstraintDetails Details = Request->GetConstraintDetails();
-	AActor* First = *Controller->IdToActorMap.Find(Details.GetIdFirstModel());
-	AActor* Second = *Controller->IdToActorMap.Find(Details.GetIdSecondModel());
+	AActor** First = Controller->IdToActorMap.Find(Details.GetIdFirstModel());
+	AActor** Second = Controller->IdToActorMap.Find(Details.GetIdSecondModel());
 
 	if (!First || !Second)
 	{
@@ -132,36 +132,48 @@ bool FROSSpawnPhysicsConstraintServer::SpawnPhysicsConstraintActor(
 		return false;
 	}
 
-	//Actors do Exist. Set as ConstraintActors of component.
-	UPhysicsConstraintComponent* ConstraintComponent = NewObject<UPhysicsConstraintComponent>(First);
-	ConstraintComponent->ConstraintActor1 = First;
-	ConstraintComponent->ConstraintActor2 = Second;
 
-	//Set pose of Component
+	//Actors do Exist. Set as ConstraintActors of component. 
+	UPhysicsConstraintComponent* ConstraintComponent = NewObject<UPhysicsConstraintComponent>(*First);
+	ConstraintComponent->bEditableWhenInherited = true;
+	ConstraintComponent->ConstraintActor1 = *First;
+	ConstraintComponent->ConstraintActor2 = *Second;
+
+	//Set World Location
 	ConstraintComponent->SetWorldLocationAndRotation(
 		Request->GetPose().GetPosition().GetVector(),
 		FRotator(Request->GetPose().GetOrientation().GetQuat()));
 
-	SetupProfileInstance(&ConstraintComponent->ConstraintInstance.ProfileInstance, Details);
-	SetupLinearLimits(ConstraintComponent->ConstraintInstance, Details);
-	SetupAngularLimits(ConstraintComponent->ConstraintInstance, Details);
+	//set up the constraint instance with all the desired values
+	FConstraintInstance ConstraintInstance;
 
-	//ConstraintComponent->SetConstrainedComponents(First->GetRootComponent(), NAME_None, Second->GetStaticMeshComponent(), NAME_None);
+
+	SetupProfileInstance(ConstraintInstance.ProfileInstance, Details);
+	SetupLinearLimits(ConstraintInstance, Details);
+	SetupAngularLimits(ConstraintInstance, Details);
+
+	ConstraintComponent->ConstraintInstance = ConstraintInstance;
+
+	ConstraintComponent->AttachToComponent((*First)->GetRootComponent(),
+		FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true));
+	ConstraintComponent->RegisterComponent();
+
 	return true;
+
 }
 
-void FROSSpawnPhysicsConstraintServer::SetupProfileInstance(FConstraintProfileProperties* ProfileInstance,
-                                                            world_control_msgs::PhysicsConstraintDetails Details)
+void FROSSpawnPhysicsConstraintServer::SetupProfileInstance(FConstraintProfileProperties& ProfileInstance,
+	world_control_msgs::PhysicsConstraintDetails Details)
 {
-	ProfileInstance->bDisableCollision = Details.GetDisableCollision();
-	ProfileInstance->bEnableProjection = Details.GetEnableProjection();
-	ProfileInstance->ProjectionLinearTolerance = Details.GetProjectionLinearTolerance();
-	ProfileInstance->ProjectionAngularTolerance = Details.GetProjectionAngularTolerance();
-	ProfileInstance->bParentDominates = Details.GetParentDominates();
+	ProfileInstance.bDisableCollision = Details.GetDisableCollision();
+	ProfileInstance.bEnableProjection = Details.GetEnableProjection();
+	ProfileInstance.ProjectionLinearTolerance = Details.GetProjectionLinearTolerance();
+	ProfileInstance.ProjectionAngularTolerance = Details.GetProjectionAngularTolerance();
+	ProfileInstance.bParentDominates = Details.GetParentDominates();
 }
 
-void FROSSpawnPhysicsConstraintServer::SetupAngularLimits(FConstraintInstance Instance,
-                                                          world_control_msgs::PhysicsConstraintDetails Details)
+void FROSSpawnPhysicsConstraintServer::SetupAngularLimits(FConstraintInstance& Instance,
+	world_control_msgs::PhysicsConstraintDetails Details)
 {
 	world_control_msgs::AngularLimits AngLimit = Details.GetAngularLimits();
 
@@ -169,11 +181,11 @@ void FROSSpawnPhysicsConstraintServer::SetupAngularLimits(FConstraintInstance In
 	{
 		//Advanced features will be set as well.
 		SetAngularLimits(Instance,
-		                 AngLimit.GetSwing1Motion(), AngLimit.GetSwing2Motion(), AngLimit.GetTwistMotion(),
-		                 AngLimit.GetSwing1LimitAngle(), AngLimit.GetSwing2LimitAngle(), AngLimit.GetTwistLimitAngle(),
-		                 AngLimit.GetSwingSoftConstrained(), AngLimit.GetTwistSoftConstrained(),
-		                 AngLimit.GetSwingStiffness(), AngLimit.GetSwingDamping(),
-		                 AngLimit.GetTwistStiffness(), AngLimit.GetTwistDamping()
+			AngLimit.GetSwing1Motion(), AngLimit.GetSwing2Motion(), AngLimit.GetTwistMotion(),
+			AngLimit.GetSwing1LimitAngle(), AngLimit.GetSwing2LimitAngle(), AngLimit.GetTwistLimitAngle(),
+			AngLimit.GetSwingSoftConstraint(), AngLimit.GetTwistSoftConstraint(),
+			AngLimit.GetSwingStiffness(), AngLimit.GetSwingDamping(),
+			AngLimit.GetTwistStiffness(), AngLimit.GetTwistDamping()
 		);
 
 		Instance.AngularRotationOffset = AngLimit.GetAngularRoationOffset().GetVector().Rotation();
@@ -182,12 +194,12 @@ void FROSSpawnPhysicsConstraintServer::SetupAngularLimits(FConstraintInstance In
 	{
 		//Advanced features will be left default.
 		SetAngularLimits(Instance,
-		                 AngLimit.GetSwing1Motion(), AngLimit.GetSwing2Motion(), AngLimit.GetTwistMotion(),
-		                 AngLimit.GetSwing1LimitAngle(), AngLimit.GetSwing2LimitAngle(), AngLimit.GetTwistLimitAngle());
+			AngLimit.GetSwing1Motion(), AngLimit.GetSwing2Motion(), AngLimit.GetTwistMotion(),
+			AngLimit.GetSwing1LimitAngle(), AngLimit.GetSwing2LimitAngle(), AngLimit.GetTwistLimitAngle());
 	}
 }
 
-void FROSSpawnPhysicsConstraintServer::SetupLinearLimits(FConstraintInstance Instance, world_control_msgs::PhysicsConstraintDetails Details)
+void FROSSpawnPhysicsConstraintServer::SetupLinearLimits(FConstraintInstance& Instance, world_control_msgs::PhysicsConstraintDetails Details)
 {
 	world_control_msgs::LinearLimits LinLimit = Details.GetLinearLimits();
 
@@ -195,17 +207,17 @@ void FROSSpawnPhysicsConstraintServer::SetupLinearLimits(FConstraintInstance Ins
 	{
 		//Advanced features will be set as well.
 		SetLinearLimits(Instance,
-		                LinLimit.GetXMotion(), LinLimit.GetYMotion(), LinLimit.GetZMotion(),
-		                LinLimit.GetLimit(),
-		                LinLimit.GetSoftConstraint(), LinLimit.GetStiffness(), LinLimit.GetDamping()
+			LinLimit.GetXMotion(), LinLimit.GetYMotion(), LinLimit.GetZMotion(),
+			LinLimit.GetLimit(),
+			LinLimit.GetSoftConstraint(), LinLimit.GetStiffness(), LinLimit.GetDamping()
 		);
 	}
 	else
 	{
 		//Advanced features will be left default.
 		SetLinearLimits(Instance,
-		                LinLimit.GetXMotion(), LinLimit.GetYMotion(), LinLimit.GetZMotion(),
-		                LinLimit.GetLimit()
+			LinLimit.GetXMotion(), LinLimit.GetYMotion(), LinLimit.GetZMotion(),
+			LinLimit.GetLimit()
 		);
 	}
 }

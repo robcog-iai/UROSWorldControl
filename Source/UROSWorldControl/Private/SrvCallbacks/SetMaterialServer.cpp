@@ -28,10 +28,10 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSetMaterialServer::Callback(
 
 	// get Actor with given UtagID of Controller IDMap
 
-	AActor* ActorToBeChanged = *Controller->IdToActorMap.Find(ChangeVisualRequest->GetId());
+	AActor** ActorToBeChanged = Controller->IdToActorMap.Find(ChangeVisualRequest->GetId());
 
 	TArray<UStaticMeshComponent*> Components;
-	ActorToBeChanged->GetComponents<UStaticMeshComponent>(Components);
+	(*ActorToBeChanged)->GetComponents<UStaticMeshComponent>(Components);
 
 	if (Components.Num() != 1)
 	{
@@ -39,7 +39,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSetMaterialServer::Callback(
 			TEXT(
 				"Actor %s has to more then one StaticMeshComponent, since it's not clear which one should be changed nothing was done."
 			),
-			*ActorToBeChanged->GetName());
+			*(*ActorToBeChanged)->GetName());
 		return MakeShareable<FROSBridgeSrv::SrvResponse>
 			(new FROSSetMaterialSrv::Response(false));
 	}

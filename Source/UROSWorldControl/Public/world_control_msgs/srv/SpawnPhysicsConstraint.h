@@ -58,9 +58,8 @@ public:
 
 		FString ToString() const override
 		{
-			return TEXT("FROSSpawnPhysicsConstraintSrv:Request {constraint_details = %s, pose = %s"),
-				ConstraintDetails.ToString(),
-				Pose.ToString();
+			return "FROSSpawnPhysicsConstraintSrv:Request {constraint_details = " + ConstraintDetails.ToString() +
+				", pose = " + Pose.ToString() + "}";
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
@@ -106,8 +105,7 @@ public:
 
 		FString ToString() const override
 		{
-			return TEXT("FROSSpawnPhysicsConstraintSrv:Response {success = %s"),
-				Success ? TEXT("True") : TEXT("False");
+			return "FROSSpawnPhysicsConstraintSrv:Response {success = " + (Success ? FString("True") : FString("False")) + "}";
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const override

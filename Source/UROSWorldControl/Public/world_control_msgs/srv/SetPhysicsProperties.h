@@ -57,9 +57,8 @@ public:
 
 		FString ToString() const override
 		{
-			return TEXT("FROSSetPhysicsPropertiesSrv:Request {id = %s, physics_properties = %s"),
-				Id,
-				PhysicsProperties.ToString();
+			return "FROSSetPhysicsPropertiesSrv:Request {id = " + Id +
+				", physics_properties = " + PhysicsProperties.ToString() + "}";
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
@@ -105,8 +104,7 @@ public:
 
 		FString ToString() const override
 		{
-			return TEXT("FROSSetPhysicsPropertiesSrv:Response {success = %s"),
-				Success ? TEXT("True") : TEXT("False");
+			return "FROSSetPhysicsPropertiesSrv:Response {success = " + (Success ? FString("True") : FString("False")) + "}";
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const override

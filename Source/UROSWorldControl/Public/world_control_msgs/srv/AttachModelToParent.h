@@ -56,9 +56,8 @@ public:
 
 		FString ToString() const override
 		{
-			return TEXT("FROSAttachModelToParentSrv:Request {parent_id = %s, child_id = %s"),
-				ParentId,
-				ChildId;
+			return "FROSAttachModelToParentSrv:Request {parent_id = " + ParentId +
+				", child_id = " + ChildId + "}";
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
@@ -104,8 +103,7 @@ public:
 
 		FString ToString() const override
 		{
-			return TEXT("FROSAttachModelToParentSrv:Response {success = %s"),
-				Success ? TEXT("True") : TEXT("False");
+			return "FROSAttachModelToParentSrv:Response {success = " + (Success ? FString("True") : FString("False")) + "}";
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const override

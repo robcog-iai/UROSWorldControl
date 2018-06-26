@@ -6,7 +6,7 @@
 #include "ROSBridgeSrv.h"
 #include "ROSWorldControlManager.h"
 #include "SpawnPhysicsConstraint.h"
-#include "Runtime/Engine/Classes/PhysicsEngine/ConstraintInstance.h"
+#include "PhysicsEngine/ConstraintInstance.h"
 
 
 class FROSSpawnPhysicsConstraintServer final : public FROSBridgeSrvServer
@@ -21,9 +21,9 @@ private:
 	ROSWorldControlManager* Controller;
 
 	bool SpawnPhysicsConstraintActor(TSharedPtr<FROSSpawnPhysicsConstraintSrv::Request> Request);
-	void SetupProfileInstance(FConstraintProfileProperties* ProfileInstance, world_control_msgs::PhysicsConstraintDetails Details);
-	void SetupAngularLimits(FConstraintInstance Instance, world_control_msgs::PhysicsConstraintDetails Details);
-	void SetupLinearLimits(FConstraintInstance Instance, world_control_msgs::PhysicsConstraintDetails Details);
+	void SetupProfileInstance(FConstraintProfileProperties& ProfileInstance, world_control_msgs::PhysicsConstraintDetails Details);
+	void SetupAngularLimits(FConstraintInstance& Instance, world_control_msgs::PhysicsConstraintDetails Details);
+	void SetupLinearLimits(FConstraintInstance& Instance, world_control_msgs::PhysicsConstraintDetails Details);
 
 
 public:

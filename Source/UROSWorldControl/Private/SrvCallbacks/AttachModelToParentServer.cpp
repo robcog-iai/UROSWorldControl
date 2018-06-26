@@ -14,14 +14,14 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSAttachModelToParentServer::Callback(
 	TSharedPtr<FROSAttachModelToParentSrv::Request> AttachModelToParentRequest =
 		StaticCastSharedPtr<FROSAttachModelToParentSrv::Request>(Request);
 
-	AActor* Child = *Controller->IdToActorMap.Find(AttachModelToParentRequest->GetChildId());
-	AActor* Parent = *Controller->IdToActorMap.Find(AttachModelToParentRequest->GetParentId());
+	AActor** Child = Controller->IdToActorMap.Find(AttachModelToParentRequest->GetChildId());
+	AActor** Parent = Controller->IdToActorMap.Find(AttachModelToParentRequest->GetParentId());
 	if (Child && Parent)
 	{
 		//Actors were found and will be attached, in GameThread
 		FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
 		{
-			Child->AttachRootComponentToActor(Parent);
+			(*Child)->AttachToActor(*Parent, FAttachmentTransformRules::KeepWorldTransform);
 		}, TStatId(), nullptr, ENamedThreads::GameThread);
 
 		//wait code above to complete

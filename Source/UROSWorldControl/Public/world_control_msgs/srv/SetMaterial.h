@@ -78,10 +78,9 @@ public:
 
 		FString ToString() const override
 		{
-			return TEXT("FROSSetMaterialSrv:Request {id = %s, material_names size = %s, material_paths size = %s"),
-				Id,
-				FString::FromInt(MaterialNames.Num()),
-				FString::FromInt(MaterialPaths.Num());
+			return "FROSSetMaterialSrv:Request {id = " + Id +
+				", material_names size = " + FString::FromInt(MaterialNames.Num()) +
+				", material_paths size = " + FString::FromInt(MaterialPaths.Num()) + "}";
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
@@ -142,8 +141,7 @@ public:
 
 		FString ToString() const override
 		{
-			return TEXT("FROSSetMaterialSrv:Response {success = %s"),
-				Success ? TEXT("True") : TEXT("False");
+			return "FROSSetMaterialSrv:Response {success = " + (Success ? FString("True") : FString("False")) + "}";
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
