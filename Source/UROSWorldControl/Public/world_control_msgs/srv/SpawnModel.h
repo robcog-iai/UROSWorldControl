@@ -145,17 +145,16 @@ public:
 
 		FString ToString() const override
 		{
-			return TEXT("FROSSpawnModelSrv:Request {name = %s, pose = %s, id = %s, tags size = %s, path = %s, actor_label = %s, physics_properties = %s, material_names size = %s, material_paths size = %s, parent_id = %s"),
-				Name,
-				Pose.ToString(),
-				Id,
-				FString::FromInt(Tags.Num()),
-				Path,
-				ActorLabel,
-				PhysicsProperties.ToString(),
-				FString::FromInt(MaterialNames.Num()),
-				FString::FromInt(MaterialPaths.Num()),
-				ParentId;
+			return "FROSSpawnModelSrv:Request {name = " + Name +
+				", pose = " + Pose.ToString() +
+				", id = " + Id +
+				", tags size = " + FString::FromInt(Tags.Num()) +
+				", path = " + Path +
+				", actor_label = " + ActorLabel +
+				", physics_properties = " + PhysicsProperties.ToString() +
+				", material_names size = " + FString::FromInt(MaterialNames.Num()) +
+				", material_paths size = " + FString::FromInt(MaterialPaths.Num()) +
+				", parent_id = " + ParentId + "}";
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
@@ -238,9 +237,8 @@ public:
 
 		FString ToString() const override
 		{
-			return TEXT("FROSSpawnModelSrv:Response {id = %s, success = %s"),
-				Id,
-				Success ? TEXT("True") : TEXT("False");
+			return "FROSSpawnModelSrv:Response {id = " + Id +
+				", success = " + (Success ? FString("True") : FString("False")) + "}";
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const override

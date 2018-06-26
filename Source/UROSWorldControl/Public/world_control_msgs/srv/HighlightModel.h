@@ -1,6 +1,9 @@
 #pragma once
 #include "ROSBridgeSrv.h"
 
+
+
+
 class UROSBRIDGE_API FROSHighlightModelSrv : public FROSBridgeSrv
 {
 protected:
@@ -53,9 +56,8 @@ public:
 
 		FString ToString() const override
 		{
-			return TEXT("FROSHighlightModelSrv:Request {id = %s, color = %s"),
-				Id,
-				FString::FromInt(Color);
+			return "FROSHighlightModelSrv:Request {id = " + Id +
+				", color = " + FString::FromInt(Color) + "}";
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
@@ -101,8 +103,7 @@ public:
 
 		FString ToString() const override
 		{
-			return TEXT("FROSHighlightModelSrv:Response {success = %s"),
-				Success ? TEXT("True") : TEXT("False");
+			return "FROSHighlightModelSrv:Response {success = " + (Success ? FString("True") : FString("False")) + "}";
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const override

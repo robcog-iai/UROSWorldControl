@@ -94,15 +94,14 @@ namespace world_control_msgs
 
 		virtual FString ToString() const override
 		{
-			return TEXT("LinearLimits {x_motion = %s, y_motion = %s, z_motion = %s, limit = %s, use_advanced = %s, soft_constraint = %s, stiffness = %s, damping = %s"),
-				FString::FromInt(XMotion),
-				FString::FromInt(YMotion),
-				FString::FromInt(ZMotion),
-				FString::SanitizeFloat(Limit),
-				UseAdvanced ? TEXT("True") : TEXT("False"),
-				SoftConstraint ? TEXT("True") : TEXT("False"),
-				FString::SanitizeFloat(Stiffness),
-				FString::SanitizeFloat(Damping);
+			return "LinearLimits {x_motion = " + FString::FromInt(XMotion) +
+				", y_motion = " + FString::FromInt(YMotion) +
+				", z_motion = " + FString::FromInt(ZMotion) +
+				", limit = " + FString::SanitizeFloat(Limit) +
+				", use_advanced = " + (UseAdvanced ? FString("True") : FString("False")) +
+				", soft_constraint = " + (SoftConstraint ? FString("True") : FString("False")) +
+				", stiffness = " + FString::SanitizeFloat(Stiffness) +
+				", damping = " + FString::SanitizeFloat(Damping) + "}";
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const override

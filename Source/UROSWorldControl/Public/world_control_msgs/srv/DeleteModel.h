@@ -48,8 +48,7 @@ public:
 
 		FString ToString() const override
 		{
-			return TEXT("FROSDeleteModelSrv:Request {id = %s"),
-				Id;
+			return "FROSDeleteModelSrv:Request {id = " + Id + "}";
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
@@ -94,8 +93,7 @@ public:
 
 		FString ToString() const override
 		{
-			return TEXT("FROSDeleteModelSrv:Response {success = %s"),
-				Success ? TEXT("True") : TEXT("False");
+			return "FROSDeleteModelSrv:Response {success = " + (Success ? FString("True") : FString("False")) + "}";
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const override

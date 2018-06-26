@@ -54,10 +54,9 @@ namespace world_control_msgs
 
 		virtual FString ToString() const override
 		{
-			return TEXT("Tag {tag_type = %s, key = %s, value = %s"),
-				TagType,
-				Key,
-				Value;
+			return "Tag {tag_type = " + TagType +
+				", key = " + Key +
+				", value = " + Value + "}";
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const override

@@ -57,9 +57,8 @@ public:
 
 		FString ToString() const override
 		{
-			return TEXT("FROSSetModelPoseSrv:Request {id = %s, pose = %s"),
-				Id,
-				Pose.ToString();
+			return "FROSSetModelPoseSrv:Request {id = " + Id +
+				", pose = " + Pose.ToString() + "}";
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
@@ -105,8 +104,7 @@ public:
 
 		FString ToString() const override
 		{
-			return TEXT("FROSSetModelPoseSrv:Response {success = %s"),
-				Success ? TEXT("True") : TEXT("False");
+			return "FROSSetModelPoseSrv:Response {success = " + (Success ? FString("True") : FString("False")) + "}";
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const override

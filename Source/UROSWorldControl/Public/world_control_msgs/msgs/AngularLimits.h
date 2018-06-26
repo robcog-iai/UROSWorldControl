@@ -16,10 +16,10 @@ namespace world_control_msgs
 		float TwistLimitAngle;
 		geometry_msgs::Vector3 AngularRoationOffset;
 		bool UseAdvanced;
-		bool SwingSoftConstrained;
+		bool SwingSoftConstraint;
 		float SwingStiffness;
 		float SwingDamping;
-		bool TwistSoftConstrained;
+		bool TwistSoftConstraint;
 		float TwistStiffness;
 		float TwistDamping;
 
@@ -27,7 +27,7 @@ namespace world_control_msgs
 	public:
 		AngularLimits() {}
 
-		AngularLimits(uint8 InSwing1Motion, uint8 InSwing2Motion, uint8 InTwistMotion, float InSwing1LimitAngle, float InSwing2LimitAngle, float InTwistLimitAngle, geometry_msgs::Vector3 InAngularRoationOffset, bool InUseAdvanced, bool InSwingSoftConstrained, float InSwingStiffness, float InSwingDamping, bool InTwistSoftConstrained, float InTwistStiffness, float InTwistDamping)
+		AngularLimits(uint8 InSwing1Motion, uint8 InSwing2Motion, uint8 InTwistMotion, float InSwing1LimitAngle, float InSwing2LimitAngle, float InTwistLimitAngle, geometry_msgs::Vector3 InAngularRoationOffset, bool InUseAdvanced, bool InSwingSoftConstraint, float InSwingStiffness, float InSwingDamping, bool InTwistSoftConstraint, float InTwistStiffness, float InTwistDamping)
 		{
 			AngularLimits();
 			Swing1Motion = InSwing1Motion;
@@ -38,10 +38,10 @@ namespace world_control_msgs
 			TwistLimitAngle = InTwistLimitAngle;
 			AngularRoationOffset = InAngularRoationOffset;
 			UseAdvanced = InUseAdvanced;
-			SwingSoftConstrained = InSwingSoftConstrained;
+			SwingSoftConstraint = InSwingSoftConstraint;
 			SwingStiffness = InSwingStiffness;
 			SwingDamping = InSwingDamping;
-			TwistSoftConstrained = InTwistSoftConstrained;
+			TwistSoftConstraint = InTwistSoftConstraint;
 			TwistStiffness = InTwistStiffness;
 			TwistDamping = InTwistDamping;
 		}
@@ -86,9 +86,9 @@ namespace world_control_msgs
 			return UseAdvanced;
 		}
 
-		bool GetSwingSoftConstrained()
+		bool GetSwingSoftConstraint()
 		{
-			return SwingSoftConstrained;
+			return SwingSoftConstraint;
 		}
 
 		float GetSwingStiffness()
@@ -101,9 +101,9 @@ namespace world_control_msgs
 			return SwingDamping;
 		}
 
-		bool GetTwistSoftConstrained()
+		bool GetTwistSoftConstraint()
 		{
-			return TwistSoftConstrained;
+			return TwistSoftConstraint;
 		}
 
 		float GetTwistStiffness()
@@ -126,10 +126,10 @@ namespace world_control_msgs
 			TwistLimitAngle = JsonObject->GetNumberField("twist_limit_angle");
 			AngularRoationOffset.FromJson(JsonObject->GetObjectField("angular_roation_offset"));
 			UseAdvanced = JsonObject->GetBoolField("use_advanced");
-			SwingSoftConstrained = JsonObject->GetBoolField("swing_soft_constrained");
+			SwingSoftConstraint = JsonObject->GetBoolField("swing_soft_constraint");
 			SwingStiffness = JsonObject->GetNumberField("swing_stiffness");
 			SwingDamping = JsonObject->GetNumberField("swing_damping");
-			TwistSoftConstrained = JsonObject->GetBoolField("twist_soft_constrained");
+			TwistSoftConstraint = JsonObject->GetBoolField("twist_soft_constraint");
 			TwistStiffness = JsonObject->GetNumberField("twist_stiffness");
 			TwistDamping = JsonObject->GetNumberField("twist_damping");
 		}
@@ -143,21 +143,20 @@ namespace world_control_msgs
 
 		virtual FString ToString() const override
 		{
-			return TEXT("AngularLimits {swing_1_motion = %s, swing_2_motion = %s, twist_motion = %s, swing_1_limit_angle = %s, swing_2_limit_angle = %s, twist_limit_angle = %s, angular_roation_offset = %s, use_advanced = %s, swing_soft_constrained = %s, swing_stiffness = %s, swing_damping = %s, twist_soft_constrained = %s, twist_stiffness = %s, twist_damping = %s"),
-				FString::FromInt(Swing1Motion),
-				FString::FromInt(Swing2Motion),
-				FString::FromInt(TwistMotion),
-				FString::SanitizeFloat(Swing1LimitAngle),
-				FString::SanitizeFloat(Swing2LimitAngle),
-				FString::SanitizeFloat(TwistLimitAngle),
-				AngularRoationOffset.ToString(),
-				UseAdvanced ? TEXT("True") : TEXT("False"),
-				SwingSoftConstrained ? TEXT("True") : TEXT("False"),
-				FString::SanitizeFloat(SwingStiffness),
-				FString::SanitizeFloat(SwingDamping),
-				TwistSoftConstrained ? TEXT("True") : TEXT("False"),
-				FString::SanitizeFloat(TwistStiffness),
-				FString::SanitizeFloat(TwistDamping);
+			return "AngularLimits {swing_1_motion = " + FString::FromInt(Swing1Motion) +
+				", swing_2_motion = " + FString::FromInt(Swing2Motion) +
+				", twist_motion = " + FString::FromInt(TwistMotion) +
+				", swing_1_limit_angle = " + FString::SanitizeFloat(Swing1LimitAngle) +
+				", swing_2_limit_angle = " + FString::SanitizeFloat(Swing2LimitAngle) +
+				", twist_limit_angle = " + FString::SanitizeFloat(TwistLimitAngle) +
+				", angular_roation_offset = " + AngularRoationOffset.ToString() +
+				", use_advanced = " + (UseAdvanced ? FString("True") : FString("False")) +
+				", swing_soft_constraint = " + (SwingSoftConstraint ? FString("True") : FString("False")) +
+				", swing_stiffness = " + FString::SanitizeFloat(SwingStiffness) +
+				", swing_damping = " + FString::SanitizeFloat(SwingDamping) +
+				", twist_soft_constraint = " + (TwistSoftConstraint ? FString("True") : FString("False")) +
+				", twist_stiffness = " + FString::SanitizeFloat(TwistStiffness) +
+				", twist_damping = " + FString::SanitizeFloat(TwistDamping) + "}";
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
@@ -171,10 +170,10 @@ namespace world_control_msgs
 			Object->SetNumberField(TEXT("twist_limit_angle"), TwistLimitAngle);
 			Object->SetObjectField(TEXT("angular_roation_offset"), AngularRoationOffset.ToJsonObject());
 			Object->SetBoolField(TEXT("use_advanced"), UseAdvanced);
-			Object->SetBoolField(TEXT("swing_soft_constrained"), SwingSoftConstrained);
+			Object->SetBoolField(TEXT("swing_soft_constraint"), SwingSoftConstraint);
 			Object->SetNumberField(TEXT("swing_stiffness"), SwingStiffness);
 			Object->SetNumberField(TEXT("swing_damping"), SwingDamping);
-			Object->SetBoolField(TEXT("twist_soft_constrained"), TwistSoftConstrained);
+			Object->SetBoolField(TEXT("twist_soft_constraint"), TwistSoftConstraint);
 			Object->SetNumberField(TEXT("twist_stiffness"), TwistStiffness);
 			Object->SetNumberField(TEXT("twist_damping"), TwistDamping);
 			return Object;

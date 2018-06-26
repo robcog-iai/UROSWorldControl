@@ -104,16 +104,15 @@ namespace world_control_msgs
 
 		virtual FString ToString() const override
 		{
-			return TEXT("PhysicsConstraintDetails {id_first_model = %s, id_second_model = %s, disable_collision = %s, enable_projection = %s, projection_linear_tolerance = %s, projection_angular_tolerance = %s, parent_dominates = %s, linear_limits = %s, angular_limits = %s"),
-				IdFirstModel,
-				IdSecondModel,
-				DisableCollision ? TEXT("True") : TEXT("False"),
-				EnableProjection ? TEXT("True") : TEXT("False"),
-				FString::SanitizeFloat(ProjectionLinearTolerance),
-				FString::SanitizeFloat(ProjectionAngularTolerance),
-				ParentDominates ? TEXT("True") : TEXT("False"),
-				LinearLimits.ToString(),
-				AngularLimits.ToString();
+			return "PhysicsConstraintDetails {id_first_model = " + IdFirstModel +
+				", id_second_model = " + IdSecondModel +
+				", disable_collision = " + (DisableCollision ? FString("True") : FString("False")) +
+				", enable_projection = " + (EnableProjection ? FString("True") : FString("False")) +
+				", projection_linear_tolerance = " + FString::SanitizeFloat(ProjectionLinearTolerance) +
+				", projection_angular_tolerance = " + FString::SanitizeFloat(ProjectionAngularTolerance) +
+				", parent_dominates = " + (ParentDominates ? FString("True") : FString("False")) +
+				", linear_limits = " + LinearLimits.ToString() +
+				", angular_limits = " + AngularLimits.ToString() + "}";
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
