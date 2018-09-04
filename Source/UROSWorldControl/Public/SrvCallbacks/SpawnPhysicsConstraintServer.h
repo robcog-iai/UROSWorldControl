@@ -4,7 +4,7 @@
 #include "ROSBridgeHandler.h"
 #include "ROSBridgeSrvServer.h"
 #include "ROSBridgeSrv.h"
-#include "ROSWorldControlManager.h"
+#include "UROSWorldControlManager.h"
 #include "SpawnPhysicsConstraint.h"
 #include "PhysicsEngine/ConstraintInstance.h"
 
@@ -18,7 +18,7 @@ private:
 	UWorld* World;
 	FThreadSafeBool ServiceSuccess;
 
-	ROSWorldControlManager* Controller;
+	UROSWorldControlManager* Controller;
 
 	bool SpawnPhysicsConstraintActor(TSharedPtr<FROSSpawnPhysicsConstraintSrv::Request> Request);
 	void SetupProfileInstance(FConstraintProfileProperties& ProfileInstance, world_control_msgs::PhysicsConstraintDetails Details);
@@ -28,7 +28,7 @@ private:
 
 public:
 	FROSSpawnPhysicsConstraintServer(FString Namespace, FString Name, UWorld* InWorld,
-	                                 ROSWorldControlManager* InController) :
+	                                 UROSWorldControlManager* InController) :
 		FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("world_control_msgs/SpawnPhysicsConstraint"))
 	{
 		World = InWorld;

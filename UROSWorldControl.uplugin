@@ -18,19 +18,16 @@
             "Name": "UROSWorldControl",
             "Type": "Developer",
             "LoadingPhase": "Default"
-        },
-        {
-            "Name": "UROSWorldControlEd",
-            "Type": "Editor",
-            "LoadingPhase": "Default"
         }
 	],
-	 "Plugins": [
-     {
-       "Name": "UROSBridge",
-       "Enabled": true
-     },{
-       "Name": "UUTils",
-       "Enabled": true
-     }]
+    "Plugins": [
+        {
+            "Name": "UROSBridge",
+            "Enabled": true
+        },
+        {
+            "Name": "UUTils",
+            "Enabled": true
+        }
+    ]
 }

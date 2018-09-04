@@ -5,7 +5,7 @@
 #include "ROSBridgeSrvServer.h"
 #include "ROSBridgeHandler.h"
 #include "SetPhysicsProperties.h"
-#include "ROSWorldControlManager.h"
+#include "UROSWorldControlManager.h"
 #include "Engine/StaticMesh.h"
 
 
@@ -24,9 +24,9 @@ protected:
 
 	
 public:
-	ROSWorldControlManager * Controller;
+	UROSWorldControlManager * Controller;
 
-	FROSSetPhysicsPropertiesServer(FString Namespace, FString Name, UWorld* InWorld, ROSWorldControlManager* InController) :
+	FROSSetPhysicsPropertiesServer(FString Namespace, FString Name, UWorld* InWorld, UROSWorldControlManager* InController) :
 		FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("world_control_msgs/SetPhysicsProperties"))
 	{
 		Controller = InController;

@@ -1,6 +1,7 @@
 #include "SpawnModelsServer.h"
 #include "Engine/StaticMeshActor.h"
 #include "FileManagerGeneric.h"
+#include "Ids.h"
 
 bool FROSSpawnModelServer::SpawnAsset(const SpawnAssetParams Params)
 {
@@ -21,7 +22,7 @@ bool FROSSpawnModelServer::SpawnAsset(const SpawnAssetParams Params)
 	UStaticMesh* Mesh = LoadMesh(Params.Name, Params.StartDir);
 	if (!Mesh)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Could not find a Mesh."));
+		UE_LOG(LogTemp, Error, TEXT("Could not find Mesh: %s."), *Params.Name);
 		return false;
 	}
 
@@ -107,7 +108,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnModelServer::Callback(TSharedPtr
 		StaticCastSharedPtr<FROSSpawnModelSrv::Request>(Request);
 
 	SpawnAssetParams Params;
-	Params.Id = SpawnMeshRequest->GetId();
+	Params.Id = SpawnMeshRequest->GetId().IsEmpty() ? FIds::NewGuidInBase64() : SpawnMeshRequest->GetId();
 	Params.Name = SpawnMeshRequest->GetName();
 	Params.Location = SpawnMeshRequest->GetPose().GetPosition().GetVector();
 	Params.Rotator = FRotator(SpawnMeshRequest->GetPose().GetOrientation().GetQuat());
@@ -130,7 +131,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnModelServer::Callback(TSharedPtr
 	FTaskGraphInterface::Get().WaitUntilTaskCompletes(Task);
 
 	return MakeShareable<FROSBridgeSrv::SrvResponse>
-		(new FROSSpawnModelSrv::Response(SpawnMeshRequest->GetId(), ServiceSuccess));
+		(new FROSSpawnModelSrv::Response(Params.Id, ServiceSuccess));
 }
 
 

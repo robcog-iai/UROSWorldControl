@@ -4,7 +4,7 @@
 #include "ROSBridgeHandler.h"
 #include "ROSBridgeSrvServer.h"
 #include "ROSBridgeSrv.h"
-#include "ROSWorldControlManager.h"
+#include "UROSWorldControlManager.h"
 
 
 class FROSSetModelPoseServer final : public FROSBridgeSrvServer
@@ -22,13 +22,13 @@ private:
 	UWorld* World;
 	FThreadSafeBool ServiceSuccess;
 
-	ROSWorldControlManager* Controller;
+	UROSWorldControlManager* Controller;
 
 	bool Relocate(AActor* Actor, FVector Location, FRotator Rotator);
 
 public:
 	FROSSetModelPoseServer(FString Namespace, FString Name, UWorld* InWorld,
-	                       ROSWorldControlManager* InController) :
+	                       UROSWorldControlManager* InController) :
 		FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("world_control_msgs/SetModelPose"))
 	{
 		World = InWorld;

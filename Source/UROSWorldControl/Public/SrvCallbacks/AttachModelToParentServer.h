@@ -4,7 +4,7 @@
 #include "ROSBridgeHandler.h"
 #include "ROSBridgeSrvServer.h"
 #include "ROSBridgeSrv.h"
-#include "ROSWorldControlManager.h"
+#include "UROSWorldControlManager.h"
 #include "AttachModelToParent.h"
 
 
@@ -17,12 +17,12 @@ private:
 	UWorld* World;
 	FThreadSafeBool ServiceSuccess;
 
-	ROSWorldControlManager* Controller;
+	UROSWorldControlManager* Controller;
 
 
 public:
 	FROSAttachModelToParentServer(FString Namespace, FString Name, UWorld* InWorld,
-	                              ROSWorldControlManager* InController) :
+	                              UROSWorldControlManager* InController) :
 		FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("world_control_msgs/AttachModelToParent"))
 	{
 		World = InWorld;

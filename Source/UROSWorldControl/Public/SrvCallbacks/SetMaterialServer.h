@@ -5,7 +5,7 @@
 #include "ROSBridgeSrvServer.h"
 #include "ROSBridgeHandler.h"
 #include "SetMaterial.h"
-#include "ROSWorldControlManager.h"
+#include "UROSWorldControlManager.h"
 #include "Engine/StaticMesh.h"
 
 
@@ -30,9 +30,9 @@ private:
 	bool ChangeVisual(UStaticMeshComponent * MeshComponent, TArray<FString> MaterialNames, TArray<FString> MaterialPaths);
 
 public:
-	ROSWorldControlManager * Controller;
+	UROSWorldControlManager * Controller;
 
-	FROSSetMaterialServer(FString Namespace, FString Name, UWorld* InWorld, ROSWorldControlManager* InController) :
+	FROSSetMaterialServer(FString Namespace, FString Name, UWorld* InWorld, UROSWorldControlManager* InController) :
 		FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("world_control_msgs/SetMaterial"))
 	{
 		Controller = InController;

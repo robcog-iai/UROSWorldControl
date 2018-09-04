@@ -3,7 +3,7 @@
 #include "ROSBridgeHandler.h"
 #include "ROSBridgeSrvServer.h"
 #include "ROSBridgeSrv.h"
-#include "ROSWorldControlManager.h"
+#include "UROSWorldControlManager.h"
 #include "HighlightModel.h"
 
 
@@ -15,10 +15,10 @@ private:
 
 	UWorld* World;
 
-	ROSWorldControlManager* Controller;
+	UROSWorldControlManager* Controller;
 public:
 	FROSHighlightModelsServer(FString Namespace, FString Name, UWorld* InWorld,
-		ROSWorldControlManager* InController) :
+		UROSWorldControlManager* InController) :
 		FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("world_control_msgs/HighlightModel")),
 		World(InWorld), Controller(InController)
 	{

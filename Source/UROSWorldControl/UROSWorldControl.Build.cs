@@ -29,6 +29,7 @@ public class UROSWorldControl : ModuleRules
 			{
 				"Core",
                 "UROSBridge",
+                "UROSBridgeEd",
                 "UTags",
                 "UIds",
                 "UConversions",
@@ -52,6 +53,8 @@ public class UROSWorldControl : ModuleRules
                 "zlib",
                 "Json",
                 "JsonUtilities",
+                "UROSBridge",
+                "UROSBridgeEd",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

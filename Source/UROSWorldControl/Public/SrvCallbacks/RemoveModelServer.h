@@ -1,7 +1,7 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "ROSBridgeHandler.h"
-#include "ROSWorldControlManager.h"
+#include "UROSWorldControlManager.h"
 #include "DeleteModel.h"
 
 class FROSRemoveModelServer final : public FROSBridgeSrvServer
@@ -11,11 +11,11 @@ private:
 	UWorld* World;
 	FThreadSafeBool ServiceSuccess;
 
-	ROSWorldControlManager* Controller;
+	UROSWorldControlManager* Controller;
 
 public:
 	FROSRemoveModelServer(FString Namespace, FString Name, UWorld* InWorld,
-	                      ROSWorldControlManager* InController) :
+	                      UROSWorldControlManager* InController) :
 		FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("world_control_msgs/DeleteModel"))
 	{
 		World = InWorld;
