@@ -10,7 +10,7 @@
 #include "SetPhysicsPropertiesServer.h"
 #include "SetMaterialServer.h"
 
-void UROSWorldControlManager::Init(FString DefaultNamespace)
+void UROSWorldControlManager::Register(FString DefaultNamespace)
 {
 	Namespace = DefaultNamespace;
 
@@ -30,7 +30,6 @@ void UROSWorldControlManager::Init(FString DefaultNamespace)
 void UROSWorldControlManager::SetupServiceServers()
 {
 	// Add Service Servers
-	//TODO: Make Actual changes
 	UWorld* World = GetWorld();
 
 	ServicesToPublish.Add(MakeShareable<FROSSpawnModelServer>(new FROSSpawnModelServer(Namespace, TEXT("spawn_model"), World, this)));

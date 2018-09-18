@@ -5,14 +5,12 @@
 #include "Engine.h"
 #include "GameFramework/Actor.h"
 #include "Tags.h"
-#include "RosBridgeHandlerRefSingleton.h"
-#include "ROSBridgeHandler.h"
-#include "ROSPublisherBaseClass.h"
+#include "UROSCallbackRegisterBase.h"
 #include "UROSWorldControlManager.generated.h"
 
 
 UCLASS()
-class UROSWORLDCONTROL_API UROSWorldControlManager : public UROSPublisherBaseClass
+class UROSWORLDCONTROL_API UROSWorldControlManager : public UROSCallbackRegisterBase
 {
 	GENERATED_BODY()
 
@@ -22,7 +20,7 @@ public:
 
 	void SetupServiceServers();
 					
-	void Init(FString DefaultNamespace) override;														
+	void Register(FString DefaultNamespace) override;														
 													
 	TMap<FString, AActor*> IdToActorMap;
 private:
