@@ -37,7 +37,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSetPhysicsPropertiesServer::Callback(
 	FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
 	{
 		MeshComponent->SetSimulatePhysics(ChangeVisualRequest->GetPhysicsProperties().GetSimulatePhysics());
-		MeshComponent->bGenerateOverlapEvents = ChangeVisualRequest->GetPhysicsProperties().GetGenerateOverlapEvents();
+		MeshComponent->SetGenerateOverlapEvents(ChangeVisualRequest->GetPhysicsProperties().GetGenerateOverlapEvents());
 		MeshComponent->SetEnableGravity(ChangeVisualRequest->GetPhysicsProperties().GetGravity());
 		MeshComponent->SetMassOverrideInKg(NAME_None, ChangeVisualRequest->GetPhysicsProperties().GetMass());
 	}, TStatId(), nullptr, ENamedThreads::GameThread);

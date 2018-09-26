@@ -17,10 +17,10 @@ void UUnrealWorldControlEdTool::ConnectToRosBridge()
 	Controller = new ROSWorldControlManager(World, ServerAdress, ServerPort, Namespace);
 
 	// Setup Callbacks
-	FWebsocketInfoCallBack ErrorCallback;
+	FROSWebsocketInfoSignature ErrorCallback;
 	ErrorCallback.AddUObject(this, &UUnrealWorldControlEdTool::ConnectionErrorCallback);
 
-	FWebsocketInfoCallBack ConnectedCallback;
+	FROSWebsocketInfoSignature ConnectedCallback;
 	ConnectedCallback.AddUObject(this, &UUnrealWorldControlEdTool::ConnectedCallback);
 
 	Controller->ConnectToROSBridge(ErrorCallback, ConnectedCallback);

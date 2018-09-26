@@ -25,7 +25,7 @@ public:
 	UWorld* World;
 
 public:
-	void ConnectToROSBridge(FWebsocketInfoCallBack CustomErrorCallbacks, FWebsocketInfoCallBack CustomConnectedCallbacks);
+	void ConnectToROSBridge(FROSWebsocketInfoSignature CustomErrorCallbacks, FROSWebsocketInfoSignature CustomConnectedCallbacks);
 	void DisconnectFromROSBridge();
 	bool IsConnected();
 

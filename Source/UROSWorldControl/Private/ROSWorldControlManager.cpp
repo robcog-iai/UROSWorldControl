@@ -20,8 +20,8 @@ ROSWorldControlManager::ROSWorldControlManager(UWorld* InWorld, FString InServer
 	Namespace = InNamespace;
 }
 
-void ROSWorldControlManager::ConnectToROSBridge(FWebsocketInfoCallBack CustomErrorCallbacks,
-                                                FWebsocketInfoCallBack CustomConnectedCallbacks)
+void ROSWorldControlManager::ConnectToROSBridge(FROSWebsocketInfoSignature CustomErrorCallbacks,
+	FROSWebsocketInfoSignature CustomConnectedCallbacks)
 {
 	if (!World)
 	{
@@ -101,5 +101,5 @@ void ROSWorldControlManager::DisconnectFromROSBridge()
 
 bool ROSWorldControlManager::IsConnected()
 {
-	return Handler->IsClientConnected();
+	return Handler->IsConnected();
 }

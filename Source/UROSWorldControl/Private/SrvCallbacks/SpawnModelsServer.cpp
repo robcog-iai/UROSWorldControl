@@ -55,7 +55,7 @@ bool FROSSpawnModelServer::SpawnAsset(const SpawnAssetParams Params)
 
 		world_control_msgs::PhysicsProperties Properties = Params.PhysicsProperties;
 		SpawnedItem->GetStaticMeshComponent()->SetSimulatePhysics(Properties.GetSimulatePhysics());
-		SpawnedItem->GetStaticMeshComponent()->bGenerateOverlapEvents = Properties.GetGenerateOverlapEvents();
+		SpawnedItem->GetStaticMeshComponent()->SetGenerateOverlapEvents(Properties.GetGenerateOverlapEvents());
 		SpawnedItem->GetStaticMeshComponent()->SetEnableGravity(Properties.GetGravity());
 		SpawnedItem->GetStaticMeshComponent()->SetMassOverrideInKg(NAME_None, Properties.GetMass());
 		
