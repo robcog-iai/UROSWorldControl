@@ -13,7 +13,7 @@ Currently there are the following ROS services supported:
 
 ## Installation
 ### Unreal
-For this Plugin to work on the unreal side of things, you also need to the Plugins [UROSBridge](https://github.com/robcog-iai/UROSBridge) and [UTags](https://github.com/robcog-iai/UTags). Copy all three plugins into your project Plugin folder and activate them.
+For this Plugin to work on the unreal side of things, you also need to the Plugins [UROSBridge](https://github.com/robcog-iai/UROSBridge) and [UUTils/UTags](https://github.com/robcog-iai/UUtils). Copy all three plugins into your project Plugin folder and activate them.
 
 For the Highlighting to work, you need to setup three things in your unreal project.
 1) Got to Edit -> Project Settings under Rendering -> Postprocessing you need to set "Custom Depht-Stencil Pass" to "Enable with Stencil".
