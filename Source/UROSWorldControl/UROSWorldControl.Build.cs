@@ -10,7 +10,6 @@ public class UROSWorldControl : ModuleRules
 		
 		PublicIncludePaths.AddRange(
 			new string[] {
-				"UROSWorldControl/Public"
 				// ... add public include paths required here ...
 			}
 			);
@@ -18,7 +17,6 @@ public class UROSWorldControl : ModuleRules
 		
 		PrivateIncludePaths.AddRange(
 			new string[] {
-				"UROSWorldControl/Private"
 				// ... add other private include paths required here ...
 			}
 			);
