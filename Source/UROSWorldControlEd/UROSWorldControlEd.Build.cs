@@ -1,4 +1,5 @@
-// Copyright 1998-2017 Epic Games, Inc. All Rights Reserved.
+// Copyright 2018, Institute for Artificial Intelligence - University of Bremen
+
 
 using UnrealBuildTool;
 
@@ -10,30 +11,25 @@ public class UROSWorldControlEd : ModuleRules
 		
 		PublicIncludePaths.AddRange(
 			new string[] {
-				"UROSWorldControlEd/Public"
 				// ... add public include paths required here ...
 			}
 			);
-				
-		
+
 		PrivateIncludePaths.AddRange(
 			new string[] {
-				"UROSWorldControlEd/Private",
 				// ... add other private include paths required here ...
 			}
 			);
-			
-		
+
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
 				"Core",
-                "UROSWorldControl",
+				"UROSWorldControl",
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
-			
-		
+
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
@@ -44,6 +40,7 @@ public class UROSWorldControlEd : ModuleRules
 				"InputCore",
 				"UnrealEd",
 				"LevelEditor",
+				"Projects",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

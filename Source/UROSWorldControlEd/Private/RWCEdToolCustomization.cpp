@@ -1,15 +1,17 @@
-#include "UnrealWorldControlEdToolCustomization.h"
+// Copyright 2018, Institute for Artificial Intelligence - University of Bremen
+
+#include "RWCEdToolCustomization.h"
 #include "PropertyEditing.h"
 #include "Widgets/Input/SButton.h"
 #include "Widgets/Input/SComboButton.h"
 
-TSharedRef<IDetailCustomization> FUnrealWorldControlEdToolCustomization::MakeInstance()
+TSharedRef<IDetailCustomization> FRWCEdToolCustomization::MakeInstance()
 {
-	return MakeShareable(new FUnrealWorldControlEdToolCustomization);
+	return MakeShareable(new FRWCEdToolCustomization);
 }
 
 
-void FUnrealWorldControlEdToolCustomization::CustomizeDetails(IDetailLayoutBuilder& DetailBuilder)
+void FRWCEdToolCustomization::CustomizeDetails(IDetailLayoutBuilder& DetailBuilder)
 {
 	TSet<UClass*> Classes;
 
@@ -42,7 +44,7 @@ void FUnrealWorldControlEdToolCustomization::CustomizeDetails(IDetailLayoutBuild
 				[
 					SNew(SButton)
 					             .Text(ButtonCaption)
-					             .OnClicked(FOnClicked::CreateStatic(&FUnrealWorldControlEdToolCustomization::ExecuteCommand,
+					             .OnClicked(FOnClicked::CreateStatic(&FRWCEdToolCustomization::ExecuteCommand,
 					                                                 &DetailBuilder, Function))
 				];
 			}
@@ -50,7 +52,7 @@ void FUnrealWorldControlEdToolCustomization::CustomizeDetails(IDetailLayoutBuild
 	}
 }
 
-FReply FUnrealWorldControlEdToolCustomization::ExecuteCommand(IDetailLayoutBuilder* DetailBuilder,
+FReply FRWCEdToolCustomization::ExecuteCommand(IDetailLayoutBuilder* DetailBuilder,
                                                               UFunction* MethodToExecute)
 {
 	TArray<TWeakObjectPtr<UObject>> ObjectsBeingCustomized;

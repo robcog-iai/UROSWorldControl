@@ -1,10 +1,12 @@
+// Copyright 2018, Institute for Artificial Intelligence - University of Bremen
+
 #pragma once
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "ROSBridgeHandler.h"
 #include "ROSBridgeSrvServer.h"
 #include "ROSBridgeSrv.h"
-#include "ROSWorldControlManager.h"
+#include "RWCManager.h"
 #include "AttachModelToParent.h"
 
 
@@ -17,12 +19,11 @@ private:
 	UWorld* World;
 	FThreadSafeBool ServiceSuccess;
 
-	ROSWorldControlManager* Controller;
+	FRWCManager* Controller;
 
 
 public:
-	FROSAttachModelToParentServer(FString Namespace, FString Name, UWorld* InWorld,
-	                              ROSWorldControlManager* InController) :
+	FROSAttachModelToParentServer(FString Namespace, FString Name, UWorld* InWorld, FRWCManager* InController) :
 		FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("world_control_msgs/AttachModelToParent"))
 	{
 		World = InWorld;

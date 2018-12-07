@@ -1,11 +1,11 @@
-// Copyright 1998-2017 Epic Games, Inc. All Rights Reserved.
+// Copyright 2018, Institute for Artificial Intelligence - University of Bremen
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "ModuleManager.h"
 
-class FUROSWorldControlModule : public IModuleInterface
+class FUROSWorldControl : public IModuleInterface
 {
 public:
 

@@ -1,12 +1,14 @@
-#include "UnrealWorldControlEdTool.h"
+// Copyright 2018, Institute for Artificial Intelligence - University of Bremen
+
+#include "RWCEdTool.h"
 #include "UObject/ConstructorHelpers.h"
 
-UUnrealWorldControlEdTool::UUnrealWorldControlEdTool(const FObjectInitializer& ObjectInitializer)
+URWCEdTool::URWCEdTool(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 }
 
-void UUnrealWorldControlEdTool::ConnectToRosBridge()
+void URWCEdTool::Connect()
 {
 	World = GEditor->GetEditorWorldContext().World();
 
@@ -14,20 +16,20 @@ void UUnrealWorldControlEdTool::ConnectToRosBridge()
 	{
 		Controller->DisconnectFromROSBridge();
 	}
-	Controller = new ROSWorldControlManager(World, ServerAdress, ServerPort, Namespace);
+	Controller = new FRWCManager(World, ServerAdress, ServerPort, Namespace);
 
 	// Setup Callbacks
 	FROSWebsocketInfoSignature ErrorCallback;
-	ErrorCallback.AddUObject(this, &UUnrealWorldControlEdTool::ConnectionErrorCallback);
+	ErrorCallback.AddUObject(this, &URWCEdTool::ConnectionErrorCallback);
 
 	FROSWebsocketInfoSignature ConnectedCallback;
-	ConnectedCallback.AddUObject(this, &UUnrealWorldControlEdTool::ConnectedCallback);
+	ConnectedCallback.AddUObject(this, &URWCEdTool::ConnectedCallback);
 
 	Controller->ConnectToROSBridge(ErrorCallback, ConnectedCallback);
 }
 
 
-void UUnrealWorldControlEdTool::ClearMap()
+void URWCEdTool::ClearMap()
 {
 	if (Controller)
 	{
@@ -40,14 +42,14 @@ void UUnrealWorldControlEdTool::ClearMap()
 }
 
 
-void UUnrealWorldControlEdTool::ConnectionErrorCallback()
+void URWCEdTool::ConnectionErrorCallback()
 {
 	ConnectionStatus = TEXT("Not connected.");
 	if (GEngine)
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("Connection to RosBridge lost.")));
 }
 
-void UUnrealWorldControlEdTool::ConnectedCallback()
+void URWCEdTool::ConnectedCallback()
 {
 	ConnectionStatus = TEXT("Connected to Rosbridge.");
 	if (GEngine)

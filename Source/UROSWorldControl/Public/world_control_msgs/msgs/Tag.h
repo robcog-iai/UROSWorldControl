@@ -1,8 +1,6 @@
 #pragma once
 #include "ROSBridgeMsg.h"
 
-
-
 namespace world_control_msgs
 {
 	class Tag : public FROSBridgeMsg

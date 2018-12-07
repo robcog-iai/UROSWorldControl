@@ -1,9 +1,11 @@
+// Copyright 2018, Institute for Artificial Intelligence - University of Bremen
+
 #pragma once
 
 #include "IDetailCustomization.h"
 #include "Reply.h"
 
-class FUnrealWorldControlEdToolCustomization : public IDetailCustomization
+class FRWCEdToolCustomization : public IDetailCustomization
 {
 public:
 	//IDetailCustomization interface

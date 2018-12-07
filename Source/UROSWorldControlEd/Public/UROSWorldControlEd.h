@@ -1,4 +1,4 @@
-// Copyright 1998-2017 Epic Games, Inc. All Rights Reserved.
+// Copyright 2018, Institute for Artificial Intelligence - University of Bremen
 
 #pragma once
 
@@ -7,22 +7,23 @@
 #include "Styling/ISlateStyle.h"
 #include "Styling/SlateStyle.h"
 
-class FUnrealWorldControlEdModeModule : public IModuleInterface
+class FUROSWorldControlEd : public IModuleInterface
 {
 public:
-
 	/** IModuleInterface implementation */
 	void StartupModule() override;
 	void ShutdownModule() override;
 
+	// Init style
 	static void Initialize();
 
+	// Get instance
 	static TSharedPtr<class ISlateStyle> Get();
 
+	// Get style name
 	static FName GetStyleSetName();
-private:
-	static FString InContent(const FString& RelativePath, const ANSICHAR* Extension);
 
 private:
-	static TSharedPtr<class FSlateStyleSet> StyleSet;
+	// Style instance
+	static TSharedPtr<class FSlateStyleSet> StyleSetInstance;
 };

@@ -1,22 +1,22 @@
-// Copyright 1998-2017 Epic Games, Inc. All Rights Reserved.
+// Copyright 2018, Institute for Artificial Intelligence - University of Bremen
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Widgets/DeclarativeSyntaxSupport.h"
 #include "Widgets/SCompoundWidget.h"
-#include "UnrealWorldControlEdMode.h"
+#include "RWCEdMode.h"
 #include "Toolkits/IToolkitHost.h"
 #include "AssetThumbnail.h"
 #include "Toolkits/BaseToolkit.h"
 #include "Editor.h"
 
 class IDetailsView;
-class SUnrealWorldControlEd;
+class SRWCEd;
 class SErrorText;
 struct FPropertyAndParent;
 
-class FUnrealWorldControlEdModeToolkit : public FModeToolkit
+class FRWCEdModeToolkit : public FModeToolkit
 {
 public:
 	/** FModeToolkit interface */
@@ -25,38 +25,38 @@ public:
 	/** IToolkit interface */
 	FName GetToolkitFName() const override;
 	FText GetBaseToolkitName() const override;
-	FUnrealWorldControlEdMode* GetEditorMode() const override;
+	FRWCEdMode* GetEditorMode() const override;
 	TSharedPtr<class SWidget> GetInlineContent() const override;
 
 
 private:
 	/** Geometry tools widget */
-	TSharedPtr<SUnrealWorldControlEd> UnrealWorldControlEdWidgets;
+	TSharedPtr<SRWCEd> RWCEdWidgets;
 };
 
 /**
 * Slate widgets for the New Editor Mode
 */
-class SUnrealWorldControlEd : public SCompoundWidget
+class SRWCEd : public SCompoundWidget
 {
 public:
-SLATE_BEGIN_ARGS(SUnrealWorldControlEd)
+SLATE_BEGIN_ARGS(SRWCEd)
 		{
 		}
 
 	SLATE_END_ARGS()
 
-	void Construct(const FArguments& InArgs, TSharedRef<FUnrealWorldControlEdModeToolkit> InParentToolkit);
+	void Construct(const FArguments& InArgs, TSharedRef<FRWCEdModeToolkit> InParentToolkit);
 
 	void RefreshDetailPanel();
 
 protected:
 
-	class FUnrealWorldControlEdMode* GetEditorMode() const;
+	class FRWCEdMode* GetEditorMode() const;
 
 	FText GetErrorText() const;
 
-	bool GetUnrealWorldControlEdIsEnabled() const;
+	bool GetRWCEdIsEnabled() const;
 
 	bool GetIsPropertyVisible(const FPropertyAndParent& PropertyAndParent) const;
 

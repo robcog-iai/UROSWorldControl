@@ -1,9 +1,6 @@
 #pragma once
 #include "ROSBridgeSrv.h"
 
-
-
-
 class UROSBRIDGE_API FROSAttachModelToParentSrv : public FROSBridgeSrv
 {
 protected:

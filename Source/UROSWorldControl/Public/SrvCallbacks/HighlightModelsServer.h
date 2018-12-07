@@ -1,24 +1,26 @@
+// Copyright 2018, Institute for Artificial Intelligence - University of Bremen
+
 #pragma once
 #include "CoreMinimal.h"
 #include "ROSBridgeHandler.h"
 #include "ROSBridgeSrvServer.h"
 #include "ROSBridgeSrv.h"
-#include "ROSWorldControlManager.h"
+#include "RWCManager.h"
 #include "HighlightModel.h"
 
 
 class FROSHighlightModelsServer final : public FROSBridgeSrvServer
 {
-		
+
 private:
 	FROSHighlightModelsServer();
 
 	UWorld* World;
 
-	ROSWorldControlManager* Controller;
+	FRWCManager* Controller;
 public:
 	FROSHighlightModelsServer(FString Namespace, FString Name, UWorld* InWorld,
-		ROSWorldControlManager* InController) :
+		FRWCManager* InController) :
 		FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("world_control_msgs/HighlightModel")),
 		World(InWorld), Controller(InController)
 	{
