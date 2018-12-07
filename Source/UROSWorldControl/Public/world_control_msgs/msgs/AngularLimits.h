@@ -2,8 +2,6 @@
 #include "ROSBridgeMsg.h"
 #include "Vector3.h"
 
-
-
 namespace world_control_msgs
 {
 	class AngularLimits : public FROSBridgeMsg

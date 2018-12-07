@@ -3,8 +3,6 @@
 #include "LinearLimits.h"
 #include "AngularLimits.h"
 
-
-
 namespace world_control_msgs
 {
 	class PhysicsConstraintDetails : public FROSBridgeMsg

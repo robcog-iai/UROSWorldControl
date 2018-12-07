@@ -1,7 +1,9 @@
+// Copyright 2018, Institute for Artificial Intelligence - University of Bremen
+
 #pragma once
 #include "CoreMinimal.h"
 #include "ROSBridgeHandler.h"
-#include "ROSWorldControlManager.h"
+#include "RWCManager.h"
 #include "DeleteModel.h"
 
 class FROSRemoveModelServer final : public FROSBridgeSrvServer
@@ -11,11 +13,11 @@ private:
 	UWorld* World;
 	FThreadSafeBool ServiceSuccess;
 
-	ROSWorldControlManager* Controller;
+	FRWCManager* Controller;
 
 public:
 	FROSRemoveModelServer(FString Namespace, FString Name, UWorld* InWorld,
-	                      ROSWorldControlManager* InController) :
+	                      FRWCManager* InController) :
 		FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("world_control_msgs/DeleteModel"))
 	{
 		World = InWorld;

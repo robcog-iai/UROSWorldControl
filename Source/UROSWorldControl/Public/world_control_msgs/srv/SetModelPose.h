@@ -2,9 +2,6 @@
 #include "ROSBridgeSrv.h"
 #include "Pose.h"
 
-
-
-
 class UROSBRIDGE_API FROSSetModelPoseSrv : public FROSBridgeSrv
 {
 protected:

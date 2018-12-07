@@ -2,9 +2,6 @@
 #include "ROSBridgeSrv.h"
 #include "PhysicsProperties.h"
 
-
-
-
 class UROSBRIDGE_API FROSSetPhysicsPropertiesSrv : public FROSBridgeSrv
 {
 protected:

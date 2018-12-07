@@ -3,13 +3,13 @@
 	"Version": 1,
 	"VersionName": "1.0",
 	"FriendlyName": "UROSWorldControl",
-	"Description": "",
-	"Category": "Other",
+	"Description": "ROS Unreal control plugin using UROSBridge",
+	"Category": "RobCoG",
 	"CreatedBy": "Bjoern Veit",
 	"CreatedByURL": "",
-	"DocsURL": "",
+	"DocsURL": "https://github.com/robcog-iai/UROSWorldControl",
 	"MarketplaceURL": "",
-	"SupportURL": "",
+	"SupportURL": "http://robcog.org/",
 	"CanContainContent": true,
 	"IsBetaVersion": false,
 	"Installed": false,
@@ -25,12 +25,14 @@
             "LoadingPhase": "Default"
         }
 	],
-	 "Plugins": [
-     {
-       "Name": "UROSBridge",
-       "Enabled": true
-     },{
-       "Name": "UUTils",
-       "Enabled": true
-     }]
+	"Plugins": [
+		{
+			"Name": "UROSBridge",
+			"Enabled": true
+		},
+		{
+		"Name": "UUTils",
+		"Enabled": true
+		}
+	]
 }

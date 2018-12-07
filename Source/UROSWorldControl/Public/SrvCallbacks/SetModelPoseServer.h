@@ -1,10 +1,12 @@
+// Copyright 2018, Institute for Artificial Intelligence - University of Bremen
+
 #pragma once
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "ROSBridgeHandler.h"
 #include "ROSBridgeSrvServer.h"
 #include "ROSBridgeSrv.h"
-#include "ROSWorldControlManager.h"
+#include "RWCManager.h"
 
 
 class FROSSetModelPoseServer final : public FROSBridgeSrvServer
@@ -22,13 +24,13 @@ private:
 	UWorld* World;
 	FThreadSafeBool ServiceSuccess;
 
-	ROSWorldControlManager* Controller;
+	FRWCManager* Controller;
 
 	bool Relocate(AActor* Actor, FVector Location, FRotator Rotator);
 
 public:
 	FROSSetModelPoseServer(FString Namespace, FString Name, UWorld* InWorld,
-	                       ROSWorldControlManager* InController) :
+	                       FRWCManager* InController) :
 		FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("world_control_msgs/SetModelPose"))
 	{
 		World = InWorld;

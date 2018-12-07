@@ -1,6 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright 2018, Institute for Artificial Intelligence - University of Bremen
 
-#include "ROSWorldControlManager.h"
+#include "RWCManager.h"
 #include "SpawnModelsServer.h"
 #include "SetModelPoseServer.h"
 #include "RemoveModelServer.h"
@@ -11,8 +11,7 @@
 #include "SetMaterialServer.h"
 
 
-ROSWorldControlManager::ROSWorldControlManager(UWorld* InWorld, FString InServerAdress, int InServerPort,
-                                               FString InNamespace)
+FRWCManager::FRWCManager(UWorld* InWorld, FString InServerAdress, int32 InServerPort, FString InNamespace)
 {
 	World = InWorld;
 	ServerAdress = InServerAdress;
@@ -20,7 +19,7 @@ ROSWorldControlManager::ROSWorldControlManager(UWorld* InWorld, FString InServer
 	Namespace = InNamespace;
 }
 
-void ROSWorldControlManager::ConnectToROSBridge(FROSWebsocketInfoSignature CustomErrorCallbacks,
+void FRWCManager::ConnectToROSBridge(FROSWebsocketInfoSignature CustomErrorCallbacks,
 	FROSWebsocketInfoSignature CustomConnectedCallbacks)
 {
 	if (!World)
@@ -91,7 +90,7 @@ void ROSWorldControlManager::ConnectToROSBridge(FROSWebsocketInfoSignature Custo
 	bServicesPulished = true;
 }
 
-void ROSWorldControlManager::DisconnectFromROSBridge()
+void FRWCManager::DisconnectFromROSBridge()
 {
 	if (Handler.IsValid())
 	{
@@ -99,7 +98,7 @@ void ROSWorldControlManager::DisconnectFromROSBridge()
 	}
 }
 
-bool ROSWorldControlManager::IsConnected()
+bool FRWCManager::IsConnected()
 {
 	return Handler->IsConnected();
 }

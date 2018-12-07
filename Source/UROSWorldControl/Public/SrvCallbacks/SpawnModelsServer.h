@@ -1,3 +1,5 @@
+// Copyright 2018, Institute for Artificial Intelligence - University of Bremen
+
 #pragma once
 
 #include "CoreMinimal.h"
@@ -6,7 +8,7 @@
 #include "ROSBridgeHandler.h"
 #include "SpawnModel.h"
 #include "PhysicsProperties.h"
-#include "ROSWorldControlManager.h"
+#include "RWCManager.h"
 #include "Engine/StaticMesh.h"
 #include "Tags.h"
 
@@ -46,9 +48,9 @@ private:
 
 
 public:
-	ROSWorldControlManager* Controller;
+	FRWCManager* Controller;
 
-	FROSSpawnModelServer(FString Namespace, FString Name, UWorld* InWorld, ROSWorldControlManager* InController) :
+	FROSSpawnModelServer(FString Namespace, FString Name, UWorld* InWorld, FRWCManager* InController) :
 		FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("world_control_msgs/SpawnModel"))
 	{
 		Controller = InController;

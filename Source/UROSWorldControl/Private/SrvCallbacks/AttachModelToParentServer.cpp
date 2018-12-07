@@ -30,17 +30,18 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSAttachModelToParentServer::Callback(
 		return MakeShareable<FROSBridgeSrv::SrvResponse>
 			(new FROSAttachModelToParentSrv::Response(true));
 	}
-	//at least one of them could not be found.
-	if (!Child)
+	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("Actor with id:\"%s\" does not exist."), *AttachModelToParentRequest->GetChildId());
+		if (!Child)
+		{
+			UE_LOG(LogTemp, Error, TEXT("Actor with id:\"%s\" does not exist."), *AttachModelToParentRequest->GetChildId());
+		}
+		if (!Parent)
+		{
+			UE_LOG(LogTemp, Error, TEXT("Actor with id:\"%s\" does not exist."), *AttachModelToParentRequest->GetParentId());
+		}
 	}
-
-	if (!Parent)
-	{
-		UE_LOG(LogTemp, Error, TEXT("Actor with id:\"%s\" does not exist."), *AttachModelToParentRequest->GetParentId());
-	}
-
+	
 	return MakeShareable<FROSBridgeSrv::SrvResponse>
 		(new FROSAttachModelToParentSrv::Response(false));
 }

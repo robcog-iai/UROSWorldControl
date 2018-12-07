@@ -1,3 +1,5 @@
+// Copyright 2018, Institute for Artificial Intelligence - University of Bremen
+
 #pragma once
 
 #include "CoreMinimal.h"
@@ -5,7 +7,7 @@
 #include "ROSBridgeSrvServer.h"
 #include "ROSBridgeHandler.h"
 #include "SetMaterial.h"
-#include "ROSWorldControlManager.h"
+#include "RWCManager.h"
 #include "Engine/StaticMesh.h"
 
 
@@ -30,9 +32,9 @@ private:
 	bool ChangeVisual(UStaticMeshComponent * MeshComponent, TArray<FString> MaterialNames, TArray<FString> MaterialPaths);
 
 public:
-	ROSWorldControlManager * Controller;
+	FRWCManager * Controller;
 
-	FROSSetMaterialServer(FString Namespace, FString Name, UWorld* InWorld, ROSWorldControlManager* InController) :
+	FROSSetMaterialServer(FString Namespace, FString Name, UWorld* InWorld, FRWCManager* InController) :
 		FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("world_control_msgs/SetMaterial"))
 	{
 		Controller = InController;

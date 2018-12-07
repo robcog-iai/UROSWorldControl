@@ -1,25 +1,25 @@
-// Copyright 1998-2017 Epic Games, Inc. All Rights Reserved.
+// Copyright 2018, Institute for Artificial Intelligence - University of Bremen
 
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UnrealWorldControlEdTool.h"
+#include "RWCEdTool.h"
 #include "EdMode.h"
 
-class UUnrealWorldControlEdTool;
+class URWCEdTool;
 
-class FUnrealWorldControlEdMode : public FEdMode
+class FRWCEdMode : public FEdMode
 {
 public:
-	UUnrealWorldControlEdTool* UISettings;
+	URWCEdTool* UISettings;
 
-	const static FEditorModeID EM_UnrealWorldControlEdModeId;
+	const static FEditorModeID EM_RWCEdModeId;
 
 	/* Constructor */
-	FUnrealWorldControlEdMode();
+	FRWCEdMode();
 
 	/* Destructor */
-	virtual ~FUnrealWorldControlEdMode();
+	virtual ~FRWCEdMode();
 
 	/** FGCObject interface */
 	void AddReferencedObjects(FReferenceCollector& Collector) override;

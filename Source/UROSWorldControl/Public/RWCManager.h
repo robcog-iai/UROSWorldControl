@@ -1,4 +1,5 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright 2018, Institute for Artificial Intelligence - University of Bremen
+
 #pragma once
 
 #include "CoreMinimal.h"
@@ -6,21 +7,21 @@
 #include "Tags.h"
 #include "ROSBridgeHandler.h"
 
-//Forward declariation to avoid recursion
+// Forward declarations to avoid recursion
 class SpawnModelServer;
 class SpawnMultipleModelsServer;
 class SetModelPoseServer;
 class RemoveModelServer;
 
-class UROSWORLDCONTROL_API ROSWorldControlManager
+class UROSWORLDCONTROL_API FRWCManager
 {
 public:
 	// Sets default values for this actor's properties
-	ROSWorldControlManager(UWorld* InWorld, FString InServerAdress, int InServerPort, FString InNamespace);
-	~ROSWorldControlManager();
+	FRWCManager(UWorld* InWorld, FString InServerAdress, int32 InServerPort, FString InNamespace);
+	~FRWCManager();
 
 	FString ServerAdress;
-	int ServerPort;
+	int32 ServerPort;
 	FString Namespace;
 	UWorld* World;
 
@@ -32,10 +33,7 @@ public:
 	TMap<FString, AActor*> IdToActorMap;
 
 private:
-	ROSWorldControlManager()
-	{
-	};
 	TSharedPtr<FROSBridgeHandler> Handler;
-
+	
 	bool bServicesPulished;
 };
