@@ -1,39 +1,28 @@
-// Copyright 2018, Institute for Artificial Intelligence - University of Bremen
-
+// Fill out your copyright notice in the Description page of Project Settings.
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Engine.h"
 #include "GameFramework/Actor.h"
 #include "Tags.h"
-#include "ROSBridgeHandler.h"
+#include "UROSCallbackRegisterBase.h"
+#include "RWCManager.generated.h"
 
-// Forward declarations to avoid recursion
-class SpawnModelServer;
-class SpawnMultipleModelsServer;
-class SetModelPoseServer;
-class RemoveModelServer;
 
-class UROSWORLDCONTROL_API FRWCManager
+UCLASS()
+class UROSWORLDCONTROL_API URWCManager : public UROSCallbackRegisterBase
 {
-public:
-	// Sets default values for this actor's properties
-	FRWCManager(UWorld* InWorld, FString InServerAdress, int32 InServerPort, FString InNamespace);
-	~FRWCManager();
-
-	FString ServerAdress;
-	int32 ServerPort;
-	FString Namespace;
-	UWorld* World;
+	GENERATED_BODY()
 
 public:
-	void ConnectToROSBridge(FROSWebsocketInfoSignature CustomErrorCallbacks, FROSWebsocketInfoSignature CustomConnectedCallbacks);
-	void DisconnectFromROSBridge();
-	bool IsConnected();
+	URWCManager(){}
+	~URWCManager(){}
 
+	void SetupServiceServers();
+					
+	void Register(FString DefaultNamespace) override;														
+													
 	TMap<FString, AActor*> IdToActorMap;
-
 private:
-	TSharedPtr<FROSBridgeHandler> Handler;
-	
-	bool bServicesPulished;
+	FString Namespace;
 };

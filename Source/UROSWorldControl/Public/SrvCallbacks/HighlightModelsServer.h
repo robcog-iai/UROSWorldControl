@@ -17,10 +17,10 @@ private:
 
 	UWorld* World;
 
-	FRWCManager* Controller;
+	URWCManager* Controller;
 public:
 	FROSHighlightModelsServer(FString Namespace, FString Name, UWorld* InWorld,
-		FRWCManager* InController) :
+		URWCManager* InController) :
 		FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("world_control_msgs/HighlightModel")),
 		World(InWorld), Controller(InController)
 	{

@@ -20,7 +20,7 @@ private:
 	UWorld* World;
 	FThreadSafeBool ServiceSuccess;
 
-	FRWCManager* Controller;
+	URWCManager* Controller;
 
 	bool SpawnPhysicsConstraintActor(TSharedPtr<FROSSpawnPhysicsConstraintSrv::Request> Request);
 	void SetupProfileInstance(FConstraintProfileProperties& ProfileInstance, world_control_msgs::PhysicsConstraintDetails Details);
@@ -30,7 +30,7 @@ private:
 
 public:
 	FROSSpawnPhysicsConstraintServer(FString Namespace, FString Name, UWorld* InWorld,
-	                                 FRWCManager* InController) :
+				URWCManager* InController) :
 		FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("world_control_msgs/SpawnPhysicsConstraint"))
 	{
 		World = InWorld;

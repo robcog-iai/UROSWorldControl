@@ -19,11 +19,11 @@ private:
 	UWorld* World;
 	FThreadSafeBool ServiceSuccess;
 
-	FRWCManager* Controller;
+	URWCManager* Controller;
 
 
 public:
-	FROSAttachModelToParentServer(FString Namespace, FString Name, UWorld* InWorld, FRWCManager* InController) :
+	FROSAttachModelToParentServer(FString Namespace, FString Name, UWorld* InWorld, URWCManager* InController) :
 		FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("world_control_msgs/AttachModelToParent"))
 	{
 		World = InWorld;

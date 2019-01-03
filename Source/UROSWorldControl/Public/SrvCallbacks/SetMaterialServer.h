@@ -26,15 +26,15 @@ protected:
 	
 
 private:
-	UStaticMesh * LoadMesh(FString Name, FString StartDir);
+	UStaticMesh* LoadMesh(FString Name, FString StartDir);
 	UMaterialInterface* LoadMaterial(FString Name, FString StartDir);
 
 	bool ChangeVisual(UStaticMeshComponent * MeshComponent, TArray<FString> MaterialNames, TArray<FString> MaterialPaths);
 
 public:
-	FRWCManager * Controller;
+	URWCManager* Controller;
 
-	FROSSetMaterialServer(FString Namespace, FString Name, UWorld* InWorld, FRWCManager* InController) :
+	FROSSetMaterialServer(FString Namespace, FString Name, UWorld* InWorld, URWCManager* InController) :
 		FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("world_control_msgs/SetMaterial"))
 	{
 		Controller = InController;

@@ -13,11 +13,11 @@ private:
 	UWorld* World;
 	FThreadSafeBool ServiceSuccess;
 
-	FRWCManager* Controller;
+	URWCManager* Controller;
 
 public:
 	FROSRemoveModelServer(FString Namespace, FString Name, UWorld* InWorld,
-	                      FRWCManager* InController) :
+			URWCManager* InController) :
 		FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("world_control_msgs/DeleteModel"))
 	{
 		World = InWorld;

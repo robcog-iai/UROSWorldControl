@@ -48,9 +48,9 @@ private:
 
 
 public:
-	FRWCManager* Controller;
+	URWCManager* Controller;
 
-	FROSSpawnModelServer(FString Namespace, FString Name, UWorld* InWorld, FRWCManager* InController) :
+	FROSSpawnModelServer(FString Namespace, FString Name, UWorld* InWorld, URWCManager* InController) :
 		FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("world_control_msgs/SpawnModel"))
 	{
 		Controller = InController;

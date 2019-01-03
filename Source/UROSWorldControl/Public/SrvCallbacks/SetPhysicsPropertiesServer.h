@@ -26,9 +26,9 @@ protected:
 
 	
 public:
-	FRWCManager * Controller;
+	URWCManager* Controller;
 
-	FROSSetPhysicsPropertiesServer(FString Namespace, FString Name, UWorld* InWorld, FRWCManager* InController) :
+	FROSSetPhysicsPropertiesServer(FString Namespace, FString Name, UWorld* InWorld, URWCManager* InController) :
 		FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("world_control_msgs/SetPhysicsProperties"))
 	{
 		Controller = InController;

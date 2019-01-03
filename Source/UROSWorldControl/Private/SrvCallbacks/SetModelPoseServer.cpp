@@ -1,5 +1,6 @@
 #include "SetModelPoseServer.h"
 #include "SetModelPose.h"
+#include "Conversions.h"
 
 
 bool FROSSetModelPoseServer::Relocate(AActor* Actor, FVector Location, FRotator Rotator)
@@ -46,14 +47,14 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSetModelPoseServer::Callback(TSharedP
 	// Setup params
 	MoveAssetParams Params;
 	Params.Actor = *Actor;
-	Params.Location = SetModelPoseRequest->GetPose().GetPosition().GetVector();
-	Params.Rotator = FRotator::FRotator(SetModelPoseRequest->GetPose().GetOrientation().GetQuat());
+	Params.Location = FConversions::ROSToU(SetModelPoseRequest->GetPose().GetPosition().GetVector());
+	Params.Rotator = FRotator::FRotator(FConversions::ROSToU(SetModelPoseRequest->GetPose().GetOrientation().GetQuat()));
 
 	//Actor was found and will be relocated, in GameThread
 	FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
 	{
 		ServiceSuccess = Relocate(Params.Actor,
-		                          Params.Location * 100.f,
+		                          Params.Location,
 		                          Params.Rotator);
 	}, TStatId(), nullptr, ENamedThreads::GameThread);
 

@@ -1,6 +1,8 @@
 #include "SpawnModelsServer.h"
 #include "Engine/StaticMeshActor.h"
 #include "FileManagerGeneric.h"
+#include "Ids.h"
+#include "Conversions.h"
 
 bool FROSSpawnModelServer::SpawnAsset(const SpawnAssetParams Params)
 {
@@ -21,7 +23,7 @@ bool FROSSpawnModelServer::SpawnAsset(const SpawnAssetParams Params)
 	UStaticMesh* Mesh = LoadMesh(Params.Name, Params.StartDir);
 	if (!Mesh)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Could not find a Mesh."));
+		UE_LOG(LogTemp, Error, TEXT("Could not find Mesh: %s."), *Params.Name);
 		return false;
 	}
 
@@ -30,7 +32,7 @@ bool FROSSpawnModelServer::SpawnAsset(const SpawnAssetParams Params)
 	if (Controller->IdToActorMap.Find(Params.Id) == nullptr)
 	{
 		//Actual Spawning MeshComponent
-		SpawnedItem = World->SpawnActor<AStaticMeshActor>(Params.Location * 100.f, Params.Rotator, SpawnParams);
+		SpawnedItem = World->SpawnActor<AStaticMeshActor>(Params.Location, Params.Rotator, SpawnParams);
 
 		// Needs to be movable if the game is running.
 		SpawnedItem->SetMobility(EComponentMobility::Movable);
@@ -50,8 +52,8 @@ bool FROSSpawnModelServer::SpawnAsset(const SpawnAssetParams Params)
 				}
 			}
 		}
-		SpawnedItem->SetActorLabel(Params.ActorLabel);
 
+		Params.ActorLabel.IsEmpty() ? SpawnedItem->SetActorLabel(Params.Name + "_"+ Params.Id) : SpawnedItem->SetActorLabel(Params.ActorLabel);
 
 		world_control_msgs::PhysicsProperties Properties = Params.PhysicsProperties;
 		SpawnedItem->GetStaticMeshComponent()->SetSimulatePhysics(Properties.GetSimulatePhysics());
@@ -107,10 +109,10 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnModelServer::Callback(TSharedPtr
 		StaticCastSharedPtr<FROSSpawnModelSrv::Request>(Request);
 
 	SpawnAssetParams Params;
-	Params.Id = SpawnMeshRequest->GetId();
+	Params.Id = SpawnMeshRequest->GetId().IsEmpty() ? FIds::NewGuidInBase64() : SpawnMeshRequest->GetId();
 	Params.Name = SpawnMeshRequest->GetName();
-	Params.Location = SpawnMeshRequest->GetPose().GetPosition().GetVector();
-	Params.Rotator = FRotator(SpawnMeshRequest->GetPose().GetOrientation().GetQuat());
+	Params.Location = FConversions::ROSToU(SpawnMeshRequest->GetPose().GetPosition().GetVector());
+	Params.Rotator = FRotator(FConversions::ROSToU(SpawnMeshRequest->GetPose().GetOrientation().GetQuat()));
 	Params.Tags = SpawnMeshRequest->GetTags();
 	Params.PhysicsProperties = SpawnMeshRequest->GetPhysicsProperties();
 	Params.StartDir = SpawnMeshRequest->GetPath();
@@ -130,7 +132,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnModelServer::Callback(TSharedPtr
 	FTaskGraphInterface::Get().WaitUntilTaskCompletes(Task);
 
 	return MakeShareable<FROSBridgeSrv::SrvResponse>
-		(new FROSSpawnModelSrv::Response(SpawnMeshRequest->GetId(), ServiceSuccess));
+		(new FROSSpawnModelSrv::Response(Params.Id, ServiceSuccess));
 }
 
 

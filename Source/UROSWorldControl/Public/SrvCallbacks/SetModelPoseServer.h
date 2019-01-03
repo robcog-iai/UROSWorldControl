@@ -24,13 +24,13 @@ private:
 	UWorld* World;
 	FThreadSafeBool ServiceSuccess;
 
-	FRWCManager* Controller;
+	URWCManager* Controller;
 
 	bool Relocate(AActor* Actor, FVector Location, FRotator Rotator);
 
 public:
 	FROSSetModelPoseServer(FString Namespace, FString Name, UWorld* InWorld,
-	                       FRWCManager* InController) :
+		URWCManager* InController) :
 		FROSBridgeSrvServer(Namespace + TEXT("/") + Name, TEXT("world_control_msgs/SetModelPose"))
 	{
 		World = InWorld;
