@@ -53,7 +53,7 @@ bool FROSSpawnModelServer::SpawnAsset(const SpawnAssetParams Params)
 			}
 		}
 
-		Params.ActorLabel.IsEmpty() ? SpawnedItem->SetActorLabel(Params.Name + "_"+ Params.Id) : SpawnedItem->SetActorLabel(Params.ActorLabel);
+		Params.ActorLabel.IsEmpty() ? SpawnedItem->SetActorLabel(Params.Name) : SpawnedItem->SetActorLabel(Params.ActorLabel);
 
 		world_control_msgs::PhysicsProperties Properties = Params.PhysicsProperties;
 		SpawnedItem->GetStaticMeshComponent()->SetSimulatePhysics(Properties.GetSimulatePhysics());
