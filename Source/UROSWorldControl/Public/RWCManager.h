@@ -4,7 +4,6 @@
 #include "CoreMinimal.h"
 #include "Engine.h"
 #include "GameFramework/Actor.h"
-#include "Tags.h"
 #include "UROSCallbackRegisterBase.h"
 #include "RWCManager.generated.h"
 
@@ -21,8 +20,7 @@ public:
 	void SetupServiceServers();
 					
 	void Register(FString DefaultNamespace) override;														
-													
-	TMap<FString, AActor*> IdToActorMap;
+											
 private:
 	FString Namespace;
 };

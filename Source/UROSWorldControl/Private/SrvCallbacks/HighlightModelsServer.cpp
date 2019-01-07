@@ -1,6 +1,8 @@
 #include "HighlightModelsServer.h"
 #include "GameFramework/Actor.h"
 #include "Components/StaticMeshComponent.h"
+#include "Tags.h"
+#include "AssetHighlighter.h"
 
 TSharedPtr<FROSBridgeSrv::SrvRequest> FROSHighlightModelsServer::FromJson(TSharedPtr<FJsonObject> JsonObject) const
 {
@@ -17,27 +19,13 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSHighlightModelsServer::Callback(
 		StaticCastSharedPtr<FROSHighlightModelSrv::Request>(Request);
 
 
-	AActor** ActorToBeHighlighted = Controller->IdToActorMap.Find(HighlightModelRequest->GetId());
+	AActor* ActorToBeHighlighted = FTags::GetActorsWithKeyValuePair(World, TEXT("SemLog"), TEXT("Id"), HighlightModelRequest->GetId()).Pop();
 	// Execute on game thread
 	if (ActorToBeHighlighted)
 	{
 		FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
 		{
-			TArray<UStaticMeshComponent*> Components;
-			(*ActorToBeHighlighted)->GetComponents<UStaticMeshComponent>(Components);
-			for (auto Component : Components)
-			{
-				uint8 Color = HighlightModelRequest->GetColor();
-				if (Color == 0)
-				{
-					Component->SetRenderCustomDepth(false);
-				} 
-				else
-				{					
-						Component->SetRenderCustomDepth(true);
-						Component->CustomDepthStencilValue = Color;
-				}
-			}
+			FAssetHighlighter::HighlightAsset(ActorToBeHighlighted, HighlightModelRequest->GetColor());
 		}, TStatId(), nullptr, ENamedThreads::GameThread);
 
 		//wait code above to complete

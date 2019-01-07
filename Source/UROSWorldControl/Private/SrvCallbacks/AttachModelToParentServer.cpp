@@ -1,4 +1,6 @@
 #include "AttachModelToParentServer.h"
+#include "AssetModifier.h"
+#include "Tags.h"
 
 TSharedPtr<FROSBridgeSrv::SrvRequest> FROSAttachModelToParentServer::FromJson(TSharedPtr<FJsonObject> JsonObject) const
 {
@@ -14,14 +16,14 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSAttachModelToParentServer::Callback(
 	TSharedPtr<FROSAttachModelToParentSrv::Request> AttachModelToParentRequest =
 		StaticCastSharedPtr<FROSAttachModelToParentSrv::Request>(Request);
 
-	AActor** Child = Controller->IdToActorMap.Find(AttachModelToParentRequest->GetChildId());
-	AActor** Parent = Controller->IdToActorMap.Find(AttachModelToParentRequest->GetParentId());
+	AActor* Child = FTags::GetActorsWithKeyValuePair(World, TEXT("SemLog"), TEXT("Id"), AttachModelToParentRequest->GetChildId()).Pop();
+	AActor* Parent = FTags::GetActorsWithKeyValuePair(World, TEXT("SemLog"), TEXT("Id"), AttachModelToParentRequest->GetParentId()).Pop();
 	if (Child && Parent)
 	{
 		//Actors were found and will be attached, in GameThread
 		FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
 		{
-			(*Child)->AttachToActor(*Parent, FAttachmentTransformRules::KeepWorldTransform);
+			FAssetModifier::AttachModelToParent(Parent, Child);
 		}, TStatId(), nullptr, ENamedThreads::GameThread);
 
 		//wait code above to complete

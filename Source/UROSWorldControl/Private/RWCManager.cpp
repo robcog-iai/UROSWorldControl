@@ -20,9 +20,6 @@ void URWCManager::Register(FString DefaultNamespace)
 		return;
 	}
 
-	// Setup IDMap
-	IdToActorMap = FTags::GetKeyValuesToActor(GetWorld(), "SemLog", "Id");
-
 	SetupServiceServers();
 }
 

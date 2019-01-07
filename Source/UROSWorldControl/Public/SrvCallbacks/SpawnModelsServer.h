@@ -16,20 +16,6 @@
 class FROSSpawnModelServer : public FROSBridgeSrvServer
 {
 protected:
-	struct SpawnAssetParams
-	{
-		FString Id;
-		FString Name;
-		FVector Location;
-		FRotator Rotator;
-		TArray<world_control_msgs::Tag> Tags;
-		world_control_msgs::PhysicsProperties PhysicsProperties;
-		FString StartDir;
-		FString ActorLabel;
-		TArray<FString> MaterialNames;
-		TArray<FString> MaterialPaths;
-		FString ParentId;
-	};
 
 	FROSSpawnModelServer()
 	{
@@ -38,8 +24,6 @@ protected:
 	UWorld* World;
 
 	FThreadSafeBool ServiceSuccess;
-
-	bool SpawnAsset(SpawnAssetParams Params);
 
 
 private:

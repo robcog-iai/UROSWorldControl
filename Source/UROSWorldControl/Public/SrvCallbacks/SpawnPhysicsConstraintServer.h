@@ -23,9 +23,6 @@ private:
 	URWCManager* Controller;
 
 	bool SpawnPhysicsConstraintActor(TSharedPtr<FROSSpawnPhysicsConstraintSrv::Request> Request);
-	void SetupProfileInstance(FConstraintProfileProperties& ProfileInstance, world_control_msgs::PhysicsConstraintDetails Details);
-	void SetupAngularLimits(FConstraintInstance& Instance, world_control_msgs::PhysicsConstraintDetails Details);
-	void SetupLinearLimits(FConstraintInstance& Instance, world_control_msgs::PhysicsConstraintDetails Details);
 
 
 public:

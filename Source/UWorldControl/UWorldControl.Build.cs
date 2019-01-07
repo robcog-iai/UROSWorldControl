@@ -1,10 +1,10 @@
-// Copyright 2018, Institute for Artificial Intelligence - University of Bremen
+// Copyright 1998-2017 Epic Games, Inc. All Rights Reserved.
 
 using UnrealBuildTool;
 
-public class UROSWorldControl : ModuleRules
+public class UWorldControl : ModuleRules
 {
-	public UROSWorldControl(ReadOnlyTargetRules Target) : base(Target)
+	public UWorldControl(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		
@@ -17,6 +17,7 @@ public class UROSWorldControl : ModuleRules
 		
 		PrivateIncludePaths.AddRange(
 			new string[] {
+
 				// ... add other private include paths required here ...
 			}
 			);
@@ -25,13 +26,10 @@ public class UROSWorldControl : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core",
-                "UWorldControl",
-			    "UROSBridge",
-			    "UROSBridgeEd",
+                "Core",
                 "UTags",
-				"UIds",
-				"UConversions",
+                "UIds",
+			    "UROSBridgeEd",
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -44,14 +42,6 @@ public class UROSWorldControl : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
-				"Networking",
-				"Sockets",
-				"PacketHandler",
-				"libWebSockets",
-				"OpenSSL",
-				"zlib",
-				"Json",
-				"JsonUtilities",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

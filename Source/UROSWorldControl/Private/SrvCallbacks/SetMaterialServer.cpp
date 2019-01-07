@@ -1,5 +1,7 @@
 #include "SetMaterialServer.h"
 #include "FileManagerGeneric.h"
+#include "AssetModifier.h"
+#include "Tags.h"
 
 
 TSharedPtr<FROSBridgeSrv::SrvRequest> FROSSetMaterialServer::FromJson(TSharedPtr<FJsonObject> JsonObject) const
@@ -16,7 +18,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSetMaterialServer::Callback(
 	TSharedPtr<FROSSetMaterialSrv::Request> ChangeVisualRequest =
 		StaticCastSharedPtr<FROSSetMaterialSrv::Request>(Request);
 
-	
+
 	if (ChangeVisualRequest->GetMaterialNames().Num() == 0 &&
 		ChangeVisualRequest->GetMaterialPaths().Num() == 0)
 	{
@@ -28,89 +30,34 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSetMaterialServer::Callback(
 
 	// get Actor with given UtagID of Controller IDMap
 
-	AActor** ActorToBeChanged = Controller->IdToActorMap.Find(ChangeVisualRequest->GetId());
-
-	TArray<UStaticMeshComponent*> Components;
-	(*ActorToBeChanged)->GetComponents<UStaticMeshComponent>(Components);
-
-	if (Components.Num() != 1)
+	AActor* ActorToBeChanged = FTags::GetActorsWithKeyValuePair(World, TEXT("SemLog"), TEXT("Id"), ChangeVisualRequest->GetId()).Pop();
+	if (ActorToBeChanged)
 	{
-		UE_LOG(LogTemp, Error,
-			TEXT(
-				"Actor %s has to more then one StaticMeshComponent, since it's not clear which one should be changed nothing was done."
-			),
-			*(*ActorToBeChanged)->GetName());
-		return MakeShareable<FROSBridgeSrv::SrvResponse>
-			(new FROSSetMaterialSrv::Response(false));
-	}
+		TArray<UStaticMeshComponent*> Components;
+		ActorToBeChanged->GetComponents<UStaticMeshComponent>(Components);
 
+		bool bOverallSuccess = true;
 
-	// Execute on game thread
-	FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
-	{
-		ServiceSuccess = ChangeVisual(Components.Pop(), ChangeVisualRequest->GetMaterialNames(), ChangeVisualRequest->GetMaterialPaths());
-	}, TStatId(), nullptr, ENamedThreads::GameThread);
-
-	//wait code above to complete
-	FTaskGraphInterface::Get().WaitUntilTaskCompletes(Task);
-
-	return MakeShareable<FROSBridgeSrv::SrvResponse>
-		(new FROSSetMaterialSrv::Response(ServiceSuccess));
-}
-
-bool FROSSetMaterialServer::ChangeVisual(UStaticMeshComponent* MeshComponent, TArray<FString> MaterialNames, TArray<FString> MaterialPaths)
-{
-	if (MaterialPaths.Num() > 0)
-	{
-		for(int i = 0; i < MaterialPaths.Num(); i++)
+		for (auto Component : Components)
 		{
-			//Try to load Material 
-			UMaterialInterface* Material = Cast<UMaterialInterface>(
-				StaticLoadObject(UMaterialInterface::StaticClass(), nullptr, *MaterialPaths[i]));
-			if (Material)
+
+			// Execute on game thread
+			FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
 			{
-				MeshComponent->SetMaterial(i, Material);
-			}
-			else
-			{
-				UE_LOG(LogTemp, Error, TEXT("Path %s does not point to a Material"), *MaterialPaths[i]);
-				return false;
-			}
+				ServiceSuccess = FAssetModifier::ChangeVisual(Component, ChangeVisualRequest->GetMaterialNames(), ChangeVisualRequest->GetMaterialPaths());
+			}, TStatId(), nullptr, ENamedThreads::GameThread);
+
+			//wait code above to complete
+			FTaskGraphInterface::Get().WaitUntilTaskCompletes(Task);
+			bOverallSuccess = bOverallSuccess && ServiceSuccess;
 		}
-		
+
+		return MakeShareable<FROSBridgeSrv::SrvResponse>
+			(new FROSSetMaterialSrv::Response(bOverallSuccess));
 	}
 	else
 	{
-		for (int i = 0; i < MaterialNames.Num(); i++)
-		{
-			// look recursively
-			TArray<FString> FileLocations;
-			FFileManagerGeneric Fm;
-			Fm.FindFilesRecursive(FileLocations, *FPaths::ProjectContentDir(), *MaterialNames[i], true, false, true);
-
-			UMaterialInterface* Material = nullptr;
-
-			for (auto Loc : FileLocations)
-			{
-				//Try all found files until one works.
-				if (Material == nullptr)
-				{
-					int First = Loc.Find("/Models");
-					Loc.RemoveAt(0, First);
-					int Last;
-					Loc.FindLastChar('.', Last);
-					Loc.RemoveAt(Last, Loc.Len() - Last);
-
-					FString FoundPath = "StaticMesh'/Game" + Loc + ".M_" + MaterialNames[i] + "'";
-					Material = Cast<UMaterialInterface>(StaticLoadObject(UMaterialInterface::StaticClass(), nullptr, *FoundPath));
-					if (Material)
-					{
-						MeshComponent->SetMaterial(i, Material);
-					}
-				}
-			}
-		}
+		return MakeShareable<FROSBridgeSrv::SrvResponse>
+			(new FROSSetMaterialSrv::Response(false));
 	}
-
-	return true;
 }

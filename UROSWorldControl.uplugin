@@ -18,6 +18,11 @@
       "Name": "UROSWorldControl",
       "Type": "Developer",
       "LoadingPhase": "Default"
+    },
+    {
+      "Name": "UWorldControl",
+      "Type": "Developer",
+      "LoadingPhase": "Default"
     }
   ],
   "Plugins": [
