@@ -22,7 +22,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnPhysicsConstraintServer::Callbac
 
 	// Setup liniear limits
 	FConstraintSpawner::FLinearLimits LinLimits;
-	world_control_msgs::LinearLimits LinLimitsMsg = SpawnPhysicsConstraintRequest->GetConstraintDetails().GetLinearLimits();
+	world_control_msgs::LinearLimits LinLimitsMsg = SpawnPhysicsConstraintRequest->GetConstraintDescription().GetConstraintDetails().GetLinearLimits();
 
 	LinLimits.XMotion = LinLimitsMsg.GetXMotion();
 	LinLimits.YMotion = LinLimitsMsg.GetYMotion();
@@ -36,7 +36,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnPhysicsConstraintServer::Callbac
 
 	// Setup angular limits
 	FConstraintSpawner::FAngularLimits AngLimits;
-	world_control_msgs::AngularLimits AngLimitsMsg = SpawnPhysicsConstraintRequest->GetConstraintDetails().GetAngularLimits();
+	world_control_msgs::AngularLimits AngLimitsMsg = SpawnPhysicsConstraintRequest->GetConstraintDescription().GetConstraintDetails().GetAngularLimits();
 
 	AngLimits.Swing1Motion = AngLimitsMsg.GetSwing1Motion();
 	AngLimits.Swing2Motion = AngLimitsMsg.GetSwing2Motion();
@@ -56,7 +56,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnPhysicsConstraintServer::Callbac
 
 	// Setup Constraint details
 	FConstraintSpawner::FPhysicsConstraintDetails Details;
-	world_control_msgs::PhysicsConstraintDetails DetailsMsg = SpawnPhysicsConstraintRequest->GetConstraintDetails();
+	world_control_msgs::PhysicsConstraintDetails DetailsMsg = SpawnPhysicsConstraintRequest->GetConstraintDescription().GetConstraintDetails();
 
 	Details.IdFirstModel = DetailsMsg.GetIdFirstModel();
 	Details.IdSecondModel = DetailsMsg.GetIdSecondModel();
@@ -69,14 +69,14 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnPhysicsConstraintServer::Callbac
 	Details.AngularLimits = AngLimits;
 	   
 
-	FVector Location = FConversions::ROSToU(SpawnPhysicsConstraintRequest->GetPose().GetPosition().GetVector());
-	FRotator Rotator = FRotator(FConversions::ROSToU(SpawnPhysicsConstraintRequest->GetPose().GetOrientation().GetQuat()));
+	FVector Location = FConversions::ROSToU(SpawnPhysicsConstraintRequest->GetConstraintDescription().GetPose().GetPosition().GetVector());
+	FRotator Rotator = FRotator(FConversions::ROSToU(SpawnPhysicsConstraintRequest->GetConstraintDescription().GetPose().GetOrientation().GetQuat()));
 
 
 	//Execute spawning on GameThreade
 	FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
 	{
-		ServiceSuccess = FConstraintSpawner::SpawnPhysicsConstraintActor(World, Details, Location, Rotator);
+		ServiceSuccess = FConstraintSpawner::SpawnPhysicsConstraintActor(World, SpawnPhysicsConstraintRequest->GetConstraintDescription().GetId(), Details, Location, Rotator);
 	}, TStatId(), nullptr, ENamedThreads::GameThread);
 
 	//wait code above to complete

@@ -2,6 +2,8 @@
 #include "ROSBridgeSrv.h"
 #include "PhysicsConstraintDetails.h"
 #include "Pose.h"
+#include "ConstraintDescription.h"
+
 
 class UROSBRIDGE_API FROSSpawnPhysicsConstraintSrv : public FROSBridgeSrv
 {
@@ -17,33 +19,28 @@ public:
 	class Request : public SrvRequest
 	{
 	private:
-		world_control_msgs::PhysicsConstraintDetails ConstraintDetails;
-		geometry_msgs::Pose Pose;
+		world_control_msgs::ConstraintDescription ConstraintDescription;
 
 
 	public:
 		Request() {}
 
-		Request(world_control_msgs::PhysicsConstraintDetails InConstraintDetails, geometry_msgs::Pose InPose)
+		Request(world_control_msgs::ConstraintDescription InConstraintDescription)
 		{
-			ConstraintDetails = InConstraintDetails;
-			Pose = InPose;
+			ConstraintDescription = InConstraintDescription;
 		}
 
-		world_control_msgs::PhysicsConstraintDetails GetConstraintDetails()
+	
+
+		world_control_msgs::ConstraintDescription GetConstraintDescription()
 		{
-			return ConstraintDetails;
+			return ConstraintDescription;
 		}
 
-		geometry_msgs::Pose GetPose()
-		{
-			return Pose;
-		}
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
-			ConstraintDetails.FromJson(JsonObject->GetObjectField("constraint_details"));
-			Pose.FromJson(JsonObject->GetObjectField("pose"));
+			ConstraintDescription.FromJson(JsonObject->GetObjectField("constraint_description"));
 		}
 
 		static Request GetFromJson(TSharedPtr<FJsonObject> JsonObject)
@@ -55,15 +52,13 @@ public:
 
 		FString ToString() const override
 		{
-			return "FROSSpawnPhysicsConstraintSrv:Request {constraint_details = " + ConstraintDetails.ToString() +
-				", pose = " + Pose.ToString() + "}";
+			return "FROSSpawnPhysicsConstraintSrv:Request {" + ConstraintDescription.ToString() + "}";
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-			Object->SetObjectField(TEXT("constraint_details"), ConstraintDetails.ToJsonObject());
-			Object->SetObjectField(TEXT("pose"), Pose.ToJsonObject());
+			Object->SetObjectField(TEXT("constraint_description"), ConstraintDescription.ToJsonObject());
 			return Object;
 		}
 

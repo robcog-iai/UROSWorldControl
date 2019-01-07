@@ -113,8 +113,16 @@ static FORCEINLINE void SetLinearLimits(
 }
 
 
-bool FConstraintSpawner::SpawnPhysicsConstraintActor(UWorld* World, FPhysicsConstraintDetails Details, FVector Location, FRotator Rotator)
+bool FConstraintSpawner::SpawnPhysicsConstraintActor(UWorld* World, FString Id, FPhysicsConstraintDetails Details, FVector Location, FRotator Rotator)
 {
+
+	UActorComponent* Component = FTags::GetComponentsWithKeyValuePair(World, TEXT("SemLog"), TEXT("Id"), Id).Pop();
+	if(Component)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[%s]:Component with id:\"%s\" does already exist, so there cannot be an other Constraint with this id"), __FUNCTION__,  *Id);
+		return false;
+	}
+
 	AActor* First = FTags::GetActorsWithKeyValuePair(World, TEXT("SemLog"), TEXT("Id"), Details.IdFirstModel).Pop();
 	AActor* Second = FTags::GetActorsWithKeyValuePair(World, TEXT("SemLog"), TEXT("Id"), Details.IdSecondModel).Pop();
 
@@ -123,12 +131,12 @@ bool FConstraintSpawner::SpawnPhysicsConstraintActor(UWorld* World, FPhysicsCons
 		//at least one of them could not be found.
 		if (!First)
 		{
-			UE_LOG(LogTemp, Error, TEXT("Actor with id:\"%s\" does not exist."), *Details.IdFirstModel);
+			UE_LOG(LogTemp, Error, TEXT("[%s]:Actor with id:\"%s\" does not exist."), __FUNCTION__, *Details.IdFirstModel);
 		}
 
 		if (!Second)
 		{
-			UE_LOG(LogTemp, Error, TEXT("Actor with id:\"%s\" does not exist."), *Details.IdFirstModel);
+			UE_LOG(LogTemp, Error, TEXT("[%s]:Actor with id:\"%s\" does not exist."), __FUNCTION__, *Details.IdFirstModel);
 		}
 
 		return false;
@@ -156,6 +164,13 @@ bool FConstraintSpawner::SpawnPhysicsConstraintActor(UWorld* World, FPhysicsCons
 	ConstraintComponent->AttachToComponent(First->GetRootComponent(),
 		FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true));
 	ConstraintComponent->RegisterComponent();
+
+	// Add Id tag to Component
+	FTags::AddKeyValuePair(
+		ConstraintComponent,
+		TEXT("SemLog"),
+		TEXT("id"),
+		Id);
 
 	return true;
 }

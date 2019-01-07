@@ -56,7 +56,7 @@ public:
 		FAngularLimits AngularLimits;
 	};
 
-	static bool SpawnPhysicsConstraintActor(UWorld* World, FPhysicsConstraintDetails Details, FVector Location, FRotator Rotator);
+	static bool SpawnPhysicsConstraintActor(UWorld* World, FString Id, FPhysicsConstraintDetails Details, FVector Location, FRotator Rotator);
 
 	//Constraint Modification
 	static void SetupProfileInstance(FConstraintProfileProperties& ProfileInstance, FPhysicsConstraintDetails Details);

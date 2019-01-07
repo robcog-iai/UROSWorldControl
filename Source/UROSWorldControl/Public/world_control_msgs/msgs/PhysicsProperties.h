@@ -1,6 +1,8 @@
 #pragma once
 #include "ROSBridgeMsg.h"
 
+
+
 namespace world_control_msgs
 {
 	class PhysicsProperties : public FROSBridgeMsg
