@@ -29,7 +29,9 @@ bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params)
 	AStaticMeshActor* SpawnedItem;
 
 	//Check if Id is used already
-	if (!FTags::GetActorsWithKeyValuePair(World, TEXT("SemLog"), TEXT("Id"), Params.Id).Pop())
+	TArray<AActor*> Actors = FTags::GetActorsWithKeyValuePair(World, TEXT("SemLog"), TEXT("Id"), Params.Id);
+
+	if (!Actors.IsValidIndex(0))
 	{
 		//Actual Spawning MeshComponent
 		SpawnedItem = World->SpawnActor<AStaticMeshActor>(Params.Location, Params.Rotator, SpawnParams);

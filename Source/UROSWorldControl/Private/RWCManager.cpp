@@ -9,6 +9,7 @@
 #include "HighlightModelsServer.h"
 #include "SetPhysicsPropertiesServer.h"
 #include "SetMaterialServer.h"
+#include "SpawnSemanticMapServer.h"
 
 void URWCManager::Register(FString DefaultNamespace)
 {
@@ -37,6 +38,7 @@ void URWCManager::SetupServiceServers()
 	ServicesToPublish.Add(MakeShareable<FROSHighlightModelsServer>(new FROSHighlightModelsServer(Namespace, TEXT("highlight_models"), World, this)));
 	ServicesToPublish.Add(MakeShareable<FROSSetPhysicsPropertiesServer>(new FROSSetPhysicsPropertiesServer(Namespace, TEXT("set_physics_properties"), World, this)));
 	ServicesToPublish.Add(MakeShareable<FROSSetMaterialServer>(new FROSSetMaterialServer(Namespace, TEXT("change_material"), World, this)));
+	ServicesToPublish.Add(MakeShareable<FROSSpawnSemanticMapServer>(new FROSSpawnSemanticMapServer(Namespace, TEXT("spawn_semantic_map"), World, this)));
 
 }
 

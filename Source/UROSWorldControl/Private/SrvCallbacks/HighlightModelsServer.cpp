@@ -17,12 +17,13 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSHighlightModelsServer::Callback(
 {
 	TSharedPtr<FROSHighlightModelSrv::Request> HighlightModelRequest =
 		StaticCastSharedPtr<FROSHighlightModelSrv::Request>(Request);
+	
+	TArray<AActor*> Actors = FTags::GetActorsWithKeyValuePair(World, TEXT("SemLog"), TEXT("Id"), HighlightModelRequest->GetId());
 
-
-	AActor* ActorToBeHighlighted = FTags::GetActorsWithKeyValuePair(World, TEXT("SemLog"), TEXT("Id"), HighlightModelRequest->GetId()).Pop();
-	// Execute on game thread
-	if (ActorToBeHighlighted)
+	if (Actors.IsValidIndex(0))
 	{
+	AActor* ActorToBeHighlighted = Actors.Pop();
+	// Execute on game thread
 		FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
 		{
 			FAssetHighlighter::HighlightAsset(ActorToBeHighlighted, HighlightModelRequest->GetColor());
