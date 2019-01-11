@@ -2,7 +2,9 @@
 #include "PhysicsEngine/ConstraintInstance.h"
 #include "Tags.h"
 #include "PhysicsEngine/PhysicsConstraintComponent.h"
-
+#include "PhysicsEngine/PhysicsConstraintActor.h"
+#include "AssetModifier.h"
+#include "Editor.h"
 
 // SetAngularLimits for Physics Constraints
 static FORCEINLINE void SetAngularLimits(
@@ -116,41 +118,53 @@ static FORCEINLINE void SetLinearLimits(
 bool FConstraintSpawner::SpawnPhysicsConstraintActor(UWorld* World, FString Id, FPhysicsConstraintDetails Details, FVector Location, FRotator Rotator)
 {
 
-	UActorComponent* Component = FTags::GetComponentsWithKeyValuePair(World, TEXT("SemLog"), TEXT("Id"), Id).Pop();
-	if(Component)
+
+	//Check if Id is used already
+	TMap<FString, UObject*> IdsToSemLogObjects = FTags::GetKeyValuesToObject(World, TEXT("SemLog"), TEXT("Id"));
+
+	if (IdsToSemLogObjects.Contains(Id))
 	{
-		UE_LOG(LogTemp, Error, TEXT("[%s]:Component with id:\"%s\" does already exist, so there cannot be an other Constraint with this id"), __FUNCTION__,  *Id);
+		UE_LOG(LogTemp, Error, TEXT("[%s]: Object with id:\"%s\" does already exist, so there cannot be an other Constraint with this id"), *FString(__FUNCTION__), *Id);
 		return false;
 	}
 
-	AActor* First = FTags::GetActorsWithKeyValuePair(World, TEXT("SemLog"), TEXT("Id"), Details.IdFirstModel).Pop();
-	AActor* Second = FTags::GetActorsWithKeyValuePair(World, TEXT("SemLog"), TEXT("Id"), Details.IdSecondModel).Pop();
+	AActor** First = (AActor**)IdsToSemLogObjects.Find(Details.IdFirstModel);
+	AActor** Second = (AActor**)IdsToSemLogObjects.Find(Details.IdSecondModel);
 
 	if (!First || !Second)
 	{
 		//at least one of them could not be found.
 		if (!First)
 		{
-			UE_LOG(LogTemp, Error, TEXT("[%s]:Actor with id:\"%s\" does not exist."), __FUNCTION__, *Details.IdFirstModel);
+			UE_LOG(LogTemp, Error, TEXT("[%s]: Actor with id:\"%s\" does not exist."), *FString(__FUNCTION__), *Details.IdFirstModel);
 		}
 
 		if (!Second)
 		{
-			UE_LOG(LogTemp, Error, TEXT("[%s]:Actor with id:\"%s\" does not exist."), __FUNCTION__, *Details.IdFirstModel);
+			UE_LOG(LogTemp, Error, TEXT("[%s]: Actor with id:\"%s\" does not exist."), *FString(__FUNCTION__), *Details.IdSecondModel);
 		}
 
 		return false;
 	}
 
+	FString Label = (*First)->GetActorLabel() + TEXT("_Constraint");
+
+#if WITH_EDITOR
+	GEditor->BeginTransaction(FText::FromString(TEXT("Spawning: ") + Label));
+#endif
 
 	//Actors do Exist. Set as ConstraintActors of component. 
-	UPhysicsConstraintComponent* ConstraintComponent = NewObject<UPhysicsConstraintComponent>(First);
+	APhysicsConstraintActor* ConstraintActor = World->SpawnActor<APhysicsConstraintActor>(Location, Rotator);
+	FAssetModifier::AttachModelToParent(*First, ConstraintActor);
+	ConstraintActor->SetActorLabel(Label);
+
+	UPhysicsConstraintComponent* ConstraintComponent = ConstraintActor->GetConstraintComp();
 	ConstraintComponent->bEditableWhenInherited = true;
-	ConstraintComponent->ConstraintActor1 = First;
-	ConstraintComponent->ConstraintActor2 = Second;
+	ConstraintComponent->ConstraintActor1 = *First;
+	ConstraintComponent->ConstraintActor2 = *Second;
 
 	//Set World Location
-	ConstraintComponent->SetWorldLocationAndRotation(Location, Rotator);
+	//ConstraintComponent->SetWorldLocationAndRotation(Location, Rotator);
 
 	//set up the constraint instance with all the desired values
 	FConstraintInstance ConstraintInstance;
@@ -160,17 +174,23 @@ bool FConstraintSpawner::SpawnPhysicsConstraintActor(UWorld* World, FString Id, 
 	SetupAngularLimits(ConstraintInstance, Details.AngularLimits);
 
 	ConstraintComponent->ConstraintInstance = ConstraintInstance;
+	//ConstraintComponent->SetupAttachment((*First)->GetRootComponent());
+	//ConstraintComponent->RegisterComponentWithWorld(World);
+	//ConstraintComponent->RegisterComponent();
 
-	ConstraintComponent->AttachToComponent(First->GetRootComponent(),
-		FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true));
-	ConstraintComponent->RegisterComponent();
+	//ConstraintComponent->AttachToComponent(ConstraintActor->GetRootComponent(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true));
 
 	// Add Id tag to Component
 	FTags::AddKeyValuePair(
-		ConstraintComponent,
+		ConstraintActor,
 		TEXT("SemLog"),
 		TEXT("id"),
 		Id);
+
+#if WITH_EDITOR
+	ConstraintActor->Modify();
+	GEditor->EndTransaction();
+#endif
 
 	return true;
 }

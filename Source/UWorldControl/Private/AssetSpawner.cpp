@@ -2,15 +2,21 @@
 #include "AssetModifier.h"
 #include "Tags.h"
 #include "Engine/StaticMeshActor.h"
+#include "Editor.h"
 
 bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params)
 {
 	//Check if World is avialable
 	if (!World)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Couldn't find the World."));
+		UE_LOG(LogTemp, Warning, TEXT("[%s]: Couldn't find the World."), *FString(__FUNCTION__));
 		return false;
 	}
+
+	FString Label = (Params.ActorLabel.IsEmpty() ? Params.Name : Params.ActorLabel);
+#if WITH_EDITOR
+	GEditor->BeginTransaction(FText::FromString(TEXT("Spawning: ")+ Label));
+#endif
 
 	//Setup SpawnParameters 
 	FActorSpawnParameters SpawnParams;
@@ -22,7 +28,10 @@ bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params)
 	UStaticMesh* Mesh = FAssetModifier::LoadMesh(Params.Name, Params.StartDir);
 	if (!Mesh)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Could not find Mesh: %s."), *Params.Name);
+		UE_LOG(LogTemp, Error, TEXT("[%s]: Could not find Mesh: %s."), *FString(__FUNCTION__), *Params.Name);
+#if WITH_EDITOR
+		GEditor->EndTransaction();
+#endif
 		return false;
 	}
 
@@ -35,6 +44,7 @@ bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params)
 	{
 		//Actual Spawning MeshComponent
 		SpawnedItem = World->SpawnActor<AStaticMeshActor>(Params.Location, Params.Rotator, SpawnParams);
+
 
 		// Needs to be movable if the game is running.
 		SpawnedItem->SetMobility(EComponentMobility::Movable);
@@ -55,7 +65,7 @@ bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params)
 			}
 		}
 
-		Params.ActorLabel.IsEmpty() ? SpawnedItem->SetActorLabel(Params.Name + "_" + Params.Id) : SpawnedItem->SetActorLabel(Params.ActorLabel);
+		SpawnedItem->SetActorLabel(Label);
 
 		FPhysicsProperties Properties = Params.PhysicsProperties;
 		SpawnedItem->GetStaticMeshComponent()->SetSimulatePhysics(Properties.bSimulatePhysics);
@@ -64,11 +74,16 @@ bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params)
 		SpawnedItem->GetStaticMeshComponent()->SetMassOverrideInKg(NAME_None, Properties.Mass);
 
 		Properties.bSimulatePhysics ? SpawnedItem->SetMobility(EComponentMobility::Movable) : SpawnedItem->SetMobility(EComponentMobility::Static);
+
 	}
 	else
 	{
 		//ID is already taken
-		UE_LOG(LogTemp, Error, TEXT("Semlog id: \"%s\" is not unique, therefore nothing was spawned."), *Params.Id);
+		UE_LOG(LogTemp, Error, TEXT("[%s]: Semlog id: \"%s\" is not unique, therefore nothing was spawned."), *FString(__FUNCTION__), *Params.Id);
+	
+#if WITH_EDITOR
+	GEditor->EndTransaction();
+#endif
 		return false;
 	}
 
@@ -89,6 +104,10 @@ bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params)
 			Tag.Key,
 			Tag.Value);
 	}
+#if WITH_EDITOR
+	SpawnedItem->Modify();
+	GEditor->EndTransaction();
+#endif
 
 	return true;
 }

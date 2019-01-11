@@ -21,9 +21,13 @@ public class UWorldControl : ModuleRules
 				// ... add other private include paths required here ...
 			}
 			);
-			
-		
-		PublicDependencyModuleNames.AddRange(
+
+	    if (Target.Type == TargetType.Editor)
+	    {
+	        PublicDependencyModuleNames.AddRange(new string[] { "UnrealEd", });
+	    }
+
+        PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
                 "Core",

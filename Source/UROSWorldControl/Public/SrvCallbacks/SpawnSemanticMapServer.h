@@ -18,7 +18,7 @@ protected:
 
 	UWorld* World;
 
-	FThreadSafeBool bSuccess;
+	FThreadSafeBool bAllSuccessfull;
 private:
 
 public:

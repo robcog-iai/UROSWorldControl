@@ -25,7 +25,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnSemanticMapServer::Callback(
 	TArray<FString> FailedModelIds;
 	TArray<FString> FailedConstraintIds;
 	TArray<world_control_msgs::RelationDescription> FailedRelations;
-	bool bAllSuccessfull = true;
+	FThreadSafeBool bSuccess = true;
 
 
 	// Spawn all models
@@ -63,8 +63,8 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnSemanticMapServer::Callback(
 		//wait code above to complete
 		FTaskGraphInterface::Get().WaitUntilTaskCompletes(Task);
 
-		bAllSuccessfull = bAllSuccessfull ? bSuccess : bAllSuccessfull;
-		if(!bSuccess)
+		bAllSuccessfull.AtomicSet(bAllSuccessfull ? bSuccess : bAllSuccessfull);
+		if (!bSuccess)
 		{
 			FailedModelIds.Add(Params.Id);
 		}
@@ -72,7 +72,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnSemanticMapServer::Callback(
 	}
 
 	// Spawn all Constraints
-	for(auto ConstraintDescription: SpawnSemanticMapRequest->GetConstraints())
+	for (auto ConstraintDescription : SpawnSemanticMapRequest->GetConstraints())
 	{
 		// Setup liniear limits
 		FConstraintSpawner::FLinearLimits LinLimits;
@@ -136,55 +136,55 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnSemanticMapServer::Callback(
 		//wait code above to complete
 		FTaskGraphInterface::Get().WaitUntilTaskCompletes(Task);
 
-		bAllSuccessfull = bAllSuccessfull ? bSuccess : bAllSuccessfull;
+		bAllSuccessfull.AtomicSet(bAllSuccessfull ? bSuccess : bAllSuccessfull);
 		if (!bSuccess)
 		{
 			FailedConstraintIds.Add(ConstraintDescription.GetId());
 		}
 	}
 
-	// Set all relations
-
-	for(auto RelationDescription: SpawnSemanticMapRequest->GetRelations())
+	// Set all relations on GameThread
+	FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
 	{
-		bSuccess = false;
-		AActor* Child = FTags::GetActorsWithKeyValuePair(World, TEXT("SemLog"), TEXT("Id"), RelationDescription.GetChildId()).Pop();
-		AActor* Parent = FTags::GetActorsWithKeyValuePair(World, TEXT("SemLog"), TEXT("Id"), RelationDescription.GetParentId()).Pop();
 
-		if (Child && Parent)
+		TMap<FString, AActor*> SemLogKeyToActor = FTags::GetKeyValuesToActor(World, TEXT("SemLog"), TEXT("Id"));
+		for (auto RelationDescription : SpawnSemanticMapRequest->GetRelations())
 		{
-			//Actors were found and will be attached, in GameThread
-			FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
+			bSuccess = false;
+			AActor** Child = SemLogKeyToActor.Find(RelationDescription.GetChildId());
+			AActor** Parent = SemLogKeyToActor.Find(RelationDescription.GetParentId());
+
+			if (Child && Parent)
 			{
-				bSuccess = FAssetModifier::AttachModelToParent(Parent, Child);
-			}, TStatId(), nullptr, ENamedThreads::GameThread);
+				//Actors were found and will be attached
+				bSuccess = FAssetModifier::AttachModelToParent(*Parent, *Child);
+			}
+			
+			if (!Child)
+			{
+				UE_LOG(LogTemp, Error, TEXT("[%s]: Actor with id:\"%s\" does not exist."), *FString(__FUNCTION__), *RelationDescription.GetChildId());
+			}
+			 
+			if (!Parent)
+			{
+				UE_LOG(LogTemp, Error, TEXT("[%s]: Actor with id:\"%s\" does not exist."), *FString(__FUNCTION__), *RelationDescription.GetParentId());
+			}
 
-			//wait code above to complete
-			FTaskGraphInterface::Get().WaitUntilTaskCompletes(Task);
-		
-		} 
-		else if (!Child)
-		{
-			UE_LOG(LogTemp, Error, TEXT("Actor with id:\"%s\" does not exist."), *RelationDescription.GetChildId());
-		} 
-		else if (!Parent)
-		{
-			UE_LOG(LogTemp, Error, TEXT("Actor with id:\"%s\" does not exist."), *RelationDescription.GetParentId());
+			bAllSuccessfull.AtomicSet(bAllSuccessfull ? bSuccess : bAllSuccessfull);
+
+			if (!bSuccess)
+			{
+				FailedRelations.Add(RelationDescription);
+			}			
 		}
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 
-		bAllSuccessfull = bAllSuccessfull ? bSuccess : bAllSuccessfull;
-		
-		if (!bSuccess)
-		{
-			FailedRelations.Add(RelationDescription);
-		}
-	}
-
+	//wait code above to complete
+	FTaskGraphInterface::Get().WaitUntilTaskCompletes(Task);
 
 	// Service response
 	return MakeShareable<FROSBridgeSrv::SrvResponse>
 		(new FROSSpawnSemanticMapSrv::Response(bAllSuccessfull, FailedModelIds, FailedConstraintIds, FailedRelations));
-
 
 }
 
