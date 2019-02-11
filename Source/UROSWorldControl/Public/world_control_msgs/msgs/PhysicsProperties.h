@@ -7,27 +7,41 @@ namespace world_control_msgs
 {
 	class PhysicsProperties : public FROSBridgeMsg
 	{
-		bool SimulatePhysics;
+
+		uint8 Mobility;
 		bool Gravity;
 		bool GenerateOverlapEvents;
 		float Mass;
 
 
 	public:
+		static enum  MobilityTypes { Static, Stationary, Dynamic, Kinematic};
+
 		PhysicsProperties() {}
 
-		PhysicsProperties(bool InSimulatePhysics, bool InGravity, bool InGenerateOverlapEvents, float InMass)
+		PhysicsProperties( bool InGravity, bool InGenerateOverlapEvents, float InMass)
 		{
 			PhysicsProperties();
-			SimulatePhysics = InSimulatePhysics;
 			Gravity = InGravity;
 			GenerateOverlapEvents = InGenerateOverlapEvents;
 			Mass = InMass;
 		}
 
-		bool GetSimulatePhysics()
+
+		EComponentMobility::Type GetMobility()
 		{
-			return SimulatePhysics;
+			switch(Mobility)
+			{
+				case Static:
+					return EComponentMobility::Static;
+				case Stationary:
+					return  EComponentMobility::Stationary;
+				case Dynamic:
+				case Kinematic:
+					return  EComponentMobility::Movable;
+				default:
+					return EComponentMobility::Static;
+			}
 		}
 
 		bool GetGravity()
@@ -40,6 +54,12 @@ namespace world_control_msgs
 			return GenerateOverlapEvents;
 		}
 
+		bool IsSimulatePhysics() 
+		{
+			return Mobility == Dynamic;
+		}
+			
+
 		float GetMass()
 		{
 			return Mass;
@@ -47,7 +67,7 @@ namespace world_control_msgs
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
-			SimulatePhysics = JsonObject->GetBoolField("simulate_physics");
+			Mobility = JsonObject->GetNumberField("mobility");
 			Gravity = JsonObject->GetBoolField("gravity");
 			GenerateOverlapEvents = JsonObject->GetBoolField("generate_overlap_events");
 			Mass = JsonObject->GetNumberField("mass");
@@ -62,8 +82,8 @@ namespace world_control_msgs
 
 		virtual FString ToString() const override
 		{
-			return "PhysicsProperties {simulate_physics = " + (SimulatePhysics ? FString("True") : FString("False")) +
-				", gravity = " + (Gravity ? FString("True") : FString("False")) +
+			return "PhysicsProperties {Mobility: " + FString::FromInt(Mobility) +
+				"gravity = " + (Gravity ? FString("True") : FString("False")) +
 				", generate_overlap_events = " + (GenerateOverlapEvents ? FString("True") : FString("False")) +
 				", mass = " + FString::SanitizeFloat(Mass) + "}";
 		}
@@ -71,7 +91,7 @@ namespace world_control_msgs
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-			Object->SetBoolField(TEXT("simulate_physics"), SimulatePhysics);
+			Object->SetNumberField(TEXT("mobility"), Mobility);
 			Object->SetBoolField(TEXT("gravity"), Gravity);
 			Object->SetBoolField(TEXT("generate_overlap_events"), GenerateOverlapEvents);
 			Object->SetNumberField(TEXT("mass"), Mass);

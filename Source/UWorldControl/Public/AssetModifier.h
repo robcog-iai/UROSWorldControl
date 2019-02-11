@@ -13,11 +13,11 @@ struct UWORLDCONTROL_API FAssetModifier
 	GENERATED_USTRUCT_BODY()
 
 public:
-	static bool AttachModelToParent(AActor* Parent, AActor* Child);
+	static bool AttachToParent(AActor* Parent, AActor* Child);
 	static bool ChangeVisual(UStaticMeshComponent* MeshComponent, TArray<FString> MaterialNames, TArray<FString> MaterialPaths);
 	static bool RemoveAsset(UWorld* World, FString Id);
 	static bool Relocate(AActor* Actor, FVector Location, FRotator Rotator);
-	static bool ChangePhysics(UStaticMeshComponent* MeshComponent, bool bSimulatedPhysics, bool bGereateOverlapEvents, bool bGravity, float Mass);
+	static bool ChangePhysicsProperties(UStaticMeshComponent* MeshComponent, EComponentMobility::Type Mobility, bool bSimulatedPhysics, bool bGereateOverlapEvents, bool bGravity, float Mass);
 	
 	static UStaticMesh* LoadMesh(FString Name, FString StartDir);
 	static UMaterialInterface* LoadMaterial(FString Name, FString StartDir);

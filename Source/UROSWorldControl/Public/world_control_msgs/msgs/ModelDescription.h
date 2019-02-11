@@ -22,7 +22,7 @@ namespace world_control_msgs
 	public:
 		ModelDescription() {}
 
-		ModelDescription(FString InName, geometry_msgs::Pose InPose, FString InId, TArray<world_control_msgs::Tag> InTags, FString InPath, FString InActorLabel, world_control_msgs::PhysicsProperties InPhysicsProperties, TArray<FString> InMaterialNames, TArray<FString> InMaterialPaths)
+		ModelDescription(FString InName, geometry_msgs::Pose InPose, FString InId, TArray<world_control_msgs::Tag> InTags, FString InPath, FString InActorLabel, int InMobility, world_control_msgs::PhysicsProperties InPhysicsProperties, TArray<FString> InMaterialNames, TArray<FString> InMaterialPaths)
 		{
 			ModelDescription();
 			Name = InName;
@@ -66,6 +66,7 @@ namespace world_control_msgs
 			return ActorLabel;
 		}
 
+		
 		world_control_msgs::PhysicsProperties GetPhysicsProperties()
 		{
 			return PhysicsProperties;
@@ -96,7 +97,6 @@ namespace world_control_msgs
 			}
 
 			Path = JsonObject->GetStringField("path");
-			ActorLabel = JsonObject->GetStringField("actor_label");
 			PhysicsProperties.FromJson(JsonObject->GetObjectField("physics_properties"));
 			MaterialNames.Empty();
 			TArray<TSharedPtr<FJsonValue>> MaterialNamesPtrArray = JsonObject->GetArrayField(TEXT("material_names"));

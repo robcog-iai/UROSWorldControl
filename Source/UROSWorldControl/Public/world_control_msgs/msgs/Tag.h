@@ -7,7 +7,7 @@ namespace world_control_msgs
 {
 	class Tag : public FROSBridgeMsg
 	{
-		FString TagType;
+		FString Type;
 		FString Key;
 		FString Value;
 
@@ -15,17 +15,17 @@ namespace world_control_msgs
 	public:
 		Tag() {}
 
-		Tag(FString InTagType, FString InKey, FString InValue)
+		Tag(FString InType, FString InKey, FString InValue)
 		{
 			Tag();
-			TagType = InTagType;
+			Type = InType;
 			Key = InKey;
 			Value = InValue;
 		}
 
-		FString GetTagType()
+		FString GetType()
 		{
-			return TagType;
+			return Type;
 		}
 
 		FString GetKey()
@@ -40,7 +40,7 @@ namespace world_control_msgs
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
-			TagType = JsonObject->GetStringField("tag_type");
+			Type = JsonObject->GetStringField("type");
 			Key = JsonObject->GetStringField("key");
 			Value = JsonObject->GetStringField("value");
 		}
@@ -54,7 +54,7 @@ namespace world_control_msgs
 
 		virtual FString ToString() const override
 		{
-			return "Tag {tag_type = " + TagType +
+			return "Tag {type = " + Type +
 				", key = " + Key +
 				", value = " + Value + "}";
 		}
@@ -62,7 +62,7 @@ namespace world_control_msgs
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-			Object->SetStringField(TEXT("tag_type"), TagType);
+			Object->SetStringField(TEXT("type"), Type);
 			Object->SetStringField(TEXT("key"), Key);
 			Object->SetStringField(TEXT("value"), Value);
 			return Object;

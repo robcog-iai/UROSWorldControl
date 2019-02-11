@@ -2,7 +2,7 @@
 #include "Tags.h"
 #include "Editor.h"
 
-bool FAssetHighlighter::HighlightAsset(AActor* ActorToBeHighlighted, uint8 Color)
+bool FAssetHighlighter::Highlight(AActor* ActorToBeHighlighted, uint8 Color)
 {
 	if (ActorToBeHighlighted)
 	{

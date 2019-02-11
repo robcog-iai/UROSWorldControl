@@ -122,6 +122,7 @@ bool FConstraintSpawner::SpawnPhysicsConstraintActor(UWorld* World, FString Id, 
 	//Check if Id is used already
 	TMap<FString, UObject*> IdsToSemLogObjects = FTags::GetKeyValuesToObject(World, TEXT("SemLog"), TEXT("Id"));
 
+
 	if (IdsToSemLogObjects.Contains(Id))
 	{
 		UE_LOG(LogTemp, Error, TEXT("[%s]: Object with id:\"%s\" does already exist, so there cannot be an other Constraint with this id"), *FString(__FUNCTION__), *Id);
@@ -155,7 +156,7 @@ bool FConstraintSpawner::SpawnPhysicsConstraintActor(UWorld* World, FString Id, 
 
 	//Actors do Exist. Set as ConstraintActors of component. 
 	APhysicsConstraintActor* ConstraintActor = World->SpawnActor<APhysicsConstraintActor>(Location, Rotator);
-	FAssetModifier::AttachModelToParent(*First, ConstraintActor);
+	FAssetModifier::AttachToParent(*First, ConstraintActor);
 	ConstraintActor->SetActorLabel(Label);
 
 	UPhysicsConstraintComponent* ConstraintComponent = ConstraintActor->GetConstraintComp();
@@ -169,9 +170,37 @@ bool FConstraintSpawner::SpawnPhysicsConstraintActor(UWorld* World, FString Id, 
 	//set up the constraint instance with all the desired values
 	FConstraintInstance ConstraintInstance;
 
-	SetupProfileInstance(ConstraintInstance.ProfileInstance, Details);
-	SetupLinearLimits(ConstraintInstance, Details.LinearLimits);
-	SetupAngularLimits(ConstraintInstance, Details.AngularLimits);
+	//SetupProfileInstance(ConstraintInstance.ProfileInstance, Details);
+
+	ConstraintInstance.ProfileInstance.bDisableCollision = Details.DisableCollision;
+	ConstraintInstance.ProfileInstance.bEnableProjection = Details.EnableProjection;
+	ConstraintInstance.ProfileInstance.ProjectionLinearTolerance = Details.ProjectionLinearTolerance;
+	ConstraintInstance.ProfileInstance.ProjectionAngularTolerance = Details.ProjectionAngularTolerance;
+	ConstraintInstance.ProfileInstance.bParentDominates = Details.ParentDominates;
+
+
+	//SetupLinearLimits(ConstraintInstance, Details.LinearLimits);
+
+		//Advanced features will be set as well.
+	SetLinearLimits(ConstraintInstance,
+		Details.LinearLimits.XMotion, Details.LinearLimits.YMotion, Details.LinearLimits.ZMotion,
+		Details.LinearLimits.Limit,
+		Details.LinearLimits.SoftConstraint, Details.LinearLimits.Stiffness, Details.LinearLimits.Damping
+	);
+
+	//SetupAngularLimits(ConstraintInstance, Details.AngularLimits);
+
+		//Advanced features will be set as well.
+	SetAngularLimits(ConstraintInstance,
+		Details.AngularLimits.Swing1Motion, Details.AngularLimits.Swing2Motion, Details.AngularLimits.TwistMotion,
+		Details.AngularLimits.Swing1LimitAngle, Details.AngularLimits.Swing2LimitAngle, Details.AngularLimits.TwistLimitAngle,
+		Details.AngularLimits.SwingSoftConstraint, Details.AngularLimits.TwistSoftConstraint,
+		Details.AngularLimits.SwingStiffness, Details.AngularLimits.SwingDamping,
+		Details.AngularLimits.TwistStiffness, Details.AngularLimits.TwistDamping
+	);
+
+	ConstraintInstance.AngularRotationOffset = Details.AngularLimits.AngularRoationOffset.Rotation();
+
 
 	ConstraintComponent->ConstraintInstance = ConstraintInstance;
 	//ConstraintComponent->SetupAttachment((*First)->GetRootComponent());

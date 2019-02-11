@@ -16,6 +16,7 @@ public:
 
 	struct FPhysicsProperties
 	{
+		EComponentMobility::Type Mobility;
 		bool bSimulatePhysics;
 		bool bGravity;
 		bool bGenerateOverlapEvents;
@@ -44,7 +45,7 @@ public:
 		FString ParentId;
 	};
 
-	static bool SpawnAsset(UWorld* World,FSpawnAssetParams Params);
+	static bool SpawnAsset(UWorld* World, FSpawnAssetParams Params);
 
 };
 

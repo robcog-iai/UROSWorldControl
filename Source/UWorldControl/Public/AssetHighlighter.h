@@ -14,7 +14,7 @@ struct UWORLDCONTROL_API FAssetHighlighter
 
 public:
 
-	static bool HighlightAsset(AActor* ActorToBeHighlighted, uint8 Color);
+	static bool Highlight(AActor* ActorToBeHighlighted, uint8 Color);
 
 };
 

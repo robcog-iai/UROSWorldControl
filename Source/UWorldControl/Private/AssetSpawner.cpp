@@ -73,7 +73,7 @@ bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params)
 		SpawnedItem->GetStaticMeshComponent()->SetEnableGravity(Properties.bGravity);
 		SpawnedItem->GetStaticMeshComponent()->SetMassOverrideInKg(NAME_None, Properties.Mass);
 
-		Properties.bSimulatePhysics ? SpawnedItem->SetMobility(EComponentMobility::Movable) : SpawnedItem->SetMobility(EComponentMobility::Static);
+		SpawnedItem->SetMobility(Properties.Mobility);
 
 	}
 	else

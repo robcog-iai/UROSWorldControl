@@ -17,28 +17,28 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSHighlightModelsServer::Callback(
 {
 	TSharedPtr<FROSHighlightModelSrv::Request> HighlightModelRequest =
 		StaticCastSharedPtr<FROSHighlightModelSrv::Request>(Request);
-	
-	TArray<AActor*> Actors = FTags::GetActorsWithKeyValuePair(World, TEXT("SemLog"), TEXT("Id"), HighlightModelRequest->GetId());
 
-	if (Actors.IsValidIndex(0))
+	bool bSuccess = true;
+	FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
 	{
-	AActor* ActorToBeHighlighted = Actors.Pop();
-	// Execute on game thread
-		FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
+		TArray<AActor*> Actors = FTags::GetActorsWithKeyValuePair(World, TEXT("SemLog"), TEXT("Id"), HighlightModelRequest->GetId());
+
+		if (Actors.IsValidIndex(0))
 		{
-			FAssetHighlighter::HighlightAsset(ActorToBeHighlighted, HighlightModelRequest->GetColor());
-		}, TStatId(), nullptr, ENamedThreads::GameThread);
+			AActor* ActorToBeHighlighted = Actors.Pop();
+			// Execute on game thread
 
-		//wait code above to complete
-		FTaskGraphInterface::Get().WaitUntilTaskCompletes(Task);
-		return MakeShareable<FROSBridgeSrv::SrvResponse>
-			(new FROSHighlightModelSrv::Response(true));
-	}
-	else
-	{
-		return MakeShareable<FROSBridgeSrv::SrvResponse>
-			(new FROSHighlightModelSrv::Response(false));
-	}
+			FAssetHighlighter::Highlight(ActorToBeHighlighted, HighlightModelRequest->GetColor());
+		}
+		else
+		{
+			bSuccess = false;
+		}
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 
 
+	//wait code above to complete
+	FTaskGraphInterface::Get().WaitUntilTaskCompletes(Task);
+	return MakeShareable<FROSBridgeSrv::SrvResponse>
+		(new FROSHighlightModelSrv::Response(bSuccess));
 }

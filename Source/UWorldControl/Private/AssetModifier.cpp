@@ -52,7 +52,8 @@ bool FAssetModifier::Relocate(AActor* Actor, FVector Location, FRotator Rotator)
 	return bSuccess;
 }
 
-bool FAssetModifier::ChangePhysics(UStaticMeshComponent* MeshComponent, bool bSimulatedPhysics,
+bool FAssetModifier::ChangePhysicsProperties(UStaticMeshComponent* MeshComponent,
+	EComponentMobility::Type Mobility, bool bSimulatedPhysics,
 	bool bGereateOverlapEvents, bool bGravity, float Mass)
 {
 	if (!MeshComponent) return false;
@@ -61,7 +62,8 @@ bool FAssetModifier::ChangePhysics(UStaticMeshComponent* MeshComponent, bool bSi
 	GEditor->BeginTransaction(FText::FromString(TEXT("Changing Phyisics on: ")
 		+ MeshComponent->GetOwner()->GetActorLabel()));
 #endif
-
+	
+	MeshComponent->SetMobility(Mobility);
 	MeshComponent->SetSimulatePhysics(bSimulatedPhysics);
 	MeshComponent->SetGenerateOverlapEvents(bGereateOverlapEvents);
 	MeshComponent->SetEnableGravity(bGravity);
@@ -125,7 +127,7 @@ bool FAssetModifier::ChangeVisual(UStaticMeshComponent* MeshComponent, TArray<FS
 	return bSuccess;
 }
 
-bool FAssetModifier::AttachModelToParent(AActor* Parent, AActor* Child)
+bool FAssetModifier::AttachToParent(AActor* Parent, AActor* Child)
 {
 
 

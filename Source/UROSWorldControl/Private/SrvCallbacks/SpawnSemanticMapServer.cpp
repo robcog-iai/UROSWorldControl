@@ -39,12 +39,16 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnSemanticMapServer::Callback(
 		for (auto Tag : ModelDescription.GetTags())
 		{
 			FAssetSpawner::FTag SpawnerTag;
-			SpawnerTag.TagType = Tag.GetTagType();
+			SpawnerTag.TagType = Tag.GetType();
 			SpawnerTag.Key = Tag.GetKey();
 			SpawnerTag.Value = Tag.GetValue();
 			Params.Tags.Add(SpawnerTag);
 		}
-		Params.PhysicsProperties.bSimulatePhysics = ModelDescription.GetPhysicsProperties().GetSimulatePhysics();
+
+
+		Params.PhysicsProperties.Mobility = ModelDescription.GetPhysicsProperties().GetMobility();
+		Params.PhysicsProperties.bSimulatePhysics = ModelDescription.GetPhysicsProperties().IsSimulatePhysics();
+
 		Params.PhysicsProperties.bGravity = ModelDescription.GetPhysicsProperties().GetGravity();
 		Params.PhysicsProperties.bGenerateOverlapEvents = ModelDescription.GetPhysicsProperties().GetGenerateOverlapEvents();
 		Params.PhysicsProperties.Mass = ModelDescription.GetPhysicsProperties().GetMass();
@@ -157,7 +161,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnSemanticMapServer::Callback(
 			if (Child && Parent)
 			{
 				//Actors were found and will be attached
-				bSuccess = FAssetModifier::AttachModelToParent(*Parent, *Child);
+				bSuccess = FAssetModifier::AttachToParent(*Parent, *Child);
 			}
 			
 			if (!Child)

@@ -27,7 +27,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSAttachModelToParentServer::Callback(
 		//Actors were found and will be attached, in GameThread
 		FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
 		{
-			FAssetModifier::AttachModelToParent(*Parent, *Child);
+			FAssetModifier::AttachToParent(*Parent, *Child);
 		}, TStatId(), nullptr, ENamedThreads::GameThread);
 
 		//wait code above to complete

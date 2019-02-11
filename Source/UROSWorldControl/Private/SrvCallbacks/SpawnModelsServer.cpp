@@ -28,12 +28,16 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnModelServer::Callback(TSharedPtr
 	for (auto Tag : SpawnMeshRequest->GetTags())
 	{
 		FAssetSpawner::FTag SpawnerTag;
-		SpawnerTag.TagType = Tag.GetTagType();
+		SpawnerTag.TagType = Tag.GetType();
 		SpawnerTag.Key = Tag.GetKey();
 		SpawnerTag.Value = Tag.GetValue();
 		Params.Tags.Add(SpawnerTag);
 	}
-	Params.PhysicsProperties.bSimulatePhysics = SpawnMeshRequest->GetPhysicsProperties().GetSimulatePhysics();
+
+	Params.PhysicsProperties.Mobility = SpawnMeshRequest->GetPhysicsProperties().GetMobility();
+	Params.PhysicsProperties.bSimulatePhysics = SpawnMeshRequest->GetPhysicsProperties().IsSimulatePhysics();
+
+	
 	Params.PhysicsProperties.bGravity = SpawnMeshRequest->GetPhysicsProperties().GetGravity();
 	Params.PhysicsProperties.bGenerateOverlapEvents = SpawnMeshRequest->GetPhysicsProperties().GetGenerateOverlapEvents();
 	Params.PhysicsProperties.Mass = SpawnMeshRequest->GetPhysicsProperties().GetMass();

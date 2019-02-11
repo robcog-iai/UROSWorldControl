@@ -14,11 +14,11 @@ TSharedPtr<FROSBridgeSrv::SrvRequest> FROSSetPhysicsPropertiesServer::FromJson(T
 TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSetPhysicsPropertiesServer::Callback(
 	TSharedPtr<FROSBridgeSrv::SrvRequest> Request)
 {
-	TSharedPtr<FROSSetPhysicsPropertiesSrv::Request> ChangeVisualRequest =
+	TSharedPtr<FROSSetPhysicsPropertiesSrv::Request> ChangePhysics =
 		StaticCastSharedPtr<FROSSetPhysicsPropertiesSrv::Request>(Request);
 
 	// get Actor with given UtagID of Controller IDMap
-	AActor* ActorToBeChanged = FTags::GetActorsWithKeyValuePair(World, TEXT("SemLog"), TEXT("Id"), ChangeVisualRequest->GetId()).Pop();
+	AActor* ActorToBeChanged = FTags::GetActorsWithKeyValuePair(World, TEXT("SemLog"), TEXT("Id"), ChangePhysics->GetId()).Pop();
 
 	TArray<UStaticMeshComponent*> Components;
 	if (ActorToBeChanged) {
@@ -29,11 +29,13 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSetPhysicsPropertiesServer::Callback(
 			// Execute on game thread
 			FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
 			{
-				FAssetModifier::ChangePhysics(Component,
-					ChangeVisualRequest->GetPhysicsProperties().GetSimulatePhysics(),
-					ChangeVisualRequest->GetPhysicsProperties().GetGenerateOverlapEvents(),
-					ChangeVisualRequest->GetPhysicsProperties().GetGravity(),
-					ChangeVisualRequest->GetPhysicsProperties().GetMass());
+				FAssetModifier::ChangePhysicsProperties(
+					Component,
+					ChangePhysics->GetPhysicsProperties().GetMobility(),
+					ChangePhysics->GetPhysicsProperties().IsSimulatePhysics(),
+					ChangePhysics->GetPhysicsProperties().GetGenerateOverlapEvents(),
+					ChangePhysics->GetPhysicsProperties().GetGravity(),
+					ChangePhysics->GetPhysicsProperties().GetMass());
 			}, TStatId(), nullptr, ENamedThreads::GameThread);
 
 			//wait code above to complete
