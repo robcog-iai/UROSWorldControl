@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class UROSWorldControl : ModuleRules
+public class UROSControl : ModuleRules
 {
-	public UROSWorldControl(ReadOnlyTargetRules Target) : base(Target)
+	public UROSControl(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		

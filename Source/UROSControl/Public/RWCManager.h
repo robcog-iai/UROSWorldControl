@@ -9,7 +9,7 @@
 
 
 UCLASS()
-class UROSWORLDCONTROL_API URWCManager : public UROSCallbackRegisterBase
+class UROSCONTROL_API URWCManager : public UROSCallbackRegisterBase
 {
 	GENERATED_BODY()
 

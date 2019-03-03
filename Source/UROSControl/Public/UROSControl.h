@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "ModuleManager.h"
 
-class FUROSWorldControl : public IModuleInterface
+class FUROSControl : public IModuleInterface
 {
 public:
 

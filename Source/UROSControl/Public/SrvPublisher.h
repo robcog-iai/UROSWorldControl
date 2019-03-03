@@ -7,7 +7,7 @@
 /**
  * 
  */
-class UROSWORLDCONTROL_API SrvPublisher
+class UROSCONTROL_API SrvPublisher
 {
 
 public:
