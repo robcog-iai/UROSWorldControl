@@ -85,7 +85,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnSemanticMapServer::Callback(
 		LinLimits.XMotion = LinLimitsMsg.GetXMotion();
 		LinLimits.YMotion = LinLimitsMsg.GetYMotion();
 		LinLimits.ZMotion = LinLimitsMsg.GetZMotion();
-		LinLimits.Limit = LinLimitsMsg.GetLimit();
+		LinLimits.Limit = FConversions::MToCm(LinLimitsMsg.GetLimit());
 		LinLimits.UseAdvanced = LinLimitsMsg.GetUseAdvanced();
 		LinLimits.SoftConstraint = LinLimitsMsg.GetSoftConstraint();
 		LinLimits.Stiffness = LinLimitsMsg.GetStiffness();
@@ -99,9 +99,9 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnSemanticMapServer::Callback(
 		AngLimits.Swing1Motion = AngLimitsMsg.GetSwing1Motion();
 		AngLimits.Swing2Motion = AngLimitsMsg.GetSwing2Motion();
 		AngLimits.TwistMotion = AngLimitsMsg.GetTwistMotion();
-		AngLimits.Swing1LimitAngle = AngLimitsMsg.GetSwing1LimitAngle();
-		AngLimits.Swing2LimitAngle = AngLimitsMsg.GetSwing2LimitAngle();
-		AngLimits.TwistLimitAngle = AngLimitsMsg.GetTwistLimitAngle();
+		AngLimits.Swing1LimitAngle = FMath::RadiansToDegrees(AngLimitsMsg.GetSwing1LimitAngle());
+		AngLimits.Swing2LimitAngle = FMath::RadiansToDegrees(AngLimitsMsg.GetSwing2LimitAngle());
+		AngLimits.TwistLimitAngle = FMath::RadiansToDegrees(AngLimitsMsg.GetTwistLimitAngle());
 		AngLimits.AngularRoationOffset = AngLimitsMsg.GetAngularRoationOffset().GetVector();
 		AngLimits.UseAdvanced = AngLimitsMsg.GetUseAdvanced();
 		AngLimits.SwingSoftConstraint = AngLimitsMsg.GetSwingSoftConstraint();

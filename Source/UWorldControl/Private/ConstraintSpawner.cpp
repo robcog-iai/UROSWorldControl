@@ -20,29 +20,29 @@ static FORCEINLINE void SetAngularLimits(
 {
 	switch (Swing1Limit)
 	{
-	case 0: Constraint.SetAngularSwing1Motion(ACM_Free);
+	case 0: Constraint.SetAngularSwing1Limit(ACM_Free, Swing1LimitAngle);
 		break;
-	case 1: Constraint.SetAngularSwing1Motion(ACM_Limited);
+	case 1: Constraint.SetAngularSwing1Limit(ACM_Limited, Swing1LimitAngle);
 		break;
-	case 2: Constraint.SetAngularSwing1Motion(ACM_Locked);
+	case 2: Constraint.SetAngularSwing1Limit(ACM_Locked, Swing1LimitAngle);
 		break;
 	}
 	switch (Swing2Limit)
 	{
-	case 0: Constraint.SetAngularSwing2Motion(ACM_Free);
+	case 0: Constraint.SetAngularSwing2Limit(ACM_Free, Swing2LimitAngle);
 		break;
-	case 1: Constraint.SetAngularSwing2Motion(ACM_Limited);
+	case 1: Constraint.SetAngularSwing2Limit(ACM_Limited, Swing2LimitAngle);
 		break;
-	case 2: Constraint.SetAngularSwing2Motion(ACM_Locked);
+	case 2: Constraint.SetAngularSwing2Limit(ACM_Locked, Swing2LimitAngle);
 		break;
 	}
 	switch (TwistLimit)
 	{
-	case 0: Constraint.SetAngularTwistMotion(ACM_Free);
+	case 0: Constraint.SetAngularTwistLimit(ACM_Free, TwistLimitAngle);
 		break;
-	case 1: Constraint.SetAngularTwistMotion(ACM_Limited);
+	case 1: Constraint.SetAngularTwistLimit(ACM_Limited, TwistLimitAngle);
 		break;
-	case 2: Constraint.SetAngularTwistMotion(ACM_Locked);
+	case 2: Constraint.SetAngularTwistLimit(ACM_Locked, TwistLimitAngle);
 		break;
 	}
 
@@ -52,12 +52,7 @@ static FORCEINLINE void SetAngularLimits(
 
 	if (SoftTwistLimit) Constraint.ProfileInstance.TwistLimit.bSoftConstraint = 1;
 	else Constraint.ProfileInstance.TwistLimit.bSoftConstraint = 0;
-
-	// Limit Angles
-	Constraint.SetAngularSwing1Limit(ACM_Free, Swing1LimitAngle);
-	Constraint.SetAngularSwing2Limit(ACM_Free, Swing2LimitAngle);
-	Constraint.SetAngularTwistLimit(ACM_Free, TwistLimitAngle);
-
+	
 	Constraint.ProfileInstance.ConeLimit.Stiffness = SwingStiff;
 	Constraint.ProfileInstance.ConeLimit.Damping = SwingDamp;
 	Constraint.ProfileInstance.TwistLimit.Stiffness = TwistStiff;
@@ -70,7 +65,7 @@ static FORCEINLINE void SetAngularLimits(
 static FORCEINLINE void SetLinearLimits(
 	FConstraintInstance& Constraint,
 	const uint8 XLimit, const uint8 YLimit, const uint8 ZLimit,
-	const float Size,
+	const float Limit,
 	bool SoftLimit = false,
 	const float SoftStiffness = 0,
 	const float SoftDampening = 0
@@ -78,11 +73,11 @@ static FORCEINLINE void SetLinearLimits(
 {
 	switch (XLimit)
 	{
-	case 0: Constraint.SetLinearXMotion(LCM_Free);
+	case 0: Constraint.SetLinearXLimit(LCM_Free, Limit);
 		break;
-	case 1: Constraint.SetLinearXMotion(LCM_Limited);
+	case 1: Constraint.SetLinearXLimit(LCM_Limited, Limit);
 		break;
-	case 2: Constraint.SetLinearXMotion(LCM_Locked);
+	case 2: Constraint.SetLinearXLimit(LCM_Locked, Limit);
 		break;
 	}
 	switch (YLimit)
@@ -104,7 +99,6 @@ static FORCEINLINE void SetLinearLimits(
 		break;
 	}
 
-	Constraint.SetLinearLimitSize(Size);
 
 	// Soft Limit?
 	if (SoftLimit) Constraint.ProfileInstance.LinearLimit.bSoftConstraint = 1;
@@ -170,34 +164,27 @@ bool FConstraintSpawner::SpawnPhysicsConstraintActor(UWorld* World, FString Id, 
 	//set up the constraint instance with all the desired values
 	FConstraintInstance ConstraintInstance;
 
-	//SetupProfileInstance(ConstraintInstance.ProfileInstance, Details);
+	SetupProfileInstance(ConstraintInstance.ProfileInstance, Details);
 
-	ConstraintInstance.ProfileInstance.bDisableCollision = Details.DisableCollision;
-	ConstraintInstance.ProfileInstance.bEnableProjection = Details.EnableProjection;
-	ConstraintInstance.ProfileInstance.ProjectionLinearTolerance = Details.ProjectionLinearTolerance;
-	ConstraintInstance.ProfileInstance.ProjectionAngularTolerance = Details.ProjectionAngularTolerance;
-	ConstraintInstance.ProfileInstance.bParentDominates = Details.ParentDominates;
-
-
-	//SetupLinearLimits(ConstraintInstance, Details.LinearLimits);
+	SetupLinearLimits(ConstraintInstance, Details.LinearLimits);
 
 		//Advanced features will be set as well.
-	SetLinearLimits(ConstraintInstance,
+	/*SetLinearLimits(ConstraintInstance,
 		Details.LinearLimits.XMotion, Details.LinearLimits.YMotion, Details.LinearLimits.ZMotion,
 		Details.LinearLimits.Limit,
 		Details.LinearLimits.SoftConstraint, Details.LinearLimits.Stiffness, Details.LinearLimits.Damping
-	);
+	);*/
 
-	//SetupAngularLimits(ConstraintInstance, Details.AngularLimits);
+	SetupAngularLimits(ConstraintInstance, Details.AngularLimits);
 
 		//Advanced features will be set as well.
-	SetAngularLimits(ConstraintInstance,
+	/*SetAngularLimits(ConstraintInstance,
 		Details.AngularLimits.Swing1Motion, Details.AngularLimits.Swing2Motion, Details.AngularLimits.TwistMotion,
 		Details.AngularLimits.Swing1LimitAngle, Details.AngularLimits.Swing2LimitAngle, Details.AngularLimits.TwistLimitAngle,
 		Details.AngularLimits.SwingSoftConstraint, Details.AngularLimits.TwistSoftConstraint,
 		Details.AngularLimits.SwingStiffness, Details.AngularLimits.SwingDamping,
 		Details.AngularLimits.TwistStiffness, Details.AngularLimits.TwistDamping
-	);
+	);*/
 
 	ConstraintInstance.AngularRotationOffset = Details.AngularLimits.AngularRoationOffset.Rotation();
 
@@ -213,7 +200,7 @@ bool FConstraintSpawner::SpawnPhysicsConstraintActor(UWorld* World, FString Id, 
 	FTags::AddKeyValuePair(
 		ConstraintActor,
 		TEXT("SemLog"),
-		TEXT("id"),
+		TEXT("Id"),
 		Id);
 
 #if WITH_EDITOR

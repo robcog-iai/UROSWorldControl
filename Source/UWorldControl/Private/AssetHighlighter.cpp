@@ -23,11 +23,12 @@ bool FAssetHighlighter::Highlight(AActor* ActorToBeHighlighted, uint8 Color)
 			}
 			else
 			{
-				Component->SetRenderCustomDepth(true);
 				Component->CustomDepthStencilValue = Color;
+				Component->SetRenderCustomDepth(true);
 			}
 		}
 #if WITH_EDITOR
+		ActorToBeHighlighted->PostEditChange();
 		ActorToBeHighlighted->Modify();
 		GEditor->EndTransaction();
 #endif
