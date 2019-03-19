@@ -146,6 +146,7 @@ bool FConstraintSpawner::SpawnPhysicsConstraintActor(UWorld* World, FString Id, 
 
 #if WITH_EDITOR
 	GEditor->BeginTransaction(FText::FromString(TEXT("Spawning: ") + Label));
+	World->Modify();
 #endif
 
 	//Actors do Exist. Set as ConstraintActors of component. 

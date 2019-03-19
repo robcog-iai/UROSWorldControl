@@ -16,6 +16,7 @@ bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params)
 	FString Label = (Params.ActorLabel.IsEmpty() ? Params.Name : Params.ActorLabel);
 #if WITH_EDITOR
 	GEditor->BeginTransaction(FText::FromString(TEXT("Spawning: ")+ Label));
+	World->Modify();
 #endif
 
 	//Setup SpawnParameters 
