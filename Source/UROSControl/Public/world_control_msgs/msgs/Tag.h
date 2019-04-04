@@ -1,7 +1,7 @@
+// Copyright 2017-2019, Institute for Artificial Intelligence - University of Bremen
+
 #pragma once
 #include "ROSBridgeMsg.h"
-
-
 
 namespace world_control_msgs
 {
@@ -10,7 +10,6 @@ namespace world_control_msgs
 		FString Type;
 		FString Key;
 		FString Value;
-
 
 	public:
 		Tag() {}

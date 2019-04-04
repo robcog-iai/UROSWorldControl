@@ -1,7 +1,7 @@
+// Copyright 2017-2019, Institute for Artificial Intelligence - University of Bremen
+
 #pragma once
 #include "ROSBridgeMsg.h"
-
-
 
 namespace world_control_msgs
 {

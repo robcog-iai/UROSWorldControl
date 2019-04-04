@@ -1,3 +1,5 @@
+// Copyright 2017-2019, Institute for Artificial Intelligence - University of Bremen
+
 #include "SpawnSemanticMapServer.h"
 #include "Ids.h"
 #include "Conversions.h"

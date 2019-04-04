@@ -1,9 +1,9 @@
+// Copyright 2017-2019, Institute for Artificial Intelligence - University of Bremen
+
 #pragma once
 #include "ROSBridgeMsg.h"
 #include "LinearLimits.h"
 #include "AngularLimits.h"
-
-
 
 namespace world_control_msgs
 {
@@ -18,7 +18,6 @@ namespace world_control_msgs
 		bool ParentDominates;
 		world_control_msgs::LinearLimits LinearLimits;
 		world_control_msgs::AngularLimits AngularLimits;
-
 
 	public:
 		PhysicsConstraintDetails() {}
