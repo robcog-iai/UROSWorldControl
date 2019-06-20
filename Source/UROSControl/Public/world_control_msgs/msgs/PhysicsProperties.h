@@ -15,7 +15,8 @@ namespace world_control_msgs
 
 
 	public:
-		static enum  MobilityTypes { Static, Stationary, Dynamic, Kinematic};
+		// static enum  MobilityTypes { Static, Stationary, Dynamic, Kinematic};
+		enum  MobilityTypes { Static, Stationary, Dynamic, Kinematic};
 
 		PhysicsProperties() {}
 
@@ -54,11 +55,11 @@ namespace world_control_msgs
 			return GenerateOverlapEvents;
 		}
 
-		bool IsSimulatePhysics() 
+		bool IsSimulatePhysics()
 		{
 			return Mobility == Dynamic;
 		}
-			
+
 
 		float GetMass()
 		{

@@ -28,7 +28,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSetModelPoseServer::Callback(TSharedP
 
 	if (!Actor)
 	{
-		// Couldn't find Actor for ID 
+		// Couldn't find Actor for ID
 		UE_LOG(LogTemp, Warning, TEXT("Actor with id:\"%s\" does not exist and can therefore not be moved."), *UniqueId);
 		return MakeShareable<FROSBridgeSrv::SrvResponse>
 			(new FROSSetModelPoseSrv::Response(false));
@@ -39,7 +39,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSetModelPoseServer::Callback(TSharedP
 	MoveAssetParams Params;
 	Params.Actor = Actor;
 	Params.Location = FConversions::ROSToU(SetModelPoseRequest->GetPose().GetPosition().GetVector());
-	Params.Rotator = FRotator::FRotator(FConversions::ROSToU(SetModelPoseRequest->GetPose().GetOrientation().GetQuat()));
+	Params.Rotator = FRotator(FConversions::ROSToU(SetModelPoseRequest->GetPose().GetOrientation().GetQuat()));
 
 	//Actor was found and will be relocated, in GameThread
 	FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
