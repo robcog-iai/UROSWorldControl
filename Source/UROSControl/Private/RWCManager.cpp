@@ -41,4 +41,3 @@ void URWCManager::SetupServiceServers()
 	ServicesToPublish.Add(MakeShareable<FROSSpawnSemanticMapServer>(new FROSSpawnSemanticMapServer(Namespace, TEXT("spawn_semantic_map"), World, this)));
 
 }
-

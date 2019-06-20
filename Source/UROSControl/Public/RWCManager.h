@@ -18,10 +18,10 @@ public:
 	URWCManager(){}
 	~URWCManager(){}
 
-	void SetupServiceServers();
-					
-	void Register(FString DefaultNamespace) override;														
-											
+	virtual void SetupServiceServers();
+
+	virtual void Register(FString DefaultNamespace) override;
+
 private:
 	FString Namespace;
 };
