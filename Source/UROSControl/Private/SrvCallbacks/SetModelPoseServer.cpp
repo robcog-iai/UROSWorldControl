@@ -20,30 +20,34 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSetModelPoseServer::Callback(TSharedP
 	TSharedPtr<FROSSetModelPoseSrv::Request> SetModelPoseRequest =
 		StaticCastSharedPtr<FROSSetModelPoseSrv::Request>(Request);
 
+	// Do all calculations that don't need a game thread first
+
 	//Get Actor for given ID
 	FString UniqueId = SetModelPoseRequest->GetId();
 
-	AActor* Actor = FTags::GetActorsWithKeyValuePair(World, TEXT("SemLog"), TEXT("Id"), UniqueId).Pop();
-
-
-	if (!Actor)
-	{
-		// Couldn't find Actor for ID
-		UE_LOG(LogTemp, Warning, TEXT("Actor with id:\"%s\" does not exist and can therefore not be moved."), *UniqueId);
-		return MakeShareable<FROSBridgeSrv::SrvResponse>
-			(new FROSSetModelPoseSrv::Response(false));
-	}
-
-
-	// Setup params
+	// Setup params (part1)
 	MoveAssetParams Params;
-	Params.Actor = Actor;
 	Params.Location = FConversions::ROSToU(SetModelPoseRequest->GetPose().GetPosition().GetVector());
 	Params.Rotator = FRotator(FConversions::ROSToU(SetModelPoseRequest->GetPose().GetOrientation().GetQuat()));
 
-	//Actor was found and will be relocated, in GameThread
+
+	//The rest has to be done in the game thread
 	FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
 	{
+		// GetActorsWithKeyValuePair (which internally uses TActorIterator) needs a game thread
+		AActor* Actor = FTags::GetActorsWithKeyValuePair(World, TEXT("SemLog"), TEXT("Id"), UniqueId).Pop();
+
+
+		if (!Actor)
+		{
+			// Couldn't find Actor for ID
+			UE_LOG(LogTemp, Warning, TEXT("Actor with id:\"%s\" does not exist and can therefore not be moved."), *UniqueId);
+			ServiceSuccess = false;
+			return;
+		}
+
+		// Set MoveAssetParam reference to actor
+		Params.Actor = Actor;
 		ServiceSuccess = FAssetModifier::Relocate(Params.Actor,
 		                          Params.Location,
 		                          Params.Rotator);
