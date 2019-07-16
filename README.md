@@ -26,4 +26,4 @@ For the Highlighting to work, you need to setup three things in your unreal proj
 On the ROS side you need the srv and msg files, for that you need to get the package `unreal_msgs`, which can be found in the [unreal_ros_pkgs](https://github.com/robcog-iai/unreal_ros_pkgs) repository.
 
 ## Usage
-After starting the editor should have an extra mode tab, within this tab the server address of the ROSBridgeServer needs to be set. After setting the adress acordingly, pressing the `ConnectToRosBridge`-Button will connect and publish the services listed above.
+After starting the editor should have an extra mode tab, within this tab the server address of the ROSBridgeServer needs to be set. In order to register the services of this plugin, also add 'RWCManager' to the Publisher List in the 'Callbacks' section of this mode tab.  After setting the adress and the publisher list acordingly, pressing the `ConnectToRosBridge`-Button will connect and publish the services listed above.
