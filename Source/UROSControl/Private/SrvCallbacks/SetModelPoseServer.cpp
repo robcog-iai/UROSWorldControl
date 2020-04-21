@@ -30,7 +30,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSetModelPoseServer::Callback(TSharedP
 	Params.Location = FConversions::ROSToU(SetModelPoseRequest->GetPose().GetPosition().GetVector());
 	Params.Rotator = FRotator(FConversions::ROSToU(SetModelPoseRequest->GetPose().GetOrientation().GetQuat()));
 
-
+	double start = FPlatformTime::Seconds();
 	//The rest has to be done in the game thread
 	FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
 	{
@@ -55,6 +55,9 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSetModelPoseServer::Callback(TSharedP
 
 	//wait code above to complete
 	FTaskGraphInterface::Get().WaitUntilTaskCompletes(Task);
+	double end = FPlatformTime::Seconds();
+	UE_LOG(LogTemp, Display, TEXT("SetModelPose executed in %f seconds."), end-start);
+
 
 	return MakeShareable<FROSBridgeSrv::SrvResponse>
 		(new FROSSetModelPoseSrv::Response(ServiceSuccess));
