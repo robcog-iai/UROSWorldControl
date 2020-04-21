@@ -51,6 +51,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnModelServer::Callback(TSharedPtr
 
 	FString FinalActorName;
 	// Execute on game thread
+	double start = FPlatformTime::Seconds();
 	FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
 	{
 		ServiceSuccess = FAssetSpawner::SpawnAsset(World, Params, FinalActorName);
@@ -58,6 +59,8 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnModelServer::Callback(TSharedPtr
 
 	//wait code above to complete
 	FTaskGraphInterface::Get().WaitUntilTaskCompletes(Task);
+	double end = FPlatformTime::Seconds();
+	UE_LOG(LogTemp, Display, TEXT("SpawnModel executed in %f seconds."), end-start);
 
 	return MakeShareable<FROSBridgeSrv::SrvResponse>
 		(new FROSSpawnModelSrv::Response(Params.Id, FinalActorName, ServiceSuccess));
