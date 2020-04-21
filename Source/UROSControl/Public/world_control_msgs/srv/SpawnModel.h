@@ -197,21 +197,28 @@ public:
 	{
 	private:
 		FString Id;
+		FString Name;
 		bool Success;
 
 
 	public:
 		Response() {}
 
-		Response(FString InId, bool InSuccess)
+		Response(FString InId, FString InName, bool InSuccess)
 		{
 			Id = InId;
+			Name = InName;
 			Success = InSuccess;
 		}
 
 		FString GetId()
 		{
 			return Id;
+		}
+
+		FString GetName()
+		{
+			return Name;
 		}
 
 		bool GetSuccess()
@@ -222,6 +229,7 @@ public:
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
 			Id = JsonObject->GetStringField("id");
+			Name = JsonObject->GetStringField("Name");
 			Success = JsonObject->GetBoolField("success");
 		}
 
@@ -235,13 +243,14 @@ public:
 		FString ToString() const override
 		{
 			return "FROSSpawnModelSrv:Response {id = " + Id +
-				", success = " + (Success ? FString("True") : FString("False")) + "}";
+				", name = " + Name + ", success = " + (Success ? FString("True") : FString("False")) + "}";
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 			Object->SetStringField(TEXT("id"), Id);
+			Object->SetStringField(TEXT("name"), Name);
 			Object->SetBoolField(TEXT("success"), Success);
 			return Object;
 		}
