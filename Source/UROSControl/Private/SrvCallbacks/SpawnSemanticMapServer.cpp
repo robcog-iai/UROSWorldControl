@@ -61,9 +61,10 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnSemanticMapServer::Callback(
 
 
 		// Execute on game thread
+    FString FinalActorName;
 		FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
 		{
-			bSuccess = FAssetSpawner::SpawnAsset(World, Params);
+			bSuccess = FAssetSpawner::SpawnAsset(World, Params, FinalActorName);
 		}, TStatId(), nullptr, ENamedThreads::GameThread);
 
 		//wait code above to complete

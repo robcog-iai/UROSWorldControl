@@ -45,7 +45,7 @@ public:
 		FString ParentId;
 	};
 
-	static bool SpawnAsset(UWorld* World, FSpawnAssetParams Params);
+	static bool SpawnAsset(UWorld* World, FSpawnAssetParams Params, FString &FinalActorName);
 
 };
 

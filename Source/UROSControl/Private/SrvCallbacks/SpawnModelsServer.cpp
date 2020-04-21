@@ -49,17 +49,17 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnModelServer::Callback(TSharedPtr
 	Params.MaterialPaths = SpawnMeshRequest->GetMaterialPaths();
 	Params.ParentId = SpawnMeshRequest->GetParentId();
 
-
+	FString FinalActorName;
 	// Execute on game thread
 	FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
 	{
-		ServiceSuccess = FAssetSpawner::SpawnAsset(World, Params);
+		ServiceSuccess = FAssetSpawner::SpawnAsset(World, Params, FinalActorName);
 	}, TStatId(), nullptr, ENamedThreads::GameThread);
 
 	//wait code above to complete
 	FTaskGraphInterface::Get().WaitUntilTaskCompletes(Task);
 
 	return MakeShareable<FROSBridgeSrv::SrvResponse>
-		(new FROSSpawnModelSrv::Response(Params.Id, ServiceSuccess));
+		(new FROSSpawnModelSrv::Response(Params.Id, FinalActorName, ServiceSuccess));
 }
 

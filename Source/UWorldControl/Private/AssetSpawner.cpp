@@ -4,7 +4,7 @@
 #include "Engine/StaticMeshActor.h"
 #include "Editor.h"
 
-bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params)
+bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params, FString &FinalActorName)
 {
 	//Check if World is avialable
 	if (!World)
@@ -109,6 +109,7 @@ bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params)
 	SpawnedItem->Modify();
 	GEditor->EndTransaction();
 #endif
+	FinalActorName = SpawnedItem->GetName();
 
 	return true;
 }
