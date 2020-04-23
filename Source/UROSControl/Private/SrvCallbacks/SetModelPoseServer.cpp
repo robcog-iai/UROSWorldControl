@@ -35,8 +35,11 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSetModelPoseServer::Callback(TSharedP
 	FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
 	{
 		// GetActorsWithKeyValuePair (which internally uses TActorIterator) needs a game thread
-		AActor* Actor = FTags::GetActorsWithKeyValuePair(World, TEXT("SemLog"), TEXT("Id"), UniqueId).Pop();
+		TArray<AActor*> AllMatchingActors = FTags::GetActorsWithKeyValuePair(World, TEXT("SemLog"), TEXT("Id"), UniqueId);
 
+		AActor* Actor = nullptr;
+		if(AllMatchingActors.Num() > 0)
+			Actor = AllMatchingActors.Pop();
 
 		if (!Actor)
 		{
