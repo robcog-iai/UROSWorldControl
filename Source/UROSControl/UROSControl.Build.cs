@@ -28,7 +28,6 @@ public class UROSControl : ModuleRules
 				"Core",
                 "UWorldControl",
 			    "UROSBridge",
-			    "UROSBridgeEd",
                 "UTags",
 				"UIds",
 				"UConversions",

@@ -33,7 +33,6 @@ public class UWorldControl : ModuleRules
                 "Core",
                 "UTags",
                 "UIds",
-			    "UROSBridgeEd",
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

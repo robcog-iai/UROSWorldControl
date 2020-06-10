@@ -17,4 +17,4 @@ void FUROSControl::ShutdownModule()
 
 #undef LOCTEXT_NAMESPACE
 
-IMPLEMENT_MODULE(FUROSControl, UROSWorldControl)
+IMPLEMENT_MODULE(FUROSControl, UROSControl)
