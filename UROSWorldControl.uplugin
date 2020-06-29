@@ -23,6 +23,11 @@
       "Name": "UWorldControl",
       "Type": "Developer",
       "LoadingPhase": "Default"
+    },
+    {
+      "Name": "UCheckpointSystem",
+      "Type": "Developer",
+      "LoadingPhase": "Default"
     }
   ],
   "Plugins": [
