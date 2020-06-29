@@ -1,4 +1,4 @@
-// Copyright 2018, Institute for Artificial Intelligence - University of Bremen
+// Copyright 2020, Institute for Artificial Intelligence - University of Bremen
 // Author: Michael Neumann
 
 #pragma once
