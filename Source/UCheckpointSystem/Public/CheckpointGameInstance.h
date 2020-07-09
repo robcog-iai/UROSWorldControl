@@ -22,11 +22,12 @@ class UCHECKPOINTSYSTEM_API UCheckpointGameInstance : public UROSBridgeGameInsta
       //Called on BeginPlay setting ub the CheckpointSystem
     virtual void OnStart() override;
 
+public:
+    UCheckpointEventBroadcaster* CheckpointEventBroadcaster;
 protected:
 
     TSharedPtr<FROSBridgeSrvServer> Server;
 
-    UCheckpointEventBroadcaster* CheckpointEventBroadcaster;
     UCheckpointHandler* CheckpointHandler;
 
     /* Function that is Bound to the SaveCheckpoint broadcast of the  CheckpointEventBroadcaster
