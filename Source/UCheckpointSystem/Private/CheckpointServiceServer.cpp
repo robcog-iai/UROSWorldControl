@@ -33,9 +33,10 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FCheckpointServiceServer::Callback(TShare
           {
             FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
                 {
-                  ServiceSuccess = CheckpointEventBroadcaster->Broadcast(Command, Args);
+                  CheckpointEventBroadcaster->Broadcast(Command, Args);
                 }, TStatId(), nullptr, ENamedThreads::GameThread);
             FTaskGraphInterface::Get().WaitUntilTaskCompletes(Task);
+            ServiceSuccess = true;
           }
         else
           {

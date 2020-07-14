@@ -4,6 +4,7 @@
 #include "CheckpointHandler.h"
 #include "GameFramework/SaveGame.h"
 #include "Kismet/GameplayStatics.h"
+#include "UCheckpointComponent.h"
 
 //
 void UCheckpointHandler::Init()
@@ -13,7 +14,7 @@ void UCheckpointHandler::Init()
   SaveGame = nullptr;
 }
 
-void UCheckpointHandler::SaveCheckpoint(const UObject* InSavedObject){
+void UCheckpointHandler::SaveCheckpoint(UObject* InSavedObject){
 
   SavedObject = InSavedObject;
   if(SavedObject)
@@ -58,7 +59,21 @@ void UCheckpointHandler::SaveToFile()
     }
 }
 
-void UCheckpointHandler::ResetCheckpoint(const UObject* OutContent){
+void UCheckpointHandler::ResetCheckpoint(UObject* InSavedObject)
+{
+  SavedObject = InSavedObject;
+  if(InSavedObject)
+    {
+      ResetCheckpoint();
+    }
+  else
+    {
+      UE_LOG(LogTemp, Log, TEXT("ResetCheckpoint: InSavedObject is nullptr"));
+    }
+}
+void UCheckpointHandler::ResetCheckpoint()
+{
+  SaveGame = UGameplayStatics::LoadGameFromSlot(*FileName, 0);
 }
 
 USaveGame* UWorldStateCheckpointHandler::CreateSaveGameFile()
@@ -73,22 +88,29 @@ void UWorldStateCheckpointHandler::GetContent()
   UGameplayStatics::GetAllActorsOfClass(SavedObject, AStaticMeshActor::StaticClass(), WorldActors);
   for(auto& Actor : WorldActors)
     {
-      WorldState->AddActor(Cast<AStaticMeshActor>(Actor));
+      TArray<UCheckpointComponent*> CheckpointHandlerComponents;
+      Actor->GetComponents<UCheckpointComponent>(CheckpointHandlerComponents);
+      if(CheckpointHandlerComponents.Num() == 0)
+        {
+          WorldState->AddActor(Cast<AStaticMeshActor>(Actor));
+        }
     }
 }
 
-void UWorldStateCheckpointHandler::ResetCheckpoint(const UObject* InSavedObject){
-
-
-  SaveGame = UGameplayStatics::LoadGameFromSlot(*FileName, 0);
-  UWorldState* WorldState = Cast<UWorldState>(SaveGame);
-  for(auto& ActorRef : WorldState->WorldStateMap)
+void UWorldStateCheckpointHandler::ResetCheckpoint()
+// void UWorldStateCheckpointHandler::ResetCheckpoint(const UObject* InSavedObject)
+{
+  Super::ResetCheckpoint();
+  //TODO remove actors that are not in checkpoint file but in the world
+  if(SavedObject)
     {
-      UStaticMeshComponent* RootComponent = Cast<UStaticMeshComponent>(ActorRef.Key->GetRootComponent());
-      ActorRef.Key->SetActorTransform(ActorRef.Value.Pose);
-      RootComponent->SetPhysicsLinearVelocity(ActorRef.Value.AngularVel);
-      RootComponent->SetPhysicsAngularVelocityInDegrees(ActorRef.Value.LinearVel);
+      UWorldState* WorldState = Cast<UWorldState>(SaveGame);
+      for(auto& ActorRef : WorldState->WorldStateMap)
+        {
+          UStaticMeshComponent* RootComponent = Cast<UStaticMeshComponent>(ActorRef.Key->GetRootComponent());
+          ActorRef.Key->SetActorTransform(ActorRef.Value.Pose);
+          RootComponent->SetPhysicsLinearVelocity(ActorRef.Value.AngularVel);
+          RootComponent->SetPhysicsAngularVelocityInDegrees(ActorRef.Value.LinearVel);
+        }
     }
-
-
 }

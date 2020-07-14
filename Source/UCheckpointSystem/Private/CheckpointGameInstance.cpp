@@ -41,5 +41,5 @@ void UCheckpointGameInstance::SaveCheckpoint(const FString& InArgs)
 
 void UCheckpointGameInstance::ResetCheckpoint(const FString& InArgs)
 {
-  CheckpointHandler->ResetCheckpoint(nullptr);
+  CheckpointHandler->ResetCheckpoint(GetWorld());
 }
