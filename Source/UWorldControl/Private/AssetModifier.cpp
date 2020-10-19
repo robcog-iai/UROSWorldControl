@@ -1,7 +1,10 @@
 #include "AssetModifier.h"
 #include "FileManagerGeneric.h"
 #include "Tags.h"
+#if WITH_EDITOR
 #include "Editor.h"
+#endif
+
 
 
 bool FAssetModifier::RemoveAsset(UWorld* World, FString Id)
@@ -62,7 +65,7 @@ bool FAssetModifier::ChangePhysicsProperties(UStaticMeshComponent* MeshComponent
 	GEditor->BeginTransaction(FText::FromString(TEXT("Changing Phyisics on: ")
 		+ MeshComponent->GetOwner()->GetActorLabel()));
 #endif
-	
+
 	MeshComponent->SetMobility(Mobility);
 	MeshComponent->SetSimulatePhysics(bSimulatedPhysics);
 	MeshComponent->SetGenerateOverlapEvents(bGereateOverlapEvents);
@@ -72,7 +75,7 @@ bool FAssetModifier::ChangePhysicsProperties(UStaticMeshComponent* MeshComponent
 #if WITH_EDITOR
 	MeshComponent->Modify();
 	GEditor->EndTransaction();
-#endif	
+#endif
 
 	return true;
 }
@@ -89,7 +92,7 @@ bool FAssetModifier::ChangeVisual(UStaticMeshComponent* MeshComponent, TArray<FS
 	{
 		for (int i = 0; i < MaterialPaths.Num(); i++)
 		{
-			//Try to load Material 
+			//Try to load Material
 			UMaterialInterface* Material = Cast<UMaterialInterface>(
 				StaticLoadObject(UMaterialInterface::StaticClass(), nullptr, *MaterialPaths[i]));
 			if (Material)
@@ -224,6 +227,3 @@ UMaterialInterface* FAssetModifier::LoadMaterial(FString Name, FString StartDir)
 	return Material;
 
 }
-
-
-
