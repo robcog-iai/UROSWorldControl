@@ -1,8 +1,9 @@
 #include "AssetModifier.h"
 #include "FileManagerGeneric.h"
 #include "Tags.h"
+#if WITH_EDITOR
 #include "Editor.h"
-
+#endif
 
 bool FAssetModifier::RemoveAsset(UWorld* World, FString Id)
 {
@@ -158,9 +159,10 @@ UStaticMesh* FAssetModifier::LoadMesh(FString Name, FString StartDir)
 	FString Filename = Name.StartsWith(TEXT("SM_")) ? TEXT("") : TEXT("SM_");
 	Filename += Name;
 	Filename += Name.EndsWith(TEXT(".uasset")) ? TEXT("") : TEXT(".uasset");
+    UE_LOG(LogTemp, Warning, TEXT("[%s]: SpawnModel Name %s"), *FString(__FUNCTION__),*Name);
 
 	TArray<FString> FileLocations;
-	FFileManagerGeneric Fm;
+    FFileManagerGeneric Fm;
 	Fm.FindFilesRecursive(FileLocations, *FPaths::ProjectContentDir().Append(StartDir), *Filename, true, false, true);
 
 	if (FileLocations.Num() == 0)
@@ -180,7 +182,7 @@ UStaticMesh* FAssetModifier::LoadMesh(FString Name, FString StartDir)
 			Loc.RemoveAt(Last, Loc.Len() - Last);
 
 			FString FoundPath = "StaticMesh'/Game/" + Loc + ".SM_" + Name + "'";
-			Mesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), nullptr, *FoundPath));
+            Mesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), nullptr, *FoundPath));
 		}
 	}
 
