@@ -1,6 +1,9 @@
-#include "AssetHighlighter.h" 
+#include "AssetHighlighter.h"
 #include "Tags.h"
+
+#if WITH_EDITOR
 #include "Editor.h"
+#endif
 
 bool FAssetHighlighter::Highlight(AActor* ActorToBeHighlighted, uint8 Color)
 {

@@ -4,7 +4,9 @@
 #include "PhysicsEngine/PhysicsConstraintComponent.h"
 #include "PhysicsEngine/PhysicsConstraintActor.h"
 #include "AssetModifier.h"
+#if WITH_EDITOR
 #include "Editor.h"
+#endif
 
 // SetAngularLimits for Physics Constraints
 static FORCEINLINE void SetAngularLimits(
@@ -52,7 +54,7 @@ static FORCEINLINE void SetAngularLimits(
 
 	if (SoftTwistLimit) Constraint.ProfileInstance.TwistLimit.bSoftConstraint = 1;
 	else Constraint.ProfileInstance.TwistLimit.bSoftConstraint = 0;
-	
+
 	Constraint.ProfileInstance.ConeLimit.Stiffness = SwingStiff;
 	Constraint.ProfileInstance.ConeLimit.Damping = SwingDamp;
 	Constraint.ProfileInstance.TwistLimit.Stiffness = TwistStiff;
@@ -142,17 +144,23 @@ bool FConstraintSpawner::SpawnPhysicsConstraintActor(UWorld* World, FString Id, 
 		return false;
 	}
 
+#if WITH_EDITOR
 	FString Label = (*First)->GetActorLabel() + TEXT("_Constraint");
+#else
+        FString Label = Details.IdFirstModel + TEXT("_Constraint");
+#endif
 
 #if WITH_EDITOR
 	GEditor->BeginTransaction(FText::FromString(TEXT("Spawning: ") + Label));
 	World->Modify();
 #endif
 
-	//Actors do Exist. Set as ConstraintActors of component. 
+	//Actors do Exist. Set as ConstraintActors of component.
 	APhysicsConstraintActor* ConstraintActor = World->SpawnActor<APhysicsConstraintActor>(Location, Rotator);
 	FAssetModifier::AttachToParent(*First, ConstraintActor);
+#if WITH_EDITOR
 	ConstraintActor->SetActorLabel(Label);
+#endif
 
 	UPhysicsConstraintComponent* ConstraintComponent = ConstraintActor->GetConstraintComp();
 	ConstraintComponent->bEditableWhenInherited = true;
