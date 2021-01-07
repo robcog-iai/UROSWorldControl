@@ -2,6 +2,7 @@
 #include "AssetModifier.h"
 #include "Tags.h"
 #include "Engine/StaticMeshActor.h"
+#include "Engine/EngineTypes.h"
 #include "Editor.h"
 
 bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params, FString &FinalActorName)
@@ -21,6 +22,8 @@ bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params, FS
 
 	//Setup SpawnParameters 
 	FActorSpawnParameters SpawnParams;
+	// SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::DontSpawnIfColliding;
+	// SpawnParams.bNoFail = false;
 	//SpawnParams.Instigator = Instigator;
 	//SpawnParams.Owner = this;
 
@@ -43,16 +46,24 @@ bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params, FS
 
 	if (!Actors.IsValidIndex(0))
 	{
+		// SpawnCollission Testing
+		TArray<FOverlapResult> Results;
+		bool bIsBlocked = World->OverlapMultiByChannel(Results, Params.Location, Params.Rotator.Quaternion(), ECollisionChannel::ECC_WorldDynamic, FCollisionShape::MakeBox(Mesh->GetBoundingBox().GetExtent()));
+
+		UE_LOG(LogTemp, Warning, TEXT("Spawn Location checking..."));
+		if (bIsBlocked)
+		{
+			UE_LOG(LogTemp, Error, TEXT("Spawn Location is obstructed"));
+			return false;
+		}
+
 		//Actual Spawning MeshComponent
 		SpawnedItem = World->SpawnActor<AStaticMeshActor>(Params.Location, Params.Rotator, SpawnParams);
-
 
 		// Needs to be movable if the game is running.
 		SpawnedItem->SetMobility(EComponentMobility::Movable);
 		//Assigning the Mesh and Material to the Component
 		SpawnedItem->GetStaticMeshComponent()->SetStaticMesh(Mesh);
-
-
 
 		if (Params.MaterialPaths.Num())
 		{
