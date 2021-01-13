@@ -50,10 +50,9 @@ bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params, FS
 		TArray<FOverlapResult> Results;
 		bool bIsBlocked = World->OverlapMultiByChannel(Results, Params.Location, Params.Rotator.Quaternion(), ECollisionChannel::ECC_WorldDynamic, FCollisionShape::MakeBox(Mesh->GetBoundingBox().GetExtent()));
 
-		UE_LOG(LogTemp, Warning, TEXT("Spawn Location checking..."));
 		if (bIsBlocked)
 		{
-			UE_LOG(LogTemp, Error, TEXT("Spawn Location is obstructed"));
+			UE_LOG(LogTemp, Error, TEXT("[%s]: Spawn Location is obstructed for: %s"), *FString(__FUNCTION__), *Params.Name);
 			return false;
 		}
 
