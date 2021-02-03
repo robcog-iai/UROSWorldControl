@@ -198,16 +198,18 @@ public:
 	private:
 		FString Id;
 		FString Name;
+		FString ErrType;
 		bool Success;
 
 
 	public:
 		Response() {}
 
-		Response(FString InId, FString InName, bool InSuccess)
+		Response(FString InId, FString InName, FString InErrorType, bool InSuccess)
 		{
 			Id = InId;
 			Name = InName;
+			ErrType = InErrorType;
 			Success = InSuccess;
 		}
 
@@ -221,6 +223,11 @@ public:
 			return Name;
 		}
 
+		FString GetErrorType()
+		{
+			return ErrType;
+		}
+
 		bool GetSuccess()
 		{
 			return Success;
@@ -230,6 +237,7 @@ public:
 		{
 			Id = JsonObject->GetStringField("id");
 			Name = JsonObject->GetStringField("Name");
+			ErrType = JsonObject->GetStringField("errtype");
 			Success = JsonObject->GetBoolField("success");
 		}
 
@@ -243,7 +251,7 @@ public:
 		FString ToString() const override
 		{
 			return "FROSSpawnModelSrv:Response {id = " + Id +
-				", name = " + Name + ", success = " + (Success ? FString("True") : FString("False")) + "}";
+				", name = " + Name + ", success = " + (Success ? FString("True") : FString("False")) + ", ErrorType = " + ErrType + "}";
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
@@ -251,6 +259,7 @@ public:
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 			Object->SetStringField(TEXT("id"), Id);
 			Object->SetStringField(TEXT("name"), Name);
+			Object->SetStringField(TEXT("errtype"), ErrType);
 			Object->SetBoolField(TEXT("success"), Success);
 			return Object;
 		}
