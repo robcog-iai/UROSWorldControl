@@ -236,8 +236,8 @@ public:
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
 			Id = JsonObject->GetStringField("id");
-			Name = JsonObject->GetStringField("Name");
-			ErrType = JsonObject->GetStringField("errtype");
+			Name = JsonObject->GetStringField("name");
+			ErrType = JsonObject->GetStringField("etype");
 			Success = JsonObject->GetBoolField("success");
 		}
 
@@ -259,7 +259,7 @@ public:
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 			Object->SetStringField(TEXT("id"), Id);
 			Object->SetStringField(TEXT("name"), Name);
-			Object->SetStringField(TEXT("errtype"), ErrType);
+			Object->SetStringField(TEXT("etype"), ErrType);
 			Object->SetBoolField(TEXT("success"), Success);
 			return Object;
 		}

@@ -53,7 +53,7 @@ bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params, FS
 		if (bIsBlocked)
 		{
 			UE_LOG(LogTemp, Error, TEXT("[%s]: Spawn Location is obstructed for: %s"), *FString(__FUNCTION__), *Params.Name);
-			ErrType = FString("[Spawn Error 02, Obstruction]: Spawn Location is obstructed at given location.");
+			ErrType = "2";
 #if WITH_EDITOR
 			GEditor->EndTransaction();
 #endif
@@ -95,7 +95,7 @@ bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params, FS
 	{
 		//ID is already taken
 		UE_LOG(LogTemp, Error, TEXT("[%s]: Semlog id: \"%s\" is not unique, therefore nothing was spawned."), *FString(__FUNCTION__), *Params.Id);
-		ErrType = FString("[Spawn Error 01, ID]: The Semlog ID: " + Params.Id + " is not unique and therefore not spawned.");
+		ErrType = "1";
 	
 #if WITH_EDITOR
 	GEditor->EndTransaction();

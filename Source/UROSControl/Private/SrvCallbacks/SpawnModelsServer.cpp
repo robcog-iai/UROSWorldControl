@@ -62,8 +62,8 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnModelServer::Callback(TSharedPtr
 	FTaskGraphInterface::Get().WaitUntilTaskCompletes(Task);
 	double end = FPlatformTime::Seconds();
 	UE_LOG(LogTemp, Display, TEXT("SpawnModel executed in %f seconds."), end-start);
-
+	UE_LOG(LogTemp, Display, TEXT("ErrType is: %s"), *ErrType);
 	return MakeShareable<FROSBridgeSrv::SrvResponse>
-		(new FROSSpawnModelSrv::Response(Params.Id, FinalActorName, ErrType, ServiceSuccess));
+		(new FROSSpawnModelSrv::Response(Params.Id, FinalActorName, *ErrType, ServiceSuccess));
 }
 
