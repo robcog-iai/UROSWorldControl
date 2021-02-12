@@ -48,7 +48,7 @@ bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params, FS
 	{
 		// SpawnCollission Testing
 		TArray<FOverlapResult> Results;
-		bool bIsBlocked = World->OverlapMultiByChannel(Results, Params.Location, Params.Rotator.Quaternion(), ECollisionChannel::ECC_WorldDynamic, FCollisionShape::MakeBox(Mesh->GetBoundingBox().GetExtent()));
+		bool bIsBlocked = World->OverlapMultiByChannel(Results, Params.Location, Params.Rotator.Quaternion(), ECollisionChannel::ECC_PhysicsBody, FCollisionShape::MakeBox(Mesh->GetBoundingBox().GetExtent()));
 
 		if (bIsBlocked)
 		{
