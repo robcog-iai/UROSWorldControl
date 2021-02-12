@@ -50,19 +50,20 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnModelServer::Callback(TSharedPtr
 	Params.ParentId = SpawnMeshRequest->GetParentId();
 
 	FString FinalActorName;
+	FString ErrType;
 	// Execute on game thread
 	double start = FPlatformTime::Seconds();
 	FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
 	{
-		ServiceSuccess = FAssetSpawner::SpawnAsset(World, Params, FinalActorName);
+		ServiceSuccess = FAssetSpawner::SpawnAsset(World, Params, FinalActorName, ErrType);
 	}, TStatId(), nullptr, ENamedThreads::GameThread);
 
 	//wait code above to complete
 	FTaskGraphInterface::Get().WaitUntilTaskCompletes(Task);
 	double end = FPlatformTime::Seconds();
 	UE_LOG(LogTemp, Display, TEXT("SpawnModel executed in %f seconds."), end-start);
-
+	UE_LOG(LogTemp, Display, TEXT("ErrType is: %s"), *ErrType);
 	return MakeShareable<FROSBridgeSrv::SrvResponse>
-		(new FROSSpawnModelSrv::Response(Params.Id, FinalActorName, ServiceSuccess));
+		(new FROSSpawnModelSrv::Response(Params.Id, FinalActorName, *ErrType, ServiceSuccess));
 }
 

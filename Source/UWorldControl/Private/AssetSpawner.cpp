@@ -5,7 +5,7 @@
 #include "Engine/EngineTypes.h"
 #include "Editor.h"
 
-bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params, FString &FinalActorName)
+bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params, FString &FinalActorName, FString &ErrType)
 {
 	//Check if World is avialable
 	if (!World)
@@ -48,11 +48,15 @@ bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params, FS
 	{
 		// SpawnCollission Testing
 		TArray<FOverlapResult> Results;
-		bool bIsBlocked = World->OverlapMultiByChannel(Results, Params.Location, Params.Rotator.Quaternion(), ECollisionChannel::ECC_WorldDynamic, FCollisionShape::MakeBox(Mesh->GetBoundingBox().GetExtent()));
+		bool bIsBlocked = World->OverlapMultiByChannel(Results, Params.Location, Params.Rotator.Quaternion(), ECollisionChannel::ECC_PhysicsBody, FCollisionShape::MakeBox(Mesh->GetBoundingBox().GetExtent()));
 
 		if (bIsBlocked)
 		{
 			UE_LOG(LogTemp, Error, TEXT("[%s]: Spawn Location is obstructed for: %s"), *FString(__FUNCTION__), *Params.Name);
+			ErrType = "2";
+#if WITH_EDITOR
+			GEditor->EndTransaction();
+#endif
 			return false;
 		}
 
@@ -91,6 +95,7 @@ bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params, FS
 	{
 		//ID is already taken
 		UE_LOG(LogTemp, Error, TEXT("[%s]: Semlog id: \"%s\" is not unique, therefore nothing was spawned."), *FString(__FUNCTION__), *Params.Id);
+		ErrType = "1";
 	
 #if WITH_EDITOR
 	GEditor->EndTransaction();
