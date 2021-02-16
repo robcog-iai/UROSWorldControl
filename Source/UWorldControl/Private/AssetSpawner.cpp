@@ -20,13 +20,7 @@ bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params, FS
 	World->Modify();
 #endif
 
-	//Setup SpawnParameters 
 	FActorSpawnParameters SpawnParams;
-	// SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::DontSpawnIfColliding;
-	// SpawnParams.bNoFail = false;
-	//SpawnParams.Instigator = Instigator;
-	//SpawnParams.Owner = this;
-
 
 	//Load Mesh and check if it succeded.
 	UStaticMesh* Mesh = FAssetModifier::LoadMesh(Params.Name, Params.StartDir);
@@ -52,7 +46,7 @@ bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params, FS
 
 		if (bIsBlocked)
 		{
-			UE_LOG(LogTemp, Error, TEXT("[%s]: Spawn Location is obstructed for: %s"), *FString(__FUNCTION__), *Params.Name);
+			UE_LOG(LogTemp, Error, TEXT("[%s]: Spawn Location is obstructed for \"%s\""), *FString(__FUNCTION__), *Params.Id);
 			ErrType = "2";
 #if WITH_EDITOR
 			GEditor->EndTransaction();
