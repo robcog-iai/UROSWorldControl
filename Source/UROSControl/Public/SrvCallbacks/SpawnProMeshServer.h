@@ -12,7 +12,7 @@
 #include "RWCManager.h"
 #include "ProceduralMeshComponent.h"
 #include "CustomMeshComponent.h"
-
+#include "BoundingBox.h"
 /**
  *
  */
@@ -35,7 +35,7 @@ public:
     FThreadSafeBool ServiceSuccess;
 
 private:
-    AActor* SpawnProMesh(TSharedPtr<FROSSpawnProMeshSrv::Request> SpawnProMeshRequest, UProceduralMeshComponent* ProMesh);
+    ABoundingBox* SpawnProMesh(TSharedPtr<FROSSpawnProMeshSrv::Request> SpawnProMeshRequest);
 
 public:
     URWCManager* Controller;
