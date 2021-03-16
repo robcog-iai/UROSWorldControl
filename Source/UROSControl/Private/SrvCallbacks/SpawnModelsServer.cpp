@@ -48,6 +48,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnModelServer::Callback(TSharedPtr
 	Params.MaterialNames = SpawnMeshRequest->GetMaterialNames();
 	Params.MaterialPaths = SpawnMeshRequest->GetMaterialPaths();
 	Params.ParentId = SpawnMeshRequest->GetParentId();
+	Params.bSpawnCollisionCheck = SpawnMeshRequest->GetSpawnCollisionCheck();
 
 	FString FinalActorName;
 	FString ErrType;

@@ -43,6 +43,7 @@ public:
 		TArray<FString> MaterialNames;
 		TArray<FString> MaterialPaths;
 		FString ParentId;
+		bool bSpawnCollisionCheck;
 	};
 
 	static bool SpawnAsset(UWorld* World, FSpawnAssetParams Params, FString &FinalActorName, FString &ErrType);

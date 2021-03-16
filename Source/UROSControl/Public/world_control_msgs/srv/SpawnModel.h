@@ -28,12 +28,13 @@ public:
 		TArray<FString> MaterialNames;
 		TArray<FString> MaterialPaths;
 		FString ParentId;
+		bool bSpawnCollisionCheck;
 
 
 	public:
 		Request() {}
 
-		Request(FString InName, geometry_msgs::Pose InPose, FString InId, TArray<world_control_msgs::Tag> InTags, FString InPath, FString InActorLabel, world_control_msgs::PhysicsProperties InPhysicsProperties, TArray<FString> InMaterialNames, TArray<FString> InMaterialPaths, FString InParentId)
+		Request(FString InName, geometry_msgs::Pose InPose, FString InId, TArray<world_control_msgs::Tag> InTags, FString InPath, FString InActorLabel, world_control_msgs::PhysicsProperties InPhysicsProperties, TArray<FString> InMaterialNames, TArray<FString> InMaterialPaths, FString InParentId, bool bInSpawnCollisionCheck)
 		{
 			Name = InName;
 			Pose = InPose;
@@ -45,6 +46,7 @@ public:
 			MaterialNames = InMaterialNames;
 			MaterialPaths = InMaterialPaths;
 			ParentId = InParentId;
+			bSpawnCollisionCheck = bInSpawnCollisionCheck;
 		}
 
 		FString GetName()
@@ -97,6 +99,11 @@ public:
 			return ParentId;
 		}
 
+		bool GetSpawnCollisionCheck()
+		{
+			return bSpawnCollisionCheck;
+		}
+
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
 			Name = JsonObject->GetStringField("name");
@@ -131,6 +138,7 @@ public:
 			}
 
 			ParentId = JsonObject->GetStringField("parent_id");
+			bSpawnCollisionCheck = JsonObject->GetBoolField("spawn_collision_check");
 		}
 
 		static Request GetFromJson(TSharedPtr<FJsonObject> JsonObject)
@@ -151,7 +159,8 @@ public:
 				", physics_properties = " + PhysicsProperties.ToString() +
 				", material_names size = " + FString::FromInt(MaterialNames.Num()) +
 				", material_paths size = " + FString::FromInt(MaterialPaths.Num()) +
-				", parent_id = " + ParentId + "}";
+				", parent_id = " + ParentId + 
+				", spawn_collision_check = " + (bSpawnCollisionCheck ? "true" : "false") + "}";
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
@@ -188,6 +197,7 @@ public:
 			Object->SetArrayField("material_paths", MaterialPathsPtrArray);
 
 			Object->SetStringField(TEXT("parent_id"), ParentId);
+			Object->SetBoolField("spawn_collision_check", bSpawnCollisionCheck);
 			return Object;
 		}
 
