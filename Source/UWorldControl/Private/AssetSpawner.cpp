@@ -2,9 +2,10 @@
 #include "AssetModifier.h"
 #include "Tags.h"
 #include "Engine/StaticMeshActor.h"
+#include "Engine/EngineTypes.h"
 #include "Editor.h"
 
-bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params, FString &FinalActorName)
+bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params, FString &FinalActorName, FString &ErrType)
 {
 	//Check if World is avialable
 	if (!World)
@@ -19,11 +20,7 @@ bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params, FS
 	World->Modify();
 #endif
 
-	//Setup SpawnParameters 
 	FActorSpawnParameters SpawnParams;
-	//SpawnParams.Instigator = Instigator;
-	//SpawnParams.Owner = this;
-
 
 	//Load Mesh and check if it succeded.
 	UStaticMesh* Mesh = FAssetModifier::LoadMesh(Params.Name, Params.StartDir);
@@ -43,16 +40,27 @@ bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params, FS
 
 	if (!Actors.IsValidIndex(0))
 	{
+		// SpawnCollission Testing
+		TArray<FOverlapResult> Results;
+		bool bIsBlocked = World->OverlapMultiByChannel(Results, Params.Location, Params.Rotator.Quaternion(), ECollisionChannel::ECC_PhysicsBody, FCollisionShape::MakeBox(Mesh->GetBoundingBox().GetExtent()));
+
+		if (bIsBlocked && Params.bSpawnCollisionCheck)
+		{
+			UE_LOG(LogTemp, Error, TEXT("[%s]: Spawn Location is obstructed for \"%s\""), *FString(__FUNCTION__), *Params.Id);
+			ErrType = "2";
+#if WITH_EDITOR
+			GEditor->EndTransaction();
+#endif
+			return false;
+		}
+
 		//Actual Spawning MeshComponent
 		SpawnedItem = World->SpawnActor<AStaticMeshActor>(Params.Location, Params.Rotator, SpawnParams);
-
 
 		// Needs to be movable if the game is running.
 		SpawnedItem->SetMobility(EComponentMobility::Movable);
 		//Assigning the Mesh and Material to the Component
 		SpawnedItem->GetStaticMeshComponent()->SetStaticMesh(Mesh);
-
-
 
 		if (Params.MaterialPaths.Num())
 		{
@@ -81,6 +89,7 @@ bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params, FS
 	{
 		//ID is already taken
 		UE_LOG(LogTemp, Error, TEXT("[%s]: Semlog id: \"%s\" is not unique, therefore nothing was spawned."), *FString(__FUNCTION__), *Params.Id);
+		ErrType = "1";
 	
 #if WITH_EDITOR
 	GEditor->EndTransaction();
