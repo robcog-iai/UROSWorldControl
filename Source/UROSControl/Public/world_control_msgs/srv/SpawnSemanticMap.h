@@ -1,8 +1,8 @@
 #pragma once
 #include "ROSBridgeSrv.h"
-#include "ModelDescription.h"
-#include "ConstraintDescription.h"
-#include "RelationDescription.h"
+#include "world_control_msgs/msgs/ModelDescription.h"
+#include "world_control_msgs/msgs/ConstraintDescription.h"
+#include "world_control_msgs/msgs/RelationDescription.h"
 
 
 class UROSBRIDGE_API FROSSpawnSemanticMapSrv : public FROSBridgeSrv

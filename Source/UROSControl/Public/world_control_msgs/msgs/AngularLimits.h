@@ -2,7 +2,7 @@
 
 #pragma once
 #include "ROSBridgeMsg.h"
-#include "Vector3.h"
+#include "geometry_msgs/Vector3.h"
 
 
 

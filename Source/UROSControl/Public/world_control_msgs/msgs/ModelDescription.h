@@ -2,7 +2,7 @@
 
 #pragma once
 #include "ROSBridgeMsg.h"
-#include "Pose.h"
+#include "geometry_msgs/Pose.h"
 #include "Tag.h"
 #include "PhysicsProperties.h"
 

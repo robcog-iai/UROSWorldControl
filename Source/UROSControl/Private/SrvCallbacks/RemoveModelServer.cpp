@@ -1,6 +1,6 @@
 // Copyright 2017-2019, Institute for Artificial Intelligence - University of Bremen
 
-#include "RemoveModelServer.h"
+#include "SrvCallbacks/RemoveModelServer.h"
 #include "AssetModifier.h"
 
 TSharedPtr<FROSBridgeSrv::SrvRequest> FROSRemoveModelServer::FromJson(TSharedPtr<FJsonObject> JsonObject) const

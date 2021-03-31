@@ -1,6 +1,6 @@
 #pragma once
 #include "ROSBridgeSrv.h"
-#include "Pose.h"
+#include "geometry_msgs/Pose.h"
 
 class UROSBRIDGE_API FROSSetModelPoseSrv : public FROSBridgeSrv
 {

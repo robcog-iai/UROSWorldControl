@@ -1,6 +1,6 @@
 // Copyright 2017-2019, Institute for Artificial Intelligence - University of Bremen
 
-#include "HighlightModelsServer.h"
+#include "SrvCallbacks/HighlightModelsServer.h"
 #include "GameFramework/Actor.h"
 #include "Components/StaticMeshComponent.h"
 #include "Tags.h"

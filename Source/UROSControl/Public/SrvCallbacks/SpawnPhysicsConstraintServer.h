@@ -7,7 +7,7 @@
 #include "ROSBridgeSrvServer.h"
 #include "ROSBridgeSrv.h"
 #include "RWCManager.h"
-#include "SpawnPhysicsConstraint.h"
+#include "world_control_msgs/srv/SpawnPhysicsConstraint.h"
 #include "PhysicsEngine/ConstraintInstance.h"
 
 

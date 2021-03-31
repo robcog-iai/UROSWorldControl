@@ -1,17 +1,17 @@
 // Copyright 2017-2019, Institute for Artificial Intelligence - University of Bremen
 
 #include "RWCManager.h"
-#include "SpawnModelsServer.h"
-#include "SetModelPoseServer.h"
-#include "GetModelPoseServer.h"
-#include "RemoveModelServer.h"
-#include "AttachModelToParentServer.h"
-#include "SpawnPhysicsConstraintServer.h"
-#include "HighlightModelsServer.h"
-#include "SetPhysicsPropertiesServer.h"
-#include "SetMaterialServer.h"
-#include "SpawnSemanticMapServer.h"
-#include "DeleteAllServer.h"
+#include "SrvCallbacks/SpawnModelsServer.h"
+#include "SrvCallbacks/SetModelPoseServer.h"
+#include "SrvCallbacks/GetModelPoseServer.h"
+#include "SrvCallbacks/RemoveModelServer.h"
+#include "SrvCallbacks/AttachModelToParentServer.h"
+#include "SrvCallbacks/SpawnPhysicsConstraintServer.h"
+#include "SrvCallbacks/HighlightModelsServer.h"
+#include "SrvCallbacks/SetPhysicsPropertiesServer.h"
+#include "SrvCallbacks/SetMaterialServer.h"
+#include "SrvCallbacks/SpawnSemanticMapServer.h"
+#include "SrvCallbacks/DeleteAllServer.h"
 
 void URWCManager::Register(FString DefaultNamespace)
 {
