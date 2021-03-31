@@ -12,6 +12,7 @@
 #include "SrvCallbacks/SetMaterialServer.h"
 #include "SrvCallbacks/SpawnSemanticMapServer.h"
 #include "SrvCallbacks/DeleteAllServer.h"
+#include "SrvCallbacks/SpawnProMeshServer.h"
 
 void URWCManager::Register(FString DefaultNamespace)
 {
@@ -42,5 +43,7 @@ void URWCManager::SetupServiceServers()
 	ServicesToPublish.Add(MakeShareable<FROSSetPhysicsPropertiesServer>(new FROSSetPhysicsPropertiesServer(Namespace, TEXT("set_physics_properties"), World, this)));
 	ServicesToPublish.Add(MakeShareable<FROSSetMaterialServer>(new FROSSetMaterialServer(Namespace, TEXT("change_material"), World, this)));
 	ServicesToPublish.Add(MakeShareable<FROSSpawnSemanticMapServer>(new FROSSpawnSemanticMapServer(Namespace, TEXT("spawn_semantic_map"), World, this)));
-	ServicesToPublish.Add(MakeShareable<FROSDeleteAllServer>(new FROSDeleteAllServer(Namespace, TEXT("delete_all"), World, this)));
+    ServicesToPublish.Add(MakeShareable<FROSDeleteAllServer>(new FROSDeleteAllServer(Namespace, TEXT("delete_all"), World, this)));
+    ServicesToPublish.Add(MakeShareable<FROSSpawnProMeshServer>(new FROSSpawnProMeshServer(Namespace, TEXT("spawn_pro_mesh"), World, this)));
+//    ServicesToPublish.Add(MakeShareable<FROSSpawnRobotServer>(new FROSSpawnRobotServer(Namespace,TEXT("spawn_robot"),World,this)));
 }

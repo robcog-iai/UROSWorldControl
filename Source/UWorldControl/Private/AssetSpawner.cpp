@@ -32,7 +32,7 @@ bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params, FS
 	UStaticMesh* Mesh = FAssetModifier::LoadMesh(Params.Name, Params.StartDir);
 	if (!Mesh)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[%s]: Could not find Mesh: %s."), *FString(__FUNCTION__), *Params.Name);
+        UE_LOG(LogTemp, Error, TEXT("[%s]: Could not find Mesh: %s."), *FString(__FUNCTION__), *Params.Name);
 #if WITH_EDITOR
 		GEditor->EndTransaction();
 #endif
