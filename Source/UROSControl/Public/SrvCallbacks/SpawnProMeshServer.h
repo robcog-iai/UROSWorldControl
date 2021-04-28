@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine/World.h"
 #include "RWCManager.h"
-#include "SpawnProMesh.h"
+#include "world_control_msgs/srv/SpawnProMesh.h"
 #include "ROSBridgeSrvServer.h"
 #include "ROSBridgeHandler.h"
 #include "KismetProceduralMeshLibrary.h"

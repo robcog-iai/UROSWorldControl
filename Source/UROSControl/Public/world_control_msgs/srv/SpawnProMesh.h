@@ -1,8 +1,8 @@
 #pragma once
 #include "ROSBridgeSrv.h"
-#include "Pose.h"
-#include "Tag.h"
-#include "PhysicsProperties.h"
+#include "geometry_msgs/Pose.h"
+#include "world_control_msgs/msgs/Tag.h"
+#include "world_control_msgs/msgs/PhysicsProperties.h"
 
 
 class UROSBRIDGE_API FROSSpawnProMeshSrv : public FROSBridgeSrv

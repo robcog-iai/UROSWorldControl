@@ -1,14 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "SpawnProMeshServer.h"
+#include "SrvCallbacks/SpawnProMeshServer.h"
 #include "KismetProceduralMeshLibrary.h"
 #include "ProceduralMeshComponent.h"
 #include "CustomMeshComponent.h"
 #include "Tags.h"
-#include "Tag.h"
+#include "world_control_msgs/msgs/Tag.h"
 #include "Conversions.h"
-#include "PhysicsProperties.h"
+#include "world_control_msgs/msgs/PhysicsProperties.h"
 
 
 TSharedPtr<FROSBridgeSrv::SrvRequest> FROSSpawnProMeshServer::FromJson(TSharedPtr<FJsonObject> JsonObject) const
@@ -27,12 +27,6 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnProMeshServer::Callback(TSharedP
     UProceduralMeshComponent* ProMesh = NewObject<UProceduralMeshComponent>();
     FActorSpawnParameters SpawnParams;
     ABoundingBox* SpawnedActor;
-
-
-
-
-
-
 
     //now Spawn it
 
