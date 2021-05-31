@@ -45,6 +45,9 @@ public class UWorldControl : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
+                //I wanted to try out some Proceudal Mesh Bullshit so I need theses
+                "CustomMeshComponent",
+                "ProceduralMeshComponent",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
