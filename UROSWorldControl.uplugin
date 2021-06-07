@@ -16,17 +16,17 @@
   "Modules": [
     {
       "Name": "UROSControl",
-      "Type": "Runtime",
+      "Type": "Developer",
       "LoadingPhase": "Default"
     },
     {
       "Name": "UWorldControl",
-      "Type": "Runtime",
+      "Type": "Developer",
       "LoadingPhase": "Default"
     },
     {
       "Name": "UCheckpointSystem",
-      "Type": "Runtime",
+      "Type": "Developer",
       "LoadingPhase": "Default"
     }
   ],
