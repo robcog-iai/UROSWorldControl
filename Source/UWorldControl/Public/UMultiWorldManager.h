@@ -2,40 +2,9 @@
 
 #include "CoreMinimal.h"
 #include "Engine/LevelStreamingDynamic.h"
+#include "UMultiWorldAsset.h"
 #include "UMultiWorldManager.generated.h"
 
-USTRUCT(BlueprintType)
-struct FWorldInformation
-{
-  GENERATED_BODY()
-  public:
-
-  UPROPERTY(EditAnywhere, BlueprintReadWrite)
-  FString WorldName;
-
-  //World can consist of multiple levels
-  UPROPERTY(EditAnywhere, BlueprintReadWrite)
-  TArray<FString> WorldComponents;
-
-  UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    FTransform WorldOrigin;
-
-  UPROPERTY()
-    USceneComponent* Origin;
-
-  UPROPERTY()
-  TArray<FName> WorldPackageNames;
-};
-
-USTRUCT()
-struct FSubLevelInformation
-{
-  GENERATED_BODY()
-  public:
-
-  UPROPERTY()
-  FString FilePath;
-};
 
 UCLASS()
 class UWORLDCONTROL_API UMultiWorldManager : public UObject
@@ -56,10 +25,16 @@ public:
 
   virtual float GetLevelSize(ULevelStreamingDynamic* InStreamingLevel);
 
+  void SpawnSubLevel(UObject* InWorldContextObject, FWorldInformation InWorldInfo, int LevelIndex);
+
 protected:
 
-  UPROPERTY()
-    TArray<FWorldInformation> WorldList;
+  UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    UMultiWorldAsset* WorldConfig;
+
+  //WorldName, Origin
+  UPROPERTY(BlueprintReadWrite)
+    TMap<FString, FTransform> Origin;
 
 };
 
