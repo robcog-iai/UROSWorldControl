@@ -7,7 +7,7 @@
 #include "ROSBridgeSrvServer.h"
 #include "ROSBridgeSrv.h"
 #include "RWCManager.h"
-#include "AttachModelToParent.h"
+#include "world_control_msgs/srv/AttachModelToParent.h"
 
 
 class FROSAttachModelToParentServer final : public FROSBridgeSrvServer

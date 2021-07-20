@@ -4,7 +4,7 @@
 #include "Engine/World.h"
 #include "ROSBridgeSrvServer.h"
 #include "ROSBridgeHandler.h"
-#include "SpawnSemanticMap.h"
+#include "world_control_msgs/srv/SpawnSemanticMap.h"
 #include "RWCManager.h"
 
 

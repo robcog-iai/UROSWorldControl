@@ -6,7 +6,7 @@
 #include "Engine/World.h"
 #include "ROSBridgeSrvServer.h"
 #include "ROSBridgeHandler.h"
-#include "SetPhysicsProperties.h"
+#include "world_control_msgs/srv/SetPhysicsProperties.h"
 #include "RWCManager.h"
 #include "Engine/StaticMesh.h"
 

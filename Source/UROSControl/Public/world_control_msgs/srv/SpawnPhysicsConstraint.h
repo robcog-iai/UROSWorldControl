@@ -1,8 +1,8 @@
 #pragma once
 #include "ROSBridgeSrv.h"
-#include "PhysicsConstraintDetails.h"
-#include "Pose.h"
-#include "ConstraintDescription.h"
+#include "world_control_msgs/msgs/PhysicsConstraintDetails.h"
+#include "geometry_msgs/Pose.h"
+#include "world_control_msgs/msgs/ConstraintDescription.h"
 
 
 class UROSBRIDGE_API FROSSpawnPhysicsConstraintSrv : public FROSBridgeSrv

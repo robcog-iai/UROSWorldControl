@@ -1,6 +1,6 @@
 // Copyright 2017-2019, Institute for Artificial Intelligence - University of Bremen
 
-#include "SpawnPhysicsConstraintServer.h"
+#include "SrvCallbacks/SpawnPhysicsConstraintServer.h"
 #include "PhysicsEngine/PhysicsConstraintComponent.h"
 #include "Tags.h"
 #include "ConstraintSpawner.h"

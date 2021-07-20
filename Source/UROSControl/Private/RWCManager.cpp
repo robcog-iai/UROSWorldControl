@@ -1,17 +1,17 @@
 // Copyright 2017-2019, Institute for Artificial Intelligence - University of Bremen
 
 #include "RWCManager.h"
-#include "SpawnModelsServer.h"
-#include "SetModelPoseServer.h"
-#include "GetModelPoseServer.h"
-#include "RemoveModelServer.h"
-#include "AttachModelToParentServer.h"
-#include "SpawnPhysicsConstraintServer.h"
-#include "HighlightModelsServer.h"
-#include "SetPhysicsPropertiesServer.h"
-#include "SetMaterialServer.h"
-#include "SpawnSemanticMapServer.h"
-#include "DeleteAllServer.h"
+#include "SrvCallbacks/SpawnModelsServer.h"
+#include "SrvCallbacks/SetModelPoseServer.h"
+#include "SrvCallbacks/GetModelPoseServer.h"
+#include "SrvCallbacks/RemoveModelServer.h"
+#include "SrvCallbacks/AttachModelToParentServer.h"
+#include "SrvCallbacks/SpawnPhysicsConstraintServer.h"
+#include "SrvCallbacks/HighlightModelsServer.h"
+#include "SrvCallbacks/SetPhysicsPropertiesServer.h"
+#include "SrvCallbacks/SetMaterialServer.h"
+#include "SrvCallbacks/SpawnSemanticMapServer.h"
+#include "SrvCallbacks/DeleteAllServer.h"
 
 void URWCManager::Register(FString DefaultNamespace)
 {
@@ -42,5 +42,6 @@ void URWCManager::SetupServiceServers()
 	ServicesToPublish.Add(MakeShareable<FROSSetPhysicsPropertiesServer>(new FROSSetPhysicsPropertiesServer(Namespace, TEXT("set_physics_properties"), World, this)));
 	ServicesToPublish.Add(MakeShareable<FROSSetMaterialServer>(new FROSSetMaterialServer(Namespace, TEXT("change_material"), World, this)));
 	ServicesToPublish.Add(MakeShareable<FROSSpawnSemanticMapServer>(new FROSSpawnSemanticMapServer(Namespace, TEXT("spawn_semantic_map"), World, this)));
-	ServicesToPublish.Add(MakeShareable<FROSDeleteAllServer>(new FROSDeleteAllServer(Namespace, TEXT("delete_all"), World, this)));
+    ServicesToPublish.Add(MakeShareable<FROSDeleteAllServer>(new FROSDeleteAllServer(Namespace, TEXT("delete_all"), World, this)));
+//    ServicesToPublish.Add(MakeShareable<FROSSpawnRobotServer>(new FROSSpawnRobotServer(Namespace,TEXT("spawn_robot"),World,this)));
 }

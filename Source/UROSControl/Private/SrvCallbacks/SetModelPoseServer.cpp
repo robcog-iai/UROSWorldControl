@@ -1,7 +1,7 @@
 // Copyright 2017-2019, Institute for Artificial Intelligence - University of Bremen
 
-#include "SetModelPoseServer.h"
-#include "SetModelPose.h"
+#include "SrvCallbacks/SetModelPoseServer.h"
+#include "world_control_msgs/srv/SetModelPose.h"
 #include "Conversions.h"
 #include "AssetModifier.h"
 #include "Tags.h"

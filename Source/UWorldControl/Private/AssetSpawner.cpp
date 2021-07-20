@@ -2,7 +2,10 @@
 #include "AssetModifier.h"
 #include "Tags.h"
 #include "Engine/StaticMeshActor.h"
+#if WITH_EDITOR
 #include "Editor.h"
+#endif
+
 
 bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params, FString &FinalActorName)
 {
@@ -19,7 +22,7 @@ bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params, FS
 	World->Modify();
 #endif
 
-	//Setup SpawnParameters 
+	//Setup SpawnParameters
 	FActorSpawnParameters SpawnParams;
 	//SpawnParams.Instigator = Instigator;
 	//SpawnParams.Owner = this;
@@ -29,7 +32,7 @@ bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params, FS
 	UStaticMesh* Mesh = FAssetModifier::LoadMesh(Params.Name, Params.StartDir);
 	if (!Mesh)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[%s]: Could not find Mesh: %s."), *FString(__FUNCTION__), *Params.Name);
+        UE_LOG(LogTemp, Error, TEXT("[%s]: Could not find Mesh: %s."), *FString(__FUNCTION__), *Params.Name);
 #if WITH_EDITOR
 		GEditor->EndTransaction();
 #endif
@@ -66,7 +69,9 @@ bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params, FS
 			}
 		}
 
+#if WITH_EDITOR
 		SpawnedItem->SetActorLabel(Label);
+#endif
 
 		FPhysicsProperties Properties = Params.PhysicsProperties;
 		SpawnedItem->GetStaticMeshComponent()->SetSimulatePhysics(Properties.bSimulatePhysics);
@@ -81,7 +86,7 @@ bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params, FS
 	{
 		//ID is already taken
 		UE_LOG(LogTemp, Error, TEXT("[%s]: Semlog id: \"%s\" is not unique, therefore nothing was spawned."), *FString(__FUNCTION__), *Params.Id);
-	
+
 #if WITH_EDITOR
 	GEditor->EndTransaction();
 #endif
@@ -113,5 +118,3 @@ bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params, FS
 
 	return true;
 }
-
-
