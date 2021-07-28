@@ -20,113 +20,113 @@ ABoundingBox::ABoundingBox()
     Front->AttachToComponent(RootComponent,FAttachmentTransformRules::KeepRelativeTransform);
 
 
-//    //Testing Purpose have picture for item with AN124036 set the size values accordingly
-//    TArray<FVector> Vertices; //Points
-//    TArray<int32> Triangles;
-//    TArray<FVector>Normals;
-//    TArray<FVector2D>UVs;
-//    float depth=6.7;
-//    float width=13.8;
-//    float height=16.2;
-//    float d=-depth/2;
-//    float w=-width/2;
-//    float h=-height/2;
+    //Testing Purpose have picture for item with AN124036 set the size values accordingly
+    TArray<FVector> Vertices; //Points
+    TArray<int32> Triangles;
+    TArray<FVector>Normals;
+    TArray<FVector2D>UVs;
+    float depth=6.7;
+    float width=13.8;
+    float height=16.2;
+    float d=-depth/2;
+    float w=-width/2;
+    float h=-height/2;
 
-//    //
-//    //From Playerstart Camera Postion
-//    Vertices.Add(FVector(d,w,h)); //FrontBottomRight 0                                          //From Rotation (0|0|0) FrontButtomLeft
-//    Vertices.Add(FVector(d,w+width,h)); //BackBottomRight 1                                       //From Rotation (0|0|0) FrontButtomRight
-//    Vertices.Add(FVector(d+depth,w,h)); //FrontBottomLeft 2                                       //From Rotation (0|0|0) BackButtomLeft
-//    Vertices.Add(FVector(d+depth,w+width,h)); //BackBottomLeft 3                                    //From Rotation (0|0|0) BackButtonRight
+    //
+    //From Playerstart Camera Postion
+    Vertices.Add(FVector(d,w,h)); //FrontBottomRight 0                                          //From Rotation (0|0|0) FrontButtomLeft
+    Vertices.Add(FVector(d,w+width,h)); //BackBottomRight 1                                       //From Rotation (0|0|0) FrontButtomRight
+    Vertices.Add(FVector(d+depth,w,h)); //FrontBottomLeft 2                                       //From Rotation (0|0|0) BackButtomLeft
+    Vertices.Add(FVector(d+depth,w+width,h)); //BackBottomLeft 3                                    //From Rotation (0|0|0) BackButtonRight
 
-//    Vertices.Add(FVector(d,w,h+height)); //FrontTopRight 4                                        //From Rotation (0|0|0) FrontTopLeft
-//    Vertices.Add(FVector(d,w+width,h+height)); //BackTopRight 5                                     //From Rotation (0|0|0) FrontTopRight
-//    Vertices.Add(FVector(d+depth,w,h+height)); //FrontTopLeft 6                                     //From Rotation (0|0|0) BackTopLeft
-//    Vertices.Add(FVector(d+depth,w+width,h+height)); //BackTopLeft 7                                  //From Rotation (0|0|0) BackTopRight
+    Vertices.Add(FVector(d,w,h+height)); //FrontTopRight 4                                        //From Rotation (0|0|0) FrontTopLeft
+    Vertices.Add(FVector(d,w+width,h+height)); //BackTopRight 5                                     //From Rotation (0|0|0) FrontTopRight
+    Vertices.Add(FVector(d+depth,w,h+height)); //FrontTopLeft 6                                     //From Rotation (0|0|0) BackTopLeft
+    Vertices.Add(FVector(d+depth,w+width,h+height)); //BackTopLeft 7                                  //From Rotation (0|0|0) BackTopRight
 
-//    //https://www.youtube.com/watch?v=1ksgB6hYGrE 8:33 ?
-////     UVs.Add(FVector2D(1,0)); //0
-////     UVs.Add(FVector2D(0,0)); //1
-////     UVs.Add(FVector2D(0,0)); //2
-////     UVs.Add(FVector2D(1,0)); //3
+    //https://www.youtube.com/watch?v=1ksgB6hYGrE 8:33 ?
+//     UVs.Add(FVector2D(1,0)); //0
+//     UVs.Add(FVector2D(0,0)); //1
+//     UVs.Add(FVector2D(0,0)); //2
+//     UVs.Add(FVector2D(1,0)); //3
 
-////     UVs.Add(FVector2D(1,1)); //4
-////     UVs.Add(FVector2D(0,1)); //5
-////     UVs.Add(FVector2D(1,0)); //6
-////     UVs.Add(FVector2D(1,1)); //7
+//     UVs.Add(FVector2D(1,1)); //4
+//     UVs.Add(FVector2D(0,1)); //5
+//     UVs.Add(FVector2D(1,0)); //6
+//     UVs.Add(FVector2D(1,1)); //7
 
-////    //Bottom
-//    Triangles.Add(2);
-//    Triangles.Add(3);
+//    //Bottom
+    Triangles.Add(2);
+    Triangles.Add(3);
+    Triangles.Add(0);
+
+    Triangles.Add(3);
+    Triangles.Add(1);
+    Triangles.Add(0);
+
+    //Right
 //    Triangles.Add(0);
-
-//    Triangles.Add(3);
-//    Triangles.Add(1);
-//    Triangles.Add(0);
-
-//    //Right
-////    Triangles.Add(0);
-////    Triangles.Add(5);
-////    Triangles.Add(4);
-
-////    Triangles.Add(0);
-////    Triangles.Add(1);
-////    Triangles.Add(5);
-
-////    Triangles.Add(0);
-////    Triangles.Add(1);
-////    Triangles.Add(4);
-
-////    Triangles.Add(1);
-////    Triangles.Add(5);
-////    Triangles.Add(4);
-
-//    //Back
 //    Triangles.Add(5);
-//    Triangles.Add(1);
-//    Triangles.Add(3);
-
-//    Triangles.Add(3);
-//    Triangles.Add(7);
-//    Triangles.Add(5);
-
-//    //Left
-//    Triangles.Add(3);
-//    Triangles.Add(2);
-//    Triangles.Add(6);
-
-//    Triangles.Add(3);
-//    Triangles.Add(6);
-//    Triangles.Add(7);
-
-//    //Top
-//    Triangles.Add(6);
 //    Triangles.Add(4);
-//    Triangles.Add(7);
 
-//    Triangles.Add(7);
+//    Triangles.Add(0);
+//    Triangles.Add(1);
+//    Triangles.Add(5);
+
+//    Triangles.Add(0);
+//    Triangles.Add(1);
 //    Triangles.Add(4);
+
+//    Triangles.Add(1);
 //    Triangles.Add(5);
+//    Triangles.Add(4);
 
-//    //Front
-//    Triangles.Add(2);
-//    Triangles.Add(0);
-//    Triangles.Add(6);
+    //Back
+    Triangles.Add(5);
+    Triangles.Add(1);
+    Triangles.Add(3);
 
-//    Triangles.Add(6);
-//    Triangles.Add(0);
-//    Triangles.Add(5);
+    Triangles.Add(3);
+    Triangles.Add(7);
+    Triangles.Add(5);
+
+    //Left
+    Triangles.Add(3);
+    Triangles.Add(2);
+    Triangles.Add(6);
+
+    Triangles.Add(3);
+    Triangles.Add(6);
+    Triangles.Add(7);
+
+    //Top
+    Triangles.Add(6);
+    Triangles.Add(4);
+    Triangles.Add(7);
+
+    Triangles.Add(7);
+    Triangles.Add(4);
+    Triangles.Add(5);
+
+    //Front
+    Triangles.Add(2);
+    Triangles.Add(0);
+    Triangles.Add(6);
+
+    Triangles.Add(6);
+    Triangles.Add(0);
+    Triangles.Add(5);
 
 
-//    ProMesh->CreateMeshSection(1,Vertices,Triangles,Normals,UVs,TArray<FColor>(),TArray<FProcMeshTangent>(),true); //create Mesh? needs to be in Game Thread?
+    ProMesh->CreateMeshSection(1,Vertices,Triangles,Normals,UVs,TArray<FColor>(),TArray<FProcMeshTangent>(),true); //create Mesh? needs to be in Game Thread?
 
-////    //Set a material
-////    ConstructorHelpers::FObjectFinder<UMaterial>FoundMat(TEXT("Material'/Game/tmp/Invisible.Invisible'"));
-////    if(FoundMat.Succeeded())
-////    {
-////        auto MaterialInstance = UMaterialInstanceDynamic::Create(FoundMat.Object,ProMesh);
-////        ProMesh->SetMaterial(1,MaterialInstance);
-////    }
+//    //Set a material
+//    ConstructorHelpers::FObjectFinder<UMaterial>FoundMat(TEXT("Material'/Game/tmp/Invisible.Invisible'"));
+//    if(FoundMat.Succeeded())
+//    {
+//        auto MaterialInstance = UMaterialInstanceDynamic::Create(FoundMat.Object,ProMesh);
+//        ProMesh->SetMaterial(1,MaterialInstance);
+//    }
 
 
 //    //Front
