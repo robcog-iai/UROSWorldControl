@@ -13,6 +13,7 @@
 #include "SrvCallbacks/SpawnSemanticMapServer.h"
 #include "SrvCallbacks/DeleteAllServer.h"
 #include "SrvCallbacks/SpawnProMeshServer.h"
+#include "SrvCallbacks/ObjectToObjectStateServer.h"
 
 void URWCManager::Register(FString DefaultNamespace)
 {
@@ -36,6 +37,7 @@ void URWCManager::SetupServiceServers()
 	ServicesToPublish.Add(MakeShareable<FROSSpawnModelServer>(new FROSSpawnModelServer(Namespace, TEXT("spawn_model"), World, this)));
 	ServicesToPublish.Add(MakeShareable<FROSSetModelPoseServer>(new FROSSetModelPoseServer(Namespace, TEXT("set_model_pose"), World, this)));
 	ServicesToPublish.Add(MakeShareable<FROSGetModelPoseServer>(new FROSGetModelPoseServer(Namespace, TEXT("get_model_pose"), World, this)));
+        ServicesToPublish.Add(MakeShareable<FROSGetModelSocketPoseServer>(new FROSGetModelSocketPoseServer(Namespace, TEXT("get_model_socket_pose"), World, this)));
 	ServicesToPublish.Add(MakeShareable<FROSRemoveModelServer>(new FROSRemoveModelServer(Namespace, TEXT("delete_model"), World, this)));
 	ServicesToPublish.Add(MakeShareable<FROSAttachModelToParentServer>(new FROSAttachModelToParentServer(Namespace, TEXT("attach_model_to_parent"), World, this)));
 	ServicesToPublish.Add(MakeShareable<FROSSpawnPhysicsConstraintServer>(new FROSSpawnPhysicsConstraintServer(Namespace, TEXT("spawn_physics_constraint"), World, this)));
@@ -43,7 +45,8 @@ void URWCManager::SetupServiceServers()
 	ServicesToPublish.Add(MakeShareable<FROSSetPhysicsPropertiesServer>(new FROSSetPhysicsPropertiesServer(Namespace, TEXT("set_physics_properties"), World, this)));
 	ServicesToPublish.Add(MakeShareable<FROSSetMaterialServer>(new FROSSetMaterialServer(Namespace, TEXT("change_material"), World, this)));
 	ServicesToPublish.Add(MakeShareable<FROSSpawnSemanticMapServer>(new FROSSpawnSemanticMapServer(Namespace, TEXT("spawn_semantic_map"), World, this)));
-    ServicesToPublish.Add(MakeShareable<FROSDeleteAllServer>(new FROSDeleteAllServer(Namespace, TEXT("delete_all"), World, this)));
-    ServicesToPublish.Add(MakeShareable<FROSSpawnProMeshServer>(new FROSSpawnProMeshServer(Namespace, TEXT("spawn_pro_mesh"), World, this)));
+    	ServicesToPublish.Add(MakeShareable<FROSSpawnProMeshServer>(new FROSSpawnProMeshServer(Namespace, TEXT("spawn_pro_mesh"), World, this)));
 //    ServicesToPublish.Add(MakeShareable<FROSSpawnRobotServer>(new FROSSpawnRobotServer(Namespace,TEXT("spawn_robot"),World,this)));
+	ServicesToPublish.Add(MakeShareable<FROSDeleteAllServer>(new FROSDeleteAllServer(Namespace, TEXT("delete_all"), World, this)));
+	ServicesToPublish.Add(MakeShareable<FROSObjectToObjectStateServer>(new FROSObjectToObjectStateServer(Namespace, TEXT("object_to_object_state"), World, this)));
 }
