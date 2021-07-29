@@ -2,7 +2,7 @@
 #include "CoreMinimal.h"
 #include "ROSBridgeHandler.h"
 #include "RWCManager.h"
-#include "ObjectToObjectState.h"
+#include "world_control_msgs/srv/ObjectToObjectState.h"
 
 class FROSObjectToObjectStateServer final : public FROSBridgeSrvServer
 {

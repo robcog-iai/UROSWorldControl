@@ -1,4 +1,4 @@
-#include "ObjectToObjectStateServer.h"
+#include "SrvCallbacks/ObjectToObjectStateServer.h"
 #include "Tags.h"
 
 TSharedPtr<FROSBridgeSrv::SrvRequest> FROSObjectToObjectStateServer::FromJson(TSharedPtr<FJsonObject> JsonObject) const
