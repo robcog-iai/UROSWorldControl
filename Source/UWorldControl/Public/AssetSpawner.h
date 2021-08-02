@@ -49,8 +49,8 @@ public:
 		bool bSpawnCollisionCheck;
 	};
 
-    	static bool SpawnProMeshAsset(UWorld* World,FSpawnAssetParams Params,FString &FinalActorName);
-	static bool SpawnAsset(UWorld* World, FSpawnAssetParams Params, FString &FinalActorName, FString &ErrType);
+    static bool SpawnAsset(UWorld* World, FSpawnAssetParams Params, FString &FinalActorName, FString &ErrType);
+    static bool SpawnProMeshAsset(UWorld* World,FSpawnAssetParams Params,FString &FinalActorName, FString &ErrType);
 
 };
 

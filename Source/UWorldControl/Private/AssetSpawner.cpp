@@ -134,7 +134,7 @@ bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params, FS
 
 
 
-bool FAssetSpawner::SpawnProMeshAsset(UWorld *World, FSpawnAssetParams Params, FString &FinalActorName)
+bool FAssetSpawner::SpawnProMeshAsset(UWorld *World, FSpawnAssetParams Params, FString &FinalActorName, FString &ErrType)
 {
     //Check if World is avialable
     if (!World)
