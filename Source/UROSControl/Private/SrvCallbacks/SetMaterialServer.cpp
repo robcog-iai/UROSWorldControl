@@ -1,7 +1,7 @@
 // Copyright 2017-2019, Institute for Artificial Intelligence - University of Bremen
 
-#include "SetMaterialServer.h"
-#include "FileManagerGeneric.h"
+#include "SrvCallbacks/SetMaterialServer.h"
+#include "HAL/FileManagerGeneric.h"
 #include "AssetModifier.h"
 #include "Tags.h"
 

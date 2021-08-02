@@ -3,7 +3,7 @@
 #pragma once
 #include "ROSBridgeMsg.h"
 #include "PhysicsConstraintDetails.h"
-#include "Pose.h"
+#include "geometry_msgs/Pose.h"
 
 namespace world_control_msgs
 {

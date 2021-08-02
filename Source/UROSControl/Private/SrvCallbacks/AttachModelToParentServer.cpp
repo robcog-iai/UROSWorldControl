@@ -1,6 +1,6 @@
 // Copyright 2017-2019, Institute for Artificial Intelligence - University of Bremen
 
-#include "AttachModelToParentServer.h"
+#include "SrvCallbacks/AttachModelToParentServer.h"
 #include "AssetModifier.h"
 #include "Tags.h"
 

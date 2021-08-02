@@ -1,6 +1,6 @@
 // Copyright 2017-2019, Institute for Artificial Intelligence - University of Bremen
-#include "GetModelSocketPoseServer.h"
-#include "GetModelSocketPose.h"
+#include "SrvCallbacks/GetModelSocketPoseServer.h"
+#include "world_control_msgs/srv/GetModelSocketPose.h"
 #include "Conversions.h"
 #include "Tags.h"
 

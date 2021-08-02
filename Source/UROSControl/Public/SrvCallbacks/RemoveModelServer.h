@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "ROSBridgeHandler.h"
 #include "RWCManager.h"
-#include "DeleteModel.h"
+#include "world_control_msgs/srv/DeleteModel.h"
 
 class FROSRemoveModelServer final : public FROSBridgeSrvServer
 {

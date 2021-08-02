@@ -1,4 +1,4 @@
-#include "DeleteAllServer.h"
+#include "SrvCallbacks/DeleteAllServer.h"
 #include "AssetModifier.h"
 #include "Tags.h"
 

@@ -2,7 +2,7 @@
 #include "CoreMinimal.h"
 #include "ROSBridgeHandler.h"
 #include "RWCManager.h"
-#include "DeleteAll.h"
+#include "world_control_msgs/srv/DeleteAll.h"
 
 class FROSDeleteAllServer final : public FROSBridgeSrvServer
 {

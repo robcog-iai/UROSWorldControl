@@ -1,6 +1,6 @@
 // Copyright 2017-2019, Institute for Artificial Intelligence - University of Bremen
-#include "GetModelPoseServer.h"
-#include "GetModelPose.h"
+#include "SrvCallbacks/GetModelPoseServer.h"
+#include "world_control_msgs/srv/GetModelPose.h"
 #include "Conversions.h"
 #include "Tags.h"
 

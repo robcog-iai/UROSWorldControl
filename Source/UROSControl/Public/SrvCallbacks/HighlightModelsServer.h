@@ -6,7 +6,7 @@
 #include "ROSBridgeSrvServer.h"
 #include "ROSBridgeSrv.h"
 #include "RWCManager.h"
-#include "HighlightModel.h"
+#include "world_control_msgs/srv/HighlightModel.h"
 
 
 class FROSHighlightModelsServer final : public FROSBridgeSrvServer

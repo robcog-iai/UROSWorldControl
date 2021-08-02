@@ -1,6 +1,6 @@
 #pragma once
 #include "ROSBridgeSrv.h"
-#include "PhysicsProperties.h"
+#include "world_control_msgs/msgs/PhysicsProperties.h"
 
 class UROSBRIDGE_API FROSSetPhysicsPropertiesSrv : public FROSBridgeSrv
 {
