@@ -4,6 +4,10 @@
 #include "WorldControlGameInstance.h"
 #include "ResetLevelServer.h"
 
+UWorldControlGameInstance::UWorldControlGameInstance()
+{
+  Manager = CreateDefaultSubobject<URWCManager>(TEXT("RWCManager"));
+}
 
 void UWorldControlGameInstance::OnStart()
 {
@@ -14,7 +18,13 @@ void UWorldControlGameInstance::OnStart()
       UWorld* World = GetWorld();
       if(World)
       {
-	ROSHandler->AddServiceServer(MakeShareable<FROSResetLevelServer>(new FROSResetLevelServer(FString("UnrealSim"), TEXT("reset_level"),  this)));
+	ROSHandler->AddServiceServer(MakeShareable<FROSResetLevelServer>(new FROSResetLevelServer(Namespace, TEXT("reset_level"),  this)));
+        if(Manager)
+          {
+            Manager->Register(Namespace, World);
+            Manager->ConnectToHandler(ROSHandler);
+          }
+
       }
       else
         {
@@ -26,9 +36,3 @@ void UWorldControlGameInstance::OnStart()
       UE_LOG(LogTemp, Error, TEXT("GameInstance: Handler not valid"));
     }
 }
-
-// void UWorldControlGameInstance::Tick(float DeltaTime)
-// {
-//   Super::Tick(DeltaTime);
-//   UE_LOG(LogTemp, Error, TEXT("Tick"));
-// }
