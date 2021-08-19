@@ -1,7 +1,7 @@
 # UROSWorldControl
 Unreal World Control from ROS using UROSBridge.
 
-Supported engine version: **UE 4.21**
+Supported engine version: **UE 4.25**
 
 ## Features
 Currently there are the following ROS services supported:
