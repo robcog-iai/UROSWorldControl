@@ -16,13 +16,12 @@ class UROSCONTROL_API UWorldControlGameInstance : public UROSBridgeGameInstance
   GENERATED_BODY()
 
     virtual void OnStart() override;
-    URWCManager* Manager;
+  UWorldControlGameInstance();
  public:
 
-  UPROPERTY(EditAnywhere, Category = "Config")
+  UPROPERTY(EditAnywhere, Instanced)
+    URWCManager* Manager;
+
+  UPROPERTY(EditAnywhere, Category = "ROS")
     FString Namespace = FString("UnrealSim");
-
-  UPROPERTY(EditAnywhere, Category = "Config")
-    bool bEnableRWCManager = false;
-
 };

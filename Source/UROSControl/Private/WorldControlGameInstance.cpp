@@ -4,6 +4,10 @@
 #include "WorldControlGameInstance.h"
 #include "ResetLevelServer.h"
 
+UWorldControlGameInstance::UWorldControlGameInstance()
+{
+  Manager = CreateDefaultSubobject<URWCManager>(TEXT("RWCManager"));
+}
 
 void UWorldControlGameInstance::OnStart()
 {
@@ -15,12 +19,12 @@ void UWorldControlGameInstance::OnStart()
       if(World)
       {
 	ROSHandler->AddServiceServer(MakeShareable<FROSResetLevelServer>(new FROSResetLevelServer(Namespace, TEXT("reset_level"),  this)));
-        if(bEnableRWCManager)
+        if(Manager)
           {
-            Manager = NewObject<URWCManager>();
             Manager->Register(Namespace, World);
             Manager->ConnectToHandler(ROSHandler);
           }
+
       }
       else
         {
