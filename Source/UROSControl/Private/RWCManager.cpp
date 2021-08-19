@@ -16,11 +16,19 @@
 #include "SrvCallbacks/ObjectToObjectStateServer.h"
 #include "SrvCallbacks/GetModelSocketPoseServer.h"
 
-void URWCManager::Register(FString DefaultNamespace)
+void URWCManager::Register(FString DefaultNamespace, UWorld* InWorld)
 {
 	Namespace = DefaultNamespace;
+        if(InWorld)
+          {
+            World = InWorld;
+          }
+        else
+          {
+            World = GetWorld();
+          }
 
-	if (!GetWorld())
+	if(!World)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("[%s]: GetWorld returned, NULL."), *FString(__FUNCTION__));
 		return;
@@ -33,7 +41,6 @@ void URWCManager::Register(FString DefaultNamespace)
 void URWCManager::SetupServiceServers()
 {
 	// Add Service Servers
-	UWorld* World = GetWorld();
 
 	ServicesToPublish.Add(MakeShareable<FROSSpawnModelServer>(new FROSSpawnModelServer(Namespace, TEXT("spawn_model"), World, this)));
 	ServicesToPublish.Add(MakeShareable<FROSSetModelPoseServer>(new FROSSetModelPoseServer(Namespace, TEXT("set_model_pose"), World, this)));
@@ -50,4 +57,22 @@ void URWCManager::SetupServiceServers()
 //    ServicesToPublish.Add(MakeShareable<FROSSpawnRobotServer>(new FROSSpawnRobotServer(Namespace,TEXT("spawn_robot"),World,this)));
 	ServicesToPublish.Add(MakeShareable<FROSDeleteAllServer>(new FROSDeleteAllServer(Namespace, TEXT("delete_all"), World, this)));
 	ServicesToPublish.Add(MakeShareable<FROSObjectToObjectStateServer>(new FROSObjectToObjectStateServer(Namespace, TEXT("object_to_object_state"), World, this)));
+}
+
+void URWCManager::ConnectToHandler(const TSharedPtr<FROSBridgeHandler>& ROSHandler)
+{
+  for(auto& Service : ServicesToPublish)
+    {
+      ROSHandler->AddServiceServer(Service);
+    }
+
+  for(auto& Publisher : PublisherToPublish)
+    {
+      ROSHandler->AddPublisher(Publisher);
+    }
+
+  for(auto& Subscriber : SubscriberToPublish)
+    {
+      ROSHandler->AddSubscriber(Subscriber);
+    }
 }

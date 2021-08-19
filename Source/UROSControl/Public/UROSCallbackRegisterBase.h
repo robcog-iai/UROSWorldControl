@@ -24,11 +24,11 @@ public:
 	UROSCallbackRegisterBase(){}
 	~UROSCallbackRegisterBase() {}
 
-	/* 
+	/*
 	 * After call to this function the Arrays are expected to be set up correctly.
 	 * If Namespace is not needed, just ignore it. It will always be provided.
 	 */
-	virtual void Register(FString DefaultNamespace)
+	virtual void Register(FString DefaultNamespace, UWorld* InWorld = nullptr)
 	{
 		UE_LOG(LogTemp, Error, TEXT("[%s]: This function schould be overriden by derived class. This class is meant to function like an Interface."), *FString(__func__));
 	};
