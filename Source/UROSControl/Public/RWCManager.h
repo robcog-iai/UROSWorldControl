@@ -10,7 +10,7 @@
 #include "RWCManager.generated.h"
 
 
-UCLASS()
+UCLASS(Blueprintable, DefaultToInstanced, hidecategories = Object, editinlinenew)
 class UROSCONTROL_API URWCManager : public UROSCallbackRegisterBase
 {
 	GENERATED_BODY()
