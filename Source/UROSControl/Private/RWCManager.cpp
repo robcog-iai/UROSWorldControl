@@ -45,7 +45,7 @@ void URWCManager::SetupServiceServers()
 	ServicesToPublish.Add(MakeShareable<FROSSpawnModelServer>(new FROSSpawnModelServer(Namespace, TEXT("spawn_model"), World, this)));
 	ServicesToPublish.Add(MakeShareable<FROSSetModelPoseServer>(new FROSSetModelPoseServer(Namespace, TEXT("set_model_pose"), World, this)));
 	ServicesToPublish.Add(MakeShareable<FROSGetModelPoseServer>(new FROSGetModelPoseServer(Namespace, TEXT("get_model_pose"), World, this)));
-    ServicesToPublish.Add(MakeShareable<FROSGetModelSocketPoseServer>(new FROSGetModelSocketPoseServer(Namespace, TEXT("get_model_socket_pose"), World, this)));
+        ServicesToPublish.Add(MakeShareable<FROSGetModelSocketPoseServer>(new FROSGetModelSocketPoseServer(Namespace, TEXT("get_model_socket_pose"), World, this)));
 	ServicesToPublish.Add(MakeShareable<FROSRemoveModelServer>(new FROSRemoveModelServer(Namespace, TEXT("delete_model"), World, this)));
 	ServicesToPublish.Add(MakeShareable<FROSAttachModelToParentServer>(new FROSAttachModelToParentServer(Namespace, TEXT("attach_model_to_parent"), World, this)));
 	ServicesToPublish.Add(MakeShareable<FROSSpawnPhysicsConstraintServer>(new FROSSpawnPhysicsConstraintServer(Namespace, TEXT("spawn_physics_constraint"), World, this)));

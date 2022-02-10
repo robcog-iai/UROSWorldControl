@@ -15,9 +15,10 @@ class UROSCONTROL_API UWorldControlGameInstance : public UROSBridgeGameInstance
 {
   GENERATED_BODY()
 
-    virtual void OnStart() override;
-  UWorldControlGameInstance();
  public:
+    virtual void OnStart() override;
+
+  UWorldControlGameInstance();
 
   UPROPERTY(EditAnywhere, Instanced)
     URWCManager* Manager;

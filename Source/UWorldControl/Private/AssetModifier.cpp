@@ -1,5 +1,9 @@
 #include "AssetModifier.h"
+#if ENGINE_MINOR_VERSION > 23 || ENGINE_MAJOR_VERSION >4
 #include "HAL/FileManagerGeneric.h"
+#else
+#include "FileManagerGeneric.h"
+#endif
 #include "Tags.h"
 #if WITH_EDITOR
 #include "Editor.h"
