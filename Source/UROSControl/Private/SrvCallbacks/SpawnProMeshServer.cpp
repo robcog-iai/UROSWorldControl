@@ -2,9 +2,9 @@
 
 
 #include "SrvCallbacks/SpawnProMeshServer.h"
-#include "KismetProceduralMeshLibrary.h"
-#include "ProceduralMeshComponent.h"
-#include "CustomMeshComponent.h"
+//#include "KismetProceduralMeshLibrary.h"
+//#include "ProceduralMeshComponent.h"
+//#include "CustomMeshComponent.h"
 #include "Tags.h"
 #include "world_control_msgs/msgs/Tag.h"
 #include "Conversions.h"
@@ -24,7 +24,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnProMeshServer::Callback(TSharedP
     TSharedPtr<FROSSpawnProMeshSrv::Request> SpawnProMeshRequest =
         StaticCastSharedPtr<FROSSpawnProMeshSrv::Request>(Request);
 
-    UProceduralMeshComponent* ProMesh = NewObject<UProceduralMeshComponent>();
+    //UProceduralMeshComponent* ProMesh = NewObject<UProceduralMeshComponent>();
     FActorSpawnParameters SpawnParams;
     ABoundingBox* SpawnedActor;
 
@@ -164,18 +164,18 @@ ABoundingBox* FROSSpawnProMeshServer::SpawnProMesh(TSharedPtr<FROSSpawnProMeshSr
         //Actual Spawning MeshComponent
         SpawnedActor = World->SpawnActor<ABoundingBox>(SpawnLocation, SpawnRotation, SpawnParams);
 
-        SpawnedActor->ProMesh->CreateMeshSection(1,Vertices,Triangles,Normals,UVs,TArray<FColor>(),TArray<FProcMeshTangent>(),true); //create Mesh? needs to be in Game Thread?
-        // Needs to be movable if the game is running.
-        SpawnedActor->ProMesh->SetMobility(EComponentMobility::Movable);
-        //Assigning the Mesh and Material to the Component
-        SpawnedActor->ProMesh->SetupAttachment(SpawnedActor->GetRootComponent());
-        UE_LOG(LogTemp, Warning, TEXT("[%s]: Attached to new RootComponent."), *FString(__FUNCTION__));
-        SpawnedActor->ProMesh->SetSimulatePhysics(SpawnProMeshRequest->GetPhysicsProperties().IsSimulatePhysics());
-        SpawnedActor->ProMesh->SetGenerateOverlapEvents(SpawnProMeshRequest->GetPhysicsProperties().GetGenerateOverlapEvents());
-        SpawnedActor->ProMesh->SetEnableGravity(SpawnProMeshRequest->GetPhysicsProperties().GetGravity());
-        SpawnedActor->ProMesh->SetMassOverrideInKg(NAME_None,SpawnProMeshRequest->GetPhysicsProperties().GetMass());
+        //SpawnedActor->ProMesh->CreateMeshSection(1,Vertices,Triangles,Normals,UVs,TArray<FColor>(),TArray<FProcMeshTangent>(),true); //create Mesh? needs to be in Game Thread?
+        //// Needs to be movable if the game is running.
+        //SpawnedActor->ProMesh->SetMobility(EComponentMobility::Movable);
+        ////Assigning the Mesh and Material to the Component
+        //SpawnedActor->ProMesh->SetupAttachment(SpawnedActor->GetRootComponent());
+        //UE_LOG(LogTemp, Warning, TEXT("[%s]: Attached to new RootComponent."), *FString(__FUNCTION__));
+        //SpawnedActor->ProMesh->SetSimulatePhysics(SpawnProMeshRequest->GetPhysicsProperties().IsSimulatePhysics());
+        //SpawnedActor->ProMesh->SetGenerateOverlapEvents(SpawnProMeshRequest->GetPhysicsProperties().GetGenerateOverlapEvents());
+        //SpawnedActor->ProMesh->SetEnableGravity(SpawnProMeshRequest->GetPhysicsProperties().GetGravity());
+        //SpawnedActor->ProMesh->SetMassOverrideInKg(NAME_None,SpawnProMeshRequest->GetPhysicsProperties().GetMass());
 
-        SpawnedActor->ProMesh->SetMobility(SpawnProMeshRequest->GetPhysicsProperties().GetMobility());
+        //SpawnedActor->ProMesh->SetMobility(SpawnProMeshRequest->GetPhysicsProperties().GetMobility());
     }
     else
     {

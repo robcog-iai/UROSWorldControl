@@ -11,14 +11,14 @@
 ABoundingBox::ABoundingBox()
 {
     // Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-    PrimaryActorTick.bCanEverTick = true;
+    PrimaryActorTick.bCanEverTick = false;
 
-    RootComponent=CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
-    ProMesh=CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("ProMesh"));
-    Front=CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("Front"));
+    //RootComponent=CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+    //ProMesh=CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("ProMesh"));
+    //Front=CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("Front"));
 
-    ProMesh->AttachToComponent(RootComponent,FAttachmentTransformRules::KeepRelativeTransform);
-    Front->AttachToComponent(RootComponent,FAttachmentTransformRules::KeepRelativeTransform);
+    //ProMesh->AttachToComponent(RootComponent,FAttachmentTransformRules::KeepRelativeTransform);
+    //Front->AttachToComponent(RootComponent,FAttachmentTransformRules::KeepRelativeTransform);
     //An Procedual Generated Bounding Box here is some example Code on how it could be used
 
 

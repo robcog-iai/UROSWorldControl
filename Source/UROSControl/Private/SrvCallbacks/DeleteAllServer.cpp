@@ -18,9 +18,9 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSDeleteAllServer::Callback(TSharedPtr<
 	// Do all calculations that don't need a game thread first.
 
 	// Get the important values from the Request.
-	FString Type = RemoveAllRequest->GetType();
-	FString Key = RemoveAllRequest->GetKey();
-	FString Value = RemoveAllRequest->GetValue();
+	FString ReqType = RemoveAllRequest->GetType();
+	FString ReqKey = RemoveAllRequest->GetKey();
+	FString ReqValue = RemoveAllRequest->GetValue();
 	bool ignoreValue = RemoveAllRequest->GetIgnore();
 
 	FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
@@ -32,11 +32,11 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSDeleteAllServer::Callback(TSharedPtr<
 
 			if (ignoreValue)
 			{
-				FTags::GetActorsToKeyValue(World, Type, Key).GenerateKeyArray(AllMatchingActors);
+				FTags::GetActorsToKeyValue(World, ReqType, ReqKey).GenerateKeyArray(AllMatchingActors);
 			}
 			else
 			{
-				AllMatchingActors = FTags::GetActorsWithKeyValuePair(World, Type, Key, Value);
+				AllMatchingActors = FTags::GetActorsWithKeyValuePair(World, ReqType, ReqKey, ReqValue);
 			}
 
 			for (AActor* Actor : AllMatchingActors)
