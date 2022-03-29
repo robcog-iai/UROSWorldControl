@@ -8,10 +8,10 @@
 #include "world_control_msgs/srv/SpawnProMesh.h"
 #include "ROSBridgeSrvServer.h"
 #include "ROSBridgeHandler.h"
-#include "KismetProceduralMeshLibrary.h"
+//#include "KismetProceduralMeshLibrary.h"
 #include "RWCManager.h"
-#include "ProceduralMeshComponent.h"
-#include "CustomMeshComponent.h"
+//#include "ProceduralMeshComponent.h"
+//#include "CustomMeshComponent.h"
 #include "BoundingBox.h"
 /**
  *

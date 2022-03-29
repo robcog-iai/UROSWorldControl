@@ -51,9 +51,8 @@ public class UROSControl : ModuleRules
 				"zlib",
 				"Json",
 				"JsonUtilities",
-                //I wanted to try out some Proceudal Mesh Bullshit so I need theses
-                "CustomMeshComponent",
-                "ProceduralMeshComponent",
+                //"CustomMeshComponent",
+                //"ProceduralMeshComponent",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
