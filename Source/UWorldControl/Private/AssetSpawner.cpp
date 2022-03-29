@@ -257,19 +257,19 @@ bool FAssetSpawner::SpawnProMeshAsset(UWorld *World, FSpawnAssetParams Params, F
         //Actual Spawning MeshComponent
         SpawnedActor = World->SpawnActor<ABoundingBox>(SpawnLocation, SpawnRotation, SpawnParams);
 
-        SpawnedActor->ProMesh->CreateMeshSection(1,Vertices,Triangles,Normals,UVs,TArray<FColor>(),TArray<FProcMeshTangent>(),true); //create Mesh? needs to be in Game Thread?
-        SpawnedActor->Front->CreateMeshSection(1,FrontVertices,FrontTriangles,FrontNormals,FrontUVs,TArray<FColor>(),TArray<FProcMeshTangent>(),true);
-        // Needs to be movable if the game is running.
-        SpawnedActor->ProMesh->SetMobility(EComponentMobility::Movable);
-        //Assigning the Mesh and Material to the Component
-        SpawnedActor->ProMesh->SetupAttachment(SpawnedActor->GetRootComponent());
-        UE_LOG(LogTemp, Warning, TEXT("[%s]: Attached to new RootComponent."), *FString(__FUNCTION__));
-        SpawnedActor->ProMesh->SetSimulatePhysics(Params.PhysicsProperties.bSimulatePhysics);
-        SpawnedActor->ProMesh->SetGenerateOverlapEvents(Params.PhysicsProperties.bGenerateOverlapEvents);
-        SpawnedActor->ProMesh->SetEnableGravity(Params.PhysicsProperties.bGravity);
-        SpawnedActor->ProMesh->SetMassOverrideInKg(NAME_None,Params.PhysicsProperties.Mass);
+        //SpawnedActor->ProMesh->CreateMeshSection(1,Vertices,Triangles,Normals,UVs,TArray<FColor>(),TArray<FProcMeshTangent>(),true); //create Mesh? needs to be in Game Thread?
+        //SpawnedActor->Front->CreateMeshSection(1,FrontVertices,FrontTriangles,FrontNormals,FrontUVs,TArray<FColor>(),TArray<FProcMeshTangent>(),true);
+        //// Needs to be movable if the game is running.
+        //SpawnedActor->ProMesh->SetMobility(EComponentMobility::Movable);
+        ////Assigning the Mesh and Material to the Component
+        //SpawnedActor->ProMesh->SetupAttachment(SpawnedActor->GetRootComponent());
+        //UE_LOG(LogTemp, Warning, TEXT("[%s]: Attached to new RootComponent."), *FString(__FUNCTION__));
+        //SpawnedActor->ProMesh->SetSimulatePhysics(Params.PhysicsProperties.bSimulatePhysics);
+        //SpawnedActor->ProMesh->SetGenerateOverlapEvents(Params.PhysicsProperties.bGenerateOverlapEvents);
+        //SpawnedActor->ProMesh->SetEnableGravity(Params.PhysicsProperties.bGravity);
+        //SpawnedActor->ProMesh->SetMassOverrideInKg(NAME_None,Params.PhysicsProperties.Mass);
 
-        SpawnedActor->ProMesh->SetMobility(Params.PhysicsProperties.Mobility);
+        //SpawnedActor->ProMesh->SetMobility(Params.PhysicsProperties.Mobility);
     }
     else
     {

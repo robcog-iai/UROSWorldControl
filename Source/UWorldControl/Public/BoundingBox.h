@@ -4,9 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "KismetProceduralMeshLibrary.h"
-#include "ProceduralMeshComponent.h"
-#include "CustomMeshComponent.h"
+//#include "KismetProceduralMeshLibrary.h"
+//#include "ProceduralMeshComponent.h"
+//#include "CustomMeshComponent.h"
 #include "BoundingBox.generated.h"
 
 UCLASS()
@@ -26,11 +26,11 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-    UPROPERTY(EditAnywhere)
-    UProceduralMeshComponent* ProMesh;
+    //UPROPERTY(EditAnywhere)
+    //UProceduralMeshComponent* ProMesh;
 
-    UPROPERTY(EditAnywhere)
-    UProceduralMeshComponent* Front;
+    //UPROPERTY(EditAnywhere)
+    //UProceduralMeshComponent* Front;
 
 
 	
