@@ -11,8 +11,6 @@
 
 bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params, FString &FinalActorName, FString &ErrType)
 {
-	UE_LOG(LogTemp, Error, TEXT("[%s]: Handling callback"), *FString(__FUNCTION__));
-
 	//Check if World is avialable
 	if (!World)
 	{
