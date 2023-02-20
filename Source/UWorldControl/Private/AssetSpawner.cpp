@@ -21,7 +21,6 @@ bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params, FS
 	}
 
 	FString Label = (Params.ActorLabel.IsEmpty() ? Params.Name : Params.ActorLabel);
-	UE_LOG(LogTemp, Error, TEXT("[%s]: Computed input actor label is \"%s\"."), *FString(__FUNCTION__), *Label);
 #if WITH_EDITOR
 	GEditor->BeginTransaction(FText::FromString(TEXT("Spawning: ")+ Label));
 	World->Modify();
@@ -33,7 +32,6 @@ bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params, FS
   // Set the ActorName explicitly if supplied for non-editor builds
   if( !Params.OverrideName.IsEmpty())
   {
-	  UE_LOG(LogTemp, Error, TEXT("[%s]: Setting Override name is %s"), *FString(__FUNCTION__), *Params.OverrideName);
     SpawnParams.Name = *Params.OverrideName;
   }
   #endif
