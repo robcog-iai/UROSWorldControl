@@ -45,6 +45,7 @@ TSharedPtr<FROSBridgeSrv::SrvResponse> FROSSpawnModelServer::Callback(TSharedPtr
 	Params.PhysicsProperties.Mass = SpawnMeshRequest->GetPhysicsProperties().GetMass();
 	Params.StartDir = SpawnMeshRequest->GetPath();
 	Params.ActorLabel = SpawnMeshRequest->GetActorLabel();
+	Params.OverrideName = SpawnMeshRequest->GetOverrideName();
 	Params.MaterialNames = SpawnMeshRequest->GetMaterialNames();
 	Params.MaterialPaths = SpawnMeshRequest->GetMaterialPaths();
 	Params.ParentId = SpawnMeshRequest->GetParentId();

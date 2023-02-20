@@ -24,6 +24,7 @@ public:
 		TArray<world_control_msgs::Tag> Tags;
 		FString Path;
 		FString ActorLabel;
+		FString OverrideName;
 		world_control_msgs::PhysicsProperties PhysicsProperties;
 		TArray<FString> MaterialNames;
 		TArray<FString> MaterialPaths;
@@ -34,7 +35,7 @@ public:
 	public:
 		Request() {}
 
-		Request(FString InName, geometry_msgs::Pose InPose, FString InId, TArray<world_control_msgs::Tag> InTags, FString InPath, FString InActorLabel, world_control_msgs::PhysicsProperties InPhysicsProperties, TArray<FString> InMaterialNames, TArray<FString> InMaterialPaths, FString InParentId, bool bInSpawnCollisionCheck)
+		Request(FString InName, geometry_msgs::Pose InPose, FString InId, TArray<world_control_msgs::Tag> InTags, FString InPath, FString InActorLabel, FString InOverrideName, world_control_msgs::PhysicsProperties InPhysicsProperties, TArray<FString> InMaterialNames, TArray<FString> InMaterialPaths, FString InParentId, bool bInSpawnCollisionCheck)
 		{
 			Name = InName;
 			Pose = InPose;
@@ -42,6 +43,7 @@ public:
 			Tags = InTags;
 			Path = InPath;
 			ActorLabel = InActorLabel;
+			OverrideName = InOverrideName;
 			PhysicsProperties = InPhysicsProperties;
 			MaterialNames = InMaterialNames;
 			MaterialPaths = InMaterialPaths;
@@ -77,6 +79,11 @@ public:
 		FString GetActorLabel()
 		{
 			return ActorLabel;
+		}
+
+		FString GetOverrideName()
+		{
+			return OverrideName;
 		}
 
 		world_control_msgs::PhysicsProperties GetPhysicsProperties()
@@ -120,6 +127,7 @@ public:
 
 			Path = JsonObject->GetStringField("path");
 			ActorLabel = JsonObject->GetStringField("actor_label");
+			OverrideName = JsonObject->GetStringField("override_name");
 			PhysicsProperties.FromJson(JsonObject->GetObjectField("physics_properties"));
 			MaterialNames.Empty();
 			TArray<TSharedPtr<FJsonValue>> MaterialNamesPtrArray = JsonObject->GetArrayField(TEXT("material_names"));
@@ -156,6 +164,7 @@ public:
 				", tags size = " + FString::FromInt(Tags.Num()) +
 				", path = " + Path +
 				", actor_label = " + ActorLabel +
+				", override_name = " + OverrideName +
 				", physics_properties = " + PhysicsProperties.ToString() +
 				", material_names size = " + FString::FromInt(MaterialNames.Num()) +
 				", material_paths size = " + FString::FromInt(MaterialPaths.Num()) +
@@ -179,6 +188,7 @@ public:
 
 			Object->SetStringField(TEXT("path"), Path);
 			Object->SetStringField(TEXT("actor_label"), ActorLabel);
+			Object->SetStringField(TEXT("override_name"), OverrideName);
 			Object->SetObjectField(TEXT("physics_properties"), PhysicsProperties.ToJsonObject());
 			TArray<TSharedPtr<FJsonValue>> MaterialNamesPtrArray;
 			for (auto &Entry : MaterialNames)

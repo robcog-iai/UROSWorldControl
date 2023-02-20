@@ -40,6 +40,7 @@ public:
 		FPhysicsProperties PhysicsProperties;
 		FString StartDir;
 		FString ActorLabel;
+		FString OverrideName;
 		TArray<FString> MaterialNames;
 		TArray<FString> MaterialPaths;
 		FString ParentId;
