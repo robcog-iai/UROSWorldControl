@@ -26,6 +26,13 @@ bool FAssetSpawner::SpawnAsset(UWorld* World, const FSpawnAssetParams Params, FS
 
 	//Setup SpawnParameters
 	FActorSpawnParameters SpawnParams;
+  #if !WITH_EDITOR
+  // Set the ActorName explicitly if supplied for non-editor builds
+  if( !Params.OverrideName.IsEmpty())
+  {
+    SpawnParams.Name = *Params.OverrideName;
+  }
+  #endif
 
 	//Load Mesh and check if it succeded.
 	UStaticMesh* Mesh = FAssetModifier::LoadMesh(Params.Name, Params.StartDir);
